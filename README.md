@@ -5,7 +5,7 @@ Demonstrates how to use webpack with Babel.
 Installation:
 
 ```
-cd webpack-babel-demo/
+cd frappe-webpack-babel/
 npm install
 ```
 
