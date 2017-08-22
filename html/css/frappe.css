@@ -1,0 +1,67 @@
+svg {
+    pointer-events: all;
+    cursor: crosshair;
+}
+
+.frappe-action {
+    cursor: pointer;
+    fill: none;
+    stroke: #000;
+    stroke-width: 2;
+}
+
+.frappe-decision {
+    pointer-events: none;
+    stroke: #000;
+    stroke-width: 1.5;
+    stroke-linecap: butt;
+}
+
+.frappe-decision-holder {
+    cursor: help;
+    stroke: transparent;
+    stroke-width: 12;
+}
+
+.frappe-handle {
+    opacity: 0;
+    transform: translate(-4px, -4px);
+    transition: opacity 0.3s;
+}
+
+.frappe-handle-hover {
+    opacity: 1;
+}
+
+.frappe-handle-symbol {
+    fill: none;
+    pointer-events: none;
+    stroke: #000;
+    stroke-width: 6;
+    stroke-linecap: square;
+    
+}
+
+.frappe-handle-bevel {
+    cursor: pointer;
+    fill: none;
+    pointer-events: visibleStroke;
+    stroke: #fff;
+    stroke-width: 10;
+    stroke-linecap: square;
+}
+
+.frappe-handle-joint {
+    cursor: cell;
+    fill: #fff;
+    stroke-width: 2;
+}
+
+.frappe-handle-joint-deco {
+    fill: #000;
+}
+
+.frappe-branch-confirm {
+    filter: grayscale(100%);
+    opacity: 0.8;
+}
