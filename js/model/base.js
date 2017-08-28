@@ -65,4 +65,4 @@ export default class {
     render() {
         this.renderer.update(this);
     }
-};
+}

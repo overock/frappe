@@ -118,7 +118,7 @@ export default class {
     /**
      * event emitters to interact event.js or any other modules
      */
-    command(type, param) {
+    emit(type, param) {
         return window.dispatchEvent(new CustomEvent(type, { detail: param }));
     }
 
@@ -275,4 +275,4 @@ export default class {
         this.radial.close();
         target.element.style.display = '';
     }
-};
+}

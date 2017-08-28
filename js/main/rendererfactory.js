@@ -12,4 +12,4 @@ export default class {
             return new Action(model, actionDef[type]);
         }
     }
-};
+}

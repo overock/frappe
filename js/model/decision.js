@@ -29,15 +29,19 @@ export default class extends Base {
     fitToNodes() {
         if(!this.isDirty) return;
         
-        const p = this.prev[0] || { top: this.top, left: this.left, width: 0, height: 0},
-            n = this.next[0] || { top: this.bottom, left: this.right, width: 0, height: 0};
-        const pcx = p.left + p.width/2,
+        const
+            p = this.prev[0] || { top: this.top, left: this.left, width: 0, height: 0},
+            n = this.next[0] || { top: this.bottom, left: this.right, width: 0, height: 0},
+
+            pcx = p.left + p.width/2,
             pcy = p.top + p.height/2,
             ncx = n.left + n.width/2,
-            ncy = n.top + n.height/2;
-        const dx = ncx - pcx,
-            dy = ncy - pcy;
-        const pu = (Math.max(Math.abs(dx)/(p.width||1), Math.abs(dy)/(p.height||1))*2)||1,
+            ncy = n.top + n.height/2,
+
+            dx = ncx - pcx,
+            dy = ncy - pcy,
+
+            pu = (Math.max(Math.abs(dx)/(p.width||1), Math.abs(dy)/(p.height||1))*2)||1,
             nu = (Math.max(Math.abs(dx)/(n.width||1), Math.abs(dy)/(n.height||1))*2)||1;
 
         this.top = pcy + dy/pu;
@@ -45,4 +49,4 @@ export default class extends Base {
         this.bottom = ncy - dy/nu;
         this.right = ncx - dx/nu;
     }
-};
+}

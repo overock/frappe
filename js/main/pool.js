@@ -35,4 +35,4 @@ export default class {
     // some iterator proxies
     filter(fn) { return this.container.filter(fn); }
     find(fn) { return this.container.find(fn); }
-};
+}

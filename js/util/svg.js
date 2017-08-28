@@ -61,6 +61,6 @@ export default class SVG {
             </symbol>
         `);
     }
-};
+}
 
 const container = SVG.create('svg');

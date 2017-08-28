@@ -246,4 +246,4 @@ export default class {
     set viewBox(values) {
         [ viewBox.x, viewBox.y, viewBox.w, viewBox.h ] = values.split(' ').map(v => v|0);
     }
-};
+}

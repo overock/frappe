@@ -17,4 +17,4 @@ export default class extends Base {
         this.handle.setAttribute('x', model.left + offX);
         this.handle.setAttribute('y', model.top + offY);
     }
-};
+}

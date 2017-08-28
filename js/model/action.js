@@ -26,4 +26,4 @@ export default class extends Base {
         this.prev.forEach(decision => decision.fitToNodes());
         this.next.forEach(decision => decision.fitToNodes());
     }
-};
+}

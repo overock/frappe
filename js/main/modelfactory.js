@@ -18,4 +18,4 @@ export default class {
         model.isGhost = true;
         return model;
     }
-};
+}

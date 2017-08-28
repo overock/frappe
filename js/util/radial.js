@@ -57,4 +57,4 @@ export default class {
         this.element.parentNode.removeChild(this.element);
         this.element = null;
     }
-};
+}
