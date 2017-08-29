@@ -6,7 +6,7 @@ let instance,
     isDragging = false;
 
 const
-    viewBox = { x: 0, y:0, w:0, h:0, z: 1 },
+    viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
     pool = new MdPool(),
     getModel = el => (currentModel = pool.item(el.closest('g').getAttribute('id'))),
 
@@ -243,7 +243,5 @@ export default class {
     }
 
     get viewBox() { return viewBox; }
-    set viewBox(values) {
-        [ viewBox.x, viewBox.y, viewBox.w, viewBox.h ] = values.split(' ').map(v => v|0);
-    }
+    set viewBox(values) { [ viewBox.x, viewBox.y, viewBox.w, viewBox.h ] = values.split(' ').map(v => v|0); }
 }

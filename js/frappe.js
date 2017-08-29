@@ -9,6 +9,7 @@ export default class {
         this.pool = new MdPool();
         this.event = new Event();
         this.radial = new RadialMenu();
+        
         this.canvas = SVG.create('svg');
         this.canvas.setAttribute('preserveAspectRatio', 'xMinYMin slice');
         this.canvas.style.width = width || '100%';

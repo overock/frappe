@@ -2,7 +2,7 @@ import Base from './base';
 
 export default class extends Base {
     constructor(model, def) {
-        super(model, def.markup + '<use href="#actionMoveTo" class="frappe-handle" width="72" height="72" />');
+        super(model, def.markup + '<use xlink:href="#actionMoveTo" class="frappe-handle" width="72" height="72" />');
     }
 
     get handle() { return this.el.getElementsByClassName('frappe-handle')[0]; }

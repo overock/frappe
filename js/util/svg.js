@@ -27,7 +27,7 @@ export default class SVG {
         
         return svg;
     }
-
+    
     static build(html) {
         container.innerHTML = html;
         const ret = container.firstElementChild;
