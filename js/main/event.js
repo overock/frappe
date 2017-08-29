@@ -36,12 +36,12 @@ const
 
         e.preventDefault();
         
-        dx = e.layerX - currentModel.left * viewBox.z, dy = e.layerY - currentModel.top * viewBox.z;
+        dx = e.pageX - currentModel.left * viewBox.z, dy = e.pageY - currentModel.top * viewBox.z;
         window.addEventListener('mousemove', actionDragging);
         window.addEventListener('mouseup', actionDragEnd);
     },
     actionDragging = e => {
-        currentModel.moveTo((e.layerX - dx)/viewBox.z, (e.layerY - dy)/viewBox.z);
+        currentModel.moveTo((e.pageX - dx)/viewBox.z, (e.pageY - dy)/viewBox.z);
         pool.render();
     },
     actionDragEnd = e => {
@@ -63,13 +63,13 @@ const
         if(isDragging) return;
         isDragging = true;
 
-        dx = e.layerX/viewBox.z, dy = e.layerY/viewBox.z, ox = viewBox.x, oy = viewBox.y;
+        dx = e.pageX/viewBox.z, dy = e.pageY/viewBox.z, ox = viewBox.x, oy = viewBox.y;
         window.addEventListener('mousemove', canvasDragging);
         window.addEventListener('mouseup', canvasDragEnd);
     },
     canvasDragging = e => {
-        viewBox.x = dx - e.layerX/viewBox.z + ox,
-        viewBox.y = dy - e.layerY/viewBox.z + oy;
+        viewBox.x = dx - e.pageX/viewBox.z + ox,
+        viewBox.y = dy - e.pageY/viewBox.z + oy;
         emit('frappe.canvasdrag', { viewBox: viewBox });
     },
     canvasDragEnd = e => {
@@ -99,16 +99,16 @@ const
         isDragging = true;
         hideHandle();
 
-        const ox = e.layerX, oy = e.layerY;
+        const ox = e.pageX, oy = e.pageY;
 
         const
             hold = e => {
-                const dist = Math.pow(e.layerX - ox, 2) + Math.pow(e.layerY - oy, 2);
+                const dist = Math.pow(e.pageX - ox, 2) + Math.pow(e.pageY - oy, 2);
                 if(dist>64) {
                     window.removeEventListener('mousemove', hold);
                     window.removeEventListener('mouseup', release);
 
-                    [ evtProps.from, evtProps.top, evtProps.left ] = [ currentModel, e.layerY/viewBox.z + viewBox.y - 32, e.layerX/viewBox.z + viewBox.x - 32 ];
+                    [ evtProps.from, evtProps.top, evtProps.left ] = [ currentModel, e.pageY/viewBox.z + viewBox.y - 32, e.pageX/viewBox.z + viewBox.x - 32 ];
 
                     emit('frappe.branchstart', { props: evtProps });
 
@@ -124,7 +124,7 @@ const
         window.addEventListener('mouseup', release);
     },
     branching = e => {
-        [ evtProps.top, evtProps.left ] = [ e.layerY/viewBox.z + viewBox.y - 32, e.layerX/viewBox.z + viewBox.x - 32 ];
+        [ evtProps.top, evtProps.left ] = [ e.pageY/viewBox.z + viewBox.y - 32, e.pageX/viewBox.z + viewBox.x - 32 ];
         const { ghostAction: action, top: top, left: left } = evtProps;
 
         action.moveTo(left, top);
@@ -157,11 +157,11 @@ const
         isDragging = true;
         hideHandle();
 
-        const ox = e.layerX, oy = e.layerY;
+        const ox = e.pageX, oy = e.pageY;
 
         const
             hold = e => {
-                const dist = Math.pow(e.layerX - ox, 2) + Math.pow(e.layerY - oy, 2);
+                const dist = Math.pow(e.pageX - ox, 2) + Math.pow(e.pageY - oy, 2);
                 if(dist>64) {
                     window.removeEventListener('mousemove', hold);
                     window.removeEventListener('mouseup', release);
@@ -182,7 +182,7 @@ const
         window.addEventListener('mouseup', release);
     },
     snapping = e => {
-        [ evtProps.top, evtProps.left ] = [ e.layerY/viewBox.z + viewBox.y - 32, e.layerX/viewBox.z + viewBox.x - 32 ];
+        [ evtProps.top, evtProps.left ] = [ e.pageY/viewBox.z + viewBox.y - 32, e.pageY/viewBox.z + viewBox.x - 32 ];
         const { ghostAction: action, ghostDecision: decision, ghostDecision2: decision2, top: top, left: left } = evtProps;
 
         action.moveTo(left, top);
