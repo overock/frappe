@@ -166,7 +166,7 @@ const
                     window.removeEventListener('mousemove', hold);
                     window.removeEventListener('mouseup', release);
 
-                    [ evtProps.from, evtProps.top, evtProps.left] = [ currentModel, e.layerY/viewBox.z + viewBox.y - 32, e.layerX/viewBox.z + viewBox.x - 32 ];
+                    [ evtProps.from, evtProps.top, evtProps.left] = [ currentModel, e.pageY/viewBox.z + viewBox.y - 32, e.pageX/viewBox.z + viewBox.x - 32 ];
 
                     emit('frappe.snapstart', { props: evtProps });
 
@@ -182,7 +182,7 @@ const
         window.addEventListener('mouseup', release);
     },
     snapping = e => {
-        [ evtProps.top, evtProps.left ] = [ e.pageY/viewBox.z + viewBox.y - 32, e.pageY/viewBox.z + viewBox.x - 32 ];
+        [ evtProps.top, evtProps.left ] = [ e.pageY/viewBox.z + viewBox.y - 32, e.pageX/viewBox.z + viewBox.x - 32 ];
         const { ghostAction: action, ghostDecision: decision, ghostDecision2: decision2, top: top, left: left } = evtProps;
 
         action.moveTo(left, top);
