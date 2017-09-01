@@ -25,6 +25,8 @@ export default class extends Base {
         return this._next_;
     }
 
+    get isDecision() { return true; }    
+
     // TODO: dirty check로 불필요한 계산 반복하지 않도록 처리해 보자.
     fitToNodes() {
         if(!this.isDirty) return;

@@ -25,6 +25,8 @@ export default class {
     get prev() { return this._prev_; }
     get next() { return this._next_; }
 
+    get isDecision() { return false; }
+
 
     moveTo(x, y) {
         this.left = x;

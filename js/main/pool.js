@@ -30,6 +30,31 @@ export default class {
         i>=0 && this.container.splice(i, 1);
     }
 
+    export() {
+        const ret = {};
+
+        this.container.filter(v => !v.isDecision).forEach(v => {
+            const action = {
+                '@name': v.uuid
+            };
+            
+            v.next.map(v => v.next[0]).forEach(v => {
+                switch(v.type) {
+                case 'kill':
+                    action['error'] = { '@to': v.uuid };
+                    break;
+
+                default:
+                    action['ok'] = { '@to': v.uuid };
+                }
+            });
+            
+            ret[v.type] = action;
+        });
+
+        return ret;
+    }
+
     render() { this.container.forEach(m => m.render()); }
 
     // some iterator proxies
