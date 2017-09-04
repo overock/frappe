@@ -32,6 +32,7 @@ export default class {
         i>=0 && this.container.splice(i, 1);
     }
 
+    import(json) { Converter.import(this, json); }
     export() { return Converter.export(this); }
 
     render() { this.container.forEach(m => m.render()); }

@@ -1,13 +1,14 @@
-export default class JSONbuilder {
-    static import(pool) { pool; }
+export default class Converter {
+    static import(pool, json) { pool, json; }
 
     static export(pool) {
         const ret = new Node().prop('name', pool.title).prop('xmlns', 'uri:oozie:workflow:0.1');
         
         pool.container.filter(v => !v.isFlow).forEach(v => {
+            let tag;    // eslint no-case-declarations rule
             switch(v.type) {
             case 'start':
-                ret.tag('start').prop('to', v.nextNode.uuid);
+                ret.tag('start').prop('to', v.nextAction.uuid);
                 break;
             case 'end':
                 ret.tag('end').prop('name', v.uuid);
@@ -16,14 +17,15 @@ export default class JSONbuilder {
                 ret.tag('kill').prop('name', v.uuid).tag('message').text(v.props.message);
                 break;
             case 'decision':
-                //const sw = ret.tag('decision').prop('name', v.uuid).tag('switch');
-                
+                tag = ret.tag('decision').prop('name', v.uuid).tag('switch');
+                v.nextActions.forEach(a => tag.tag('case').prop('to', a.uuid));
                 break;
             case 'fork':
-                ret.tag('fork').prop('name', v.uuid);
+                tag = ret.tag('fork').prop('name', v.uuid);
+                v.nextActions.forEach(a => tag.tag('path').prop('start', a.uuid));
                 break;
             case 'join':
-                ret.tag('join').prop('name', v.uuid).prop('to', v.nextNode.uuid);
+                ret.tag('join').prop('name', v.uuid).prop('to', v.nextAction.uuid);
                 break;
             default:
                 ret.tag('action').prop('name', v.uuid).tag(v.type);
@@ -40,8 +42,8 @@ class Node {
         for(let k in o) o.hasOwnProperty(k) && (this[k] = o[k]);
     }
 
-    tag(t) {
-        const o = new Node();
+    tag(t, c) {
+        const o = new Node(c);
         !this[t]? (this[t] = o) : this[t] instanceof Array? this[t].push(o) : (this[t]=[this[t]]).push(o);
         return o;
     }
@@ -52,4 +54,4 @@ class Node {
 }
 
 // 4 test
-window.json = JSONbuilder;
+window.json = Converter;
