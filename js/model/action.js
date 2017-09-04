@@ -23,7 +23,7 @@ export default class extends Base {
     }
     
     adjustEdges() {
-        this.prev.forEach(decision => decision.fitToNodes());
-        this.next.forEach(decision => decision.fitToNodes());
+        this.prev.forEach(f => f.fitToNodes());
+        this.next.forEach(f => f.fitToNodes());
     }
 }

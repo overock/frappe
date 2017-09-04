@@ -52,9 +52,9 @@ export default class SVG {
         `);
     }
 
-    static get decisionHandle() {
+    static get flowHandle() {
         return this.build(`
-            <symbol id="decisionSnapTo" viewBox="0 0 16 16">
+            <symbol id="flowSnapTo" viewBox="0 0 16 16">
                 <circle class="frappe-handle-joint" cx="8" cy="8" r="7" />
                 <circle class="frappe-handle-joint frappe-handle-joint-deco" cx="8" cy="8" r="6" fill="#000" />
                 <path class="frappe-handle-joint" d="M4, 8 l8, 0 M8, 4 l0, 8" stroke="#fff"/>

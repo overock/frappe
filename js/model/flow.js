@@ -2,7 +2,7 @@ import Base from './base';
 
 export default class extends Base {
     constructor(top, left, bottom, right) {
-        super('decision', top, left);
+        super('flow', top, left);
         this.bottom = bottom || 0;
         this.right = right || 0;
         this.isDirty = true;
@@ -25,7 +25,7 @@ export default class extends Base {
         return this._next_;
     }
 
-    get isDecision() { return true; }    
+    get isFlow() { return true; }    
 
     // TODO: dirty check로 불필요한 계산 반복하지 않도록 처리해 보자.
     fitToNodes() {

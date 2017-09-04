@@ -25,7 +25,7 @@ export default class {
     get prev() { return this._prev_; }
     get next() { return this._next_; }
 
-    get isDecision() { return false; }
+    get isFlow() { return false; }
 
 
     moveTo(x, y) {

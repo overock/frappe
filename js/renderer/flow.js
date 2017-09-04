@@ -3,13 +3,13 @@ import Base from './base';
 export default class extends Base {
     constructor(model) {
         super(model, `
-            <line class="frappe-decision" marker-end="url(#dest)" />
-            <line class="frappe-decision-holder" />
-            <use href="#decisionSnapTo" class="frappe-handle" width="16" height="16" />
+            <line class="frappe-flow" marker-end="url(#dest)" />
+            <line class="frappe-flow-holder" />
+            <use href="#flowSnapTo" class="frappe-handle" width="16" height="16" />
         `);
     }
 
-    get holder() { return this.el.getElementsByClassName('frappe-decision-holder')[0]; }
+    get holder() { return this.el.getElementsByClassName('frappe-flow-holder')[0]; }
     get handle() { return this.el.getElementsByClassName('frappe-handle')[0]; }
 
     update(model) {

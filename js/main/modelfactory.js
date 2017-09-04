@@ -1,13 +1,13 @@
 import Action from '../model/action';
-import Decision from '../model/decision';
+import Flow from '../model/flow';
 import actionDef from '../defs/action';
 
 export default class {
     static create(type, top, left, bottom, right) {
         type = (type|| '').toLowerCase();
         switch(type) {
-        case 'decision':
-            return new Decision(top, left, bottom, right);
+        case 'flow':
+            return new Flow(top, left, bottom, right);
         default:
             return new Action(type, top, left, actionDef[type]);
         }

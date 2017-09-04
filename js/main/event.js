@@ -1,4 +1,4 @@
-import MdPool from './pool';
+import MdPool from '../model/pool';
 
 let instance,
     dx, dy, ox, oy,
@@ -91,7 +91,7 @@ const
      */
     evtProps = {
         from: null, to: null, 
-        ghostAction: null, ghostDecision: null, ghostDecision2: null,
+        ghostAction: null, ghostFlow: null, ghostFlow2: null,
         top: 0, left: 0
     },
     branchStart = e => {
@@ -183,12 +183,12 @@ const
     },
     snapping = e => {
         [ evtProps.top, evtProps.left ] = [ e.pageY/viewBox.z + viewBox.y - 32, e.pageX/viewBox.z + viewBox.x - 32 ];
-        const { ghostAction: action, ghostDecision: decision, ghostDecision2: decision2, top: top, left: left } = evtProps;
+        const { ghostAction: action, ghostFlow: flow1, ghostFlow2: flow2, top: top, left: left } = evtProps;
 
         action.moveTo(left, top);
         action.render();
-        decision.render();
-        decision2.render();
+        flow1.render();
+        flow2.render();
     },
     snapEnd = e => {
         window.removeEventListener('mousemove', snapping);
@@ -228,13 +228,13 @@ export default class {
     deafen(model) { this._batch(model, 'removeEventListener'); }
 
     _batch(model, method) {
-        // action/decision 공통
+        // action/flow 공통
         model.renderer.element[method]('dblclick', propEditor);
 
         model.element[method]('mouseover', showGadget);
         model.element[method]('mouseout', hideGadget);
         // action 전용
-        if(model.type=='decision') {
+        if(model.isFlow) {
             model.renderer.handle[method]('mousedown', snapStart);
         } else {
             model.renderer.handle[method]('mousedown', actionDragStart);

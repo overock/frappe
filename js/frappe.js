@@ -1,6 +1,6 @@
 import ModelFactory from './main/modelfactory';
-import MdPool from './main/pool';
 import Event from './main/event';
+import MdPool from './model/pool';
 import SVG from './util/svg';
 import RadialMenu from './util/radial';
 
@@ -17,7 +17,7 @@ export default class {
 
         this.canvas.appendChild(SVG.marker);
         this.canvas.appendChild(SVG.actionHandle);
-        this.canvas.appendChild(SVG.decisionHandle);
+        this.canvas.appendChild(SVG.flowHandle);
 
         parent.appendChild(this.canvas);
         this.event.bind(this);
@@ -74,7 +74,7 @@ export default class {
         if(typeof model=='string') model = ModelFactory.create(model, top, left, bottom, right);
 
         this.pool.add(model);
-        if(model.type=='decision') {
+        if(model.isFlow) {
             this.canvas.insertBefore(model.element, this.canvas.firstElementChild);
         } else {
             this.canvas.appendChild(model.element);
@@ -91,11 +91,11 @@ export default class {
     }
 
     link(src, dest) {
-        if(src.type!='decision' && dest.type!='decision') {
-            let bridge = this.add('decision');
+        if(!src.isFlow && !dest.isFlow) {
+            let bridge = this.add('flow');
             bridge.linkAfter(src);
             dest.linkAfter(bridge);
-        } else if((src.type=='decision')^(dest.type=='decision')) {
+        } else if(src.isFlow^dest.isFlow) {
             dest.linkAfter(src);
         }
 
@@ -153,26 +153,26 @@ export default class {
         const
             p = d.props,
             ga = ModelFactory.createGhost('ghost', p.top, p.left),
-            gd = ModelFactory.createGhost('decision');
+            gf = ModelFactory.createGhost('flow');
 
-        [ p.ghostAction, p.ghostDecision ] = [ ga, gd ];
+        [ p.ghostAction, p.ghostFlow ] = [ ga, gf ];
         
-        this.link(p.from, gd);
-        this.link(gd, ga);
+        this.link(p.from, gf);
+        this.link(gf, ga);
         ga.render();
-        gd.render();
+        gf.render();
         this.canvas.appendChild(ga.element);
-        this.canvas.appendChild(gd.element);
+        this.canvas.appendChild(gf.element);
     }
 
     checkArea(d) {
         const
             { viewBox: v, props: p, originalEvent: e } = d,
-            { from: lnFrom, to: lnTo, ghostAction: ga, ghostDecision: gd } = p,
+            { from: lnFrom, to: lnTo, ghostAction: ga, ghostFlow: gd } = p,
             x = v.x + e.layerX/v.z,
             y = v.y + e.layerY/v.z,
             hover = this.pool
-                .filter(m => m!=lnFrom && m.type!=='decision' && !lnFrom.isAdjacentTo(m) && !lnFrom.isMakingCircuit(m))
+                .filter(m => m!=lnFrom && !m.isFlow && !lnFrom.isAdjacentTo(m) && !lnFrom.isMakingCircuit(m))
                 .find(m => m.top<=y && m.left<=x && m.bottom>=y && m.right>=x);
         if(lnTo!=hover) {   // switch link mode
             ga.element.style.visibility = hover? 'hidden' : '';
@@ -188,16 +188,16 @@ export default class {
 
     confirmGhost(d) {
         const {
-            props: { ghostAction: ga, ghostDecision: gd, from: lnFrom, to: lnTo, top: y, left: x },
+            props: { ghostAction: ga, ghostFlow: gf, from: lnFrom, to: lnTo, top: y, left: x },
             listener: fn
         } = d;
 
         if(lnTo) {
-            gd.unlinkAll();
+            gf.unlinkAll();
             this.link(lnFrom, lnTo);
 
             this.canvas.removeChild(ga.element);
-            this.canvas.removeChild(gd.element);
+            this.canvas.removeChild(gf.element);
         } else {
             this.radial.open(this.canvas, x, y, ['fork', 'join', 'mapreduce', 'filesystem', 'spark', 'hive', 'java', 'pig', 'subworkflow']);
             this.canvas.addEventListener('mousedown', fn);
@@ -206,17 +206,17 @@ export default class {
 
     removeGhost(d) {
         const {
-            props: { from: target, ghostAction: ga, ghostDecision: gd },
+            props: { from: target, ghostAction: ga, ghostFlow: gf },
             type: type,
             listener: fn,
             confirmed: c
         } = d;
 
-        gd.unlinkAll();
+        gf.unlinkAll();
         c && this.link(target, this.replace(ga, type));
 
         this.remove(ga);
-        this.remove(gd);
+        this.remove(gf);
         this.canvas.removeEventListener('mousedown', fn);
         this.radial.close();
     }
@@ -225,21 +225,21 @@ export default class {
         const
             p = d.props,
             ga = ModelFactory.createGhost('ghost', p.top, p.left),
-            gd = ModelFactory.createGhost('decision'),
-            gd2 = ModelFactory.createGhost('decision');
+            gf1 = ModelFactory.createGhost('flow'),
+            gf2 = ModelFactory.createGhost('flow');
 
-        [ p.ghostAction, p.ghostDecision, p.ghostDecision2 ] = [ ga, gd, gd2 ];
+        [ p.ghostAction, p.ghostFlow, p.ghostFlow2 ] = [ ga, gf1, gf2 ];
         
-        this.link(p.from.prev[0], gd);
-        this.link(gd, ga);
-        this.link(ga, gd2);
-        this.link(gd2, p.from.next[0]);
+        this.link(p.from.prev[0], gf1);
+        this.link(gf1, ga);
+        this.link(ga, gf2);
+        this.link(gf2, p.from.next[0]);
         ga.render();
-        gd.render();
-        gd2.render();
+        gf1.render();
+        gf2.render();
         this.canvas.appendChild(ga.element);
-        this.canvas.appendChild(gd.element);
-        this.canvas.appendChild(gd2.element);
+        this.canvas.appendChild(gf1.element);
+        this.canvas.appendChild(gf2.element);
         p.from.element.style.display = 'none';
     }
 
@@ -255,14 +255,14 @@ export default class {
 
     removeGhostSnap(d) {
         const {
-                props: { from: target, ghostAction: ga, ghostDecision: gd, ghostDecision2: gd2 },
+                props: { from: target, ghostAction: ga, ghostFlow: gf1, ghostFlow2: gf2 },
                 type: type,
                 listener: fn,
                 confirmed: c
             } = d, newMd = this.replace(ga, type);
 
-        gd.unlinkAll();
-        gd2.unlinkAll();
+        gf1.unlinkAll();
+        gf2.unlinkAll();
 
         if(c) {
             this.link(newMd, target.next[0]);
@@ -270,8 +270,8 @@ export default class {
         }
 
         this.remove(ga);
-        this.remove(gd);
-        this.remove(gd2);
+        this.remove(gf1);
+        this.remove(gf2);
         this.canvas.removeEventListener('mousedown', fn);
         this.radial.close();
         target.element.style.display = '';
