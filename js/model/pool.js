@@ -8,6 +8,7 @@ export default class {
         if(instance) return instance;
 
         this.container = [];
+        this.title = '';
 
         instance = this;
     }

@@ -13,6 +13,9 @@ export default class extends Base {
     get bottom() { return this.top + this.height; }
     get right() { return this.left + this.width; }
 
+    get prevNode() { return !!this.prev[0] && this.prev[0].prev[0]; }
+    get nextNode() { return !!this.next[0] && this.next[0].next[0]; }
+
     isAdjacentTo(target) {
         return this.prev.some(m => m.prev[0] == target) || this.next.some(m => m.next[0] == target);
     }
