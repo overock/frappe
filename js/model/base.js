@@ -10,18 +10,20 @@ export default class {
         this.width = typeof width !== 'undefined'? width : 64;
         this.height = typeof height !== 'undefined'? height: 64;
 
-        this._props_ = {};
+        this.props = {};
         this._prev_ = [];
         this._next_ = [];
 
         this.renderer = RendererFactory.create(this);
     }
 
+    get name() { return this.props.name || this.uuid; }
+
     get element() { return this.renderer.el; }
 
     get links() { return this.prev.concat(this.next); }
 
-    get props() { return this._props_; }
+    //get props() { return this._props_; }  // vanilla getter/setter 지양 
     get prev() { return this._prev_; }
     get next() { return this._next_; }
 
