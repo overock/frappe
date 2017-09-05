@@ -1,4 +1,4 @@
-export default class Converter {
+export default class {
     static import(pool, json) { pool, json; }
 
     static export(pool) {
@@ -18,7 +18,7 @@ export default class Converter {
                 break;
             case 'decision':
                 c = ret.tag('decision').prop('name', v.name).tag('switch');
-                v.nextActions.forEach(a => c.tag('case').prop('to', a.name));
+                v.next.forEach(f => c.tag('switch').text(f.props.predicate).prop('to', f.next[0].name));
                 break;
             case 'fork':
                 c = ret.tag('fork').prop('name', v.name);
@@ -29,13 +29,13 @@ export default class Converter {
                 break;
             default:
                 c = ret.tag('action').prop('name', v.name);
+
                 v.nextActions.forEach(a => a.type == 'kill'
                     ? c.tag('error').prop('to', a.name)
                     : c.tag('ok').prop('to', a.name)
                 );
-                c = c.tag(v.type);
-                for(let k in v.props)
-                    c.tag(k).text(v.props[k]);
+                
+                c.tag(v.type, v.props);
             }
         });
 
@@ -43,43 +43,45 @@ export default class Converter {
     }
 }
 
+// not a robust class. use at your own risk
 class Node {
     constructor(o, p) {
-        o = o || {};
-        for(let k in o) o.hasOwnProperty(k) && (this[k] = o[k]);
-        p && Object.defineProperty(this, 'parent', { get: ()=>p });
+        if(o instanceof Node)
+            return o;
+        else if(o instanceof Array)
+            return o.map(e => new Node(e));
+        else if(o instanceof Object)
+            Object.keys(o).forEach(k => o.hasOwnProperty(k) && this.add(k, o[k]));
+        
+        p && Object.defineProperty(this, 'parent', { get: () => p });
     }
+
+    children(t) { return typeof this[t]=='undefined'? [] : [].concat(this[t]); }
+    
+    add(k, v) { return k[0]=='@'? this.prop(k.slice(1), v) : k[0]=='#'? this.text(v) : this.tag(k, v); }
 
     tag(t, c) {
-        const o = new Node(c, this);
-        !this[t]? (this[t] = o) : this[t] instanceof Array? this[t].push(o) : (this[t]=[this[t]]).push(o);
-        return o;
-    }
-
-    children(t) {
-        return this[t] instanceof Array? this[t] : typeof this[t] == 'undefined'? [] : [this[t]];
+        if(c instanceof Array) 
+            return c.forEach(v => this.add(t, v)), this[t][this[t].length-1];
+        else {
+            const o = new Node(c, this);
+            !this[t]? (this[t] = o) : this[t] instanceof Array? this[t].push(o) : (this[t] = [this[t]]).push(o);
+            return o;
+        }
     }
 
     prop(k, v) {
         if(typeof k=='object')
-            for(let kk in k)
-                this['@'+kk] = k[kk];
+            Object.keys(k).forEach(kk => this.prop(kk, k[kk]));
         else if(typeof v=='undefined')
             return this['@'+k];
-        else this['@'+k] = v;
+        else this['@'+k] = v.toString();
 
         return this;
     }
 
-    text(v) {
-        if(typeof v=='undefined')
-            return this['#text'];
-        else
-            this['#text'] = v;
-
-        return this;
-    }
+    text(v) { return typeof v=='undefined'? this['#text'] : (this['#text'] = v), this; }
 }
 
-// 4 test
-window.json = Converter;
+// just 4 test
+window.Node = Node;
