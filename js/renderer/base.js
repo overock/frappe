@@ -1,5 +1,5 @@
 import SVG from '../util/svg';
-export default class {
+export default class Renderer {
     constructor(model, markup) {
         this.el = SVG.create('g', markup);
         this.el.setAttribute('id', model.uuid);

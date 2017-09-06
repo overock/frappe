@@ -1,7 +1,7 @@
 import RendererFactory from '../main/rendererfactory';
 import uuid from '../util/uuid';
 
-export default class {
+export default class Model {
     constructor(type, top, left, width, height) {
         this.uuid = uuid();
         this.type = type || 'nil';
@@ -18,12 +18,10 @@ export default class {
     }
 
     get name() { return this.props.name || this.uuid; }
-
     get element() { return this.renderer.el; }
-
     get links() { return this.prev.concat(this.next); }
+    get propKeys() { return Object.keys(this.props); }
 
-    //get props() { return this._props_; }  // vanilla getter/setter 지양 
     get prev() { return this._prev_; }
     get next() { return this._next_; }
 

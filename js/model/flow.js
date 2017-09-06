@@ -1,6 +1,6 @@
-import Base from './base';
+import Model from './base';
 
-export default class extends Base {
+export default class FlowModel extends Model {
     constructor(top, left, bottom, right) {
         super('flow', top, left);
         this.bottom = bottom || 0;

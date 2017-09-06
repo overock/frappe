@@ -2,7 +2,7 @@ import Action from '../renderer/action';
 import Flow from '../renderer/flow';
 import actionDef from '../defs/action';
 
-export default class {
+export default class RendererFactory {
     static create(model) {
         const type = (model.type || '').toLowerCase();
         switch(type) {

@@ -1,14 +1,18 @@
-import Base from './base';
+import Model from './base';
+import actionDef from '../defs/action.js';
 
-export default class extends Base {
-    constructor(type, top, left, def) {
+export default class ActionModel extends Model {
+    constructor(type, top, left) {
         super(type, top, left);
-        this._props_ = def.props;
-        this._rules_ = def.rules;
+
+        this.props = Object.assign({}, this.def.props);
         
-        def && def.width && (this.width = def.width);
-        def && def.height && (this.height = def.height);
+        this.def.width && (this.width = this.def.width);
+        this.def.height && (this.height = this.def.height);
     }
+
+    get def() { return actionDef[this.type]; }
+    get rules() { return this.def.rules; }
 
     get bottom() { return this.top + this.height; }
     get right() { return this.left + this.width; }

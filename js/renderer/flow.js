@@ -1,12 +1,14 @@
-import Base from './base';
+import Renderer from './base';
 
-export default class extends Base {
+export default class FlowRenderer extends Renderer {
     constructor(model) {
         super(model, `
             <line class="frappe-flow" marker-end="url(#dest)" />
             <line class="frappe-flow-holder" />
             <use href="#flowSnapTo" class="frappe-handle" width="16" height="16" />
         `);
+
+        this.props.predicate = '';
     }
 
     get holder() { return this.el.getElementsByClassName('frappe-flow-holder')[0]; }

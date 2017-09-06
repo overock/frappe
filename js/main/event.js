@@ -208,7 +208,7 @@ const
         });
     };
 
-export default class {
+export default class EventHandler {
     constructor() {
         if(instance) return instance;
         instance = this;

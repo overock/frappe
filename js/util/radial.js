@@ -3,7 +3,7 @@ import SVG from './svg';
 
 let instance = null;
 
-export default class {
+export default class RadialMenu {
     constructor() {
         if(instance) return instance;
 

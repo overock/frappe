@@ -1,5 +1,10 @@
-export default class {
-    static import(pool, json) { pool, json; }
+import Node from '../util/node';
+
+export default class JSONConverter {
+    static import(pool, json) {
+        const inp = new In();
+        pool, json, inp;
+    }
 
     static export(pool) {
         const
@@ -10,48 +15,17 @@ export default class {
     }
 }
 
-// not a robust class. use at your own risk
-class Node {
-    constructor(o, p) {
-        if(o instanceof Node)
-            return o;
-        else if(o instanceof Array)
-            return o.map(e => new Node(e));
-        else if(o instanceof Object)
-            Object.keys(o).forEach(k => o.hasOwnProperty(k) && this.add(k, o[k]));
-        
-        p && Object.defineProperty(this, 'parent', { value: p });
-    }
-
-    children(t) { return typeof this[t]=='undefined'? [] : [].concat(this[t]); }
-    
-    add(k, v) { return k[0]=='@'? this.prop(k.slice(1), v) : k[0]=='#'? this.text(v) : this.tag(k, v); }
-
-    tag(t, c) {
-        if(c instanceof Array) 
-            return c.forEach(v => this.add(t, v)), this[t][this[t].length-1];
-        else {
-            const o = new Node(c, this);
-            !this[t]? (this[t] = o) : this[t] instanceof Array? this[t].push(o) : (this[t] = [this[t]]).push(o);
-            return o;
-        }
-    }
-
-    prop(k, v) {
-        if(typeof k=='object')
-            Object.keys(k).forEach(kk => this.prop(kk, k[kk]));
-        else if(typeof v=='undefined')
-            return this['@'+k];
-        else this['@'+k] = v.toString();
-
-        return this;
-    }
-
-    text(v) { return typeof v=='undefined'? this['#text'] : (this['#text'] = v.toString()), this; }
-}
-
 let actions = [ 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java' ],
+    in_instance,
     out_instance;
+
+class In {
+    constructor() {
+        if(in_instance) return in_instance;
+        in_instance = this;
+        actions.forEach(k => this[k] = this.action);
+    }
+}
 
 class Out {
     constructor() {
@@ -79,6 +53,3 @@ class Out {
         c.tag(v.type, v.props);
     }
 }
-
-// just 4 test
-window.Node = Node;

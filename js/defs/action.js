@@ -16,8 +16,7 @@ export default {
         rules: {
             maxFrom: 0,
             maxNext: 1,
-            noFrom: [],
-            noTo: ['kill']
+            after: ['end', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     end: {
@@ -27,19 +26,15 @@ export default {
         props: {},
         rules: {
             maxFrom: 1, // ?
-            maxNext: 0,
-            noFrom: ['start'],
-            noTo: []
+            maxNext: 0
         }
     },
     kill: {
         markup: '<image class="frappe-action" data-actiontype="kill" xlink:href="images/wd-kill.png" width="64" height="64"/>',
-        props: {},
+        props: { 'message': 'default error' },
         rules: {
             maxFrom: -1,
             maxNext: 0,
-            noFrom: ['start', 'decision', 'fork', 'join'],
-            noTo: []
         }
     },
     fork: {
@@ -48,8 +43,7 @@ export default {
         rules: {
             maxFrom: 1, // ?
             maxNext: -1,
-            noFrom: [],
-            noTo: ['kill', 'end']
+            after: ['join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     join: {
@@ -58,8 +52,7 @@ export default {
         rules: {
             maxFrom: -1, // ?
             maxNext: 1,
-            noFrom: ['start'],
-            noTo: ['kill']
+            after: ['end', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
 
@@ -69,8 +62,7 @@ export default {
         rules: {
             maxFrom: 1,
             maxNext: 2,
-            noFrom: [],
-            noTo: []
+            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     pig: {
@@ -79,8 +71,7 @@ export default {
         rules: {
             maxFrom: 1,
             maxNext: 2,
-            noFrom: [],
-            noTo: []
+            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     fs: {
@@ -89,8 +80,7 @@ export default {
         rules: {
             maxFrom: 1,
             maxNext: 2,
-            noFrom: [],
-            noTo: []
+            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     'sub-workflow': {
@@ -99,8 +89,7 @@ export default {
         rules: {
             maxFrom: 1,
             maxNext: 2,
-            noFrom: [],
-            noTo: []
+            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     // streaming: {
@@ -114,8 +103,7 @@ export default {
         rules: {
             maxFrom: 1,
             maxNext: 2,
-            noFrom: [],
-            noTo: []
+            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     spark: {
@@ -124,8 +112,7 @@ export default {
         rules: {
             maxFrom: 1,
             maxNext: 2,
-            noFrom: [],
-            noTo: []
+            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     hive: {
@@ -134,8 +121,7 @@ export default {
         rules: {
             maxFrom: 1,
             maxNext: 2,
-            noFrom: [],
-            noTo: []
+            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     

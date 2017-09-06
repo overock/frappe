@@ -4,7 +4,7 @@ import MdPool from './model/pool';
 import SVG from './util/svg';
 import RadialMenu from './util/radial';
 
-export default class {
+export default class Frappe {
     constructor(parent, width, height) {
         this.pool = new MdPool();
         this.event = new Event();
@@ -202,7 +202,7 @@ export default class {
             this.canvas.removeChild(ga.element);
             this.canvas.removeChild(gf.element);
         } else {
-            this.radial.open(this.canvas, x, y, ['fork', 'join', 'map-reduce', 'fs', 'spark', 'hive', 'java', 'pig', 'sub-workflow']);
+            this.radial.open(this.canvas, x, y, lnFrom.rules.after);
             this.canvas.addEventListener('mousedown', fn);
         }
     }
@@ -248,11 +248,12 @@ export default class {
 
     confirmGhostSnap(d) {
         const {
-            props: { top: y, left: x },
+            props: { from: lnFrom, top: y, left: x },
             listener: fn
         } = d;
 
-        this.radial.open(this.canvas, x, y, ['fork', 'join', 'map-reduce', 'fs', 'spark', 'hive', 'java', 'pig', 'sub-workflow']);
+        //TODO: 생각해 보니 snap은 before/after에 대한 intersect를 받아야 함. 끄응...
+        this.radial.open(this.canvas, x, y, lnFrom.prev[0].rules.after);
         this.canvas.addEventListener('mousedown', fn);
     }
 

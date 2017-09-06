@@ -3,7 +3,7 @@ import Converter from './conv';
 
 let instance = null;
 
-export default class {
+export default class ModelPool {
     constructor() {
         if(instance) return instance;
 
