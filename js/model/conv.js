@@ -41,6 +41,7 @@ class Out {
     decision(r, v) {
         const c = r.tag('decision').prop('name', v.name).tag('switch');
         v.next.forEach(f => c.tag('case').text(f.props.predicate).prop('to', f.next[0].name));
+        // TODO: default는 언제? 어떻게? 넣지?
     }
     fork(r, v) {
         const c = r.tag('fork').prop('name', v.name);

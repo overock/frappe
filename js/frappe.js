@@ -250,10 +250,11 @@ export default class Frappe {
         const {
             props: { from: lnFrom, top: y, left: x },
             listener: fn
-        } = d;
-
-        //TODO: 생각해 보니 snap은 before/after에 대한 intersect를 받아야 함. 끄응...
-        this.radial.open(this.canvas, x, y, lnFrom.prev[0].rules.after);
+        } = d,
+            pList = lnFrom.prev[0].rules.after,
+            nList = lnFrom.next[0].rules.before;
+            
+        this.radial.open(this.canvas, x, y, pList.filter(v => nList.indexOf(v)>=0));
         this.canvas.addEventListener('mousedown', fn);
     }
 
