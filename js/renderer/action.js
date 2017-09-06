@@ -3,6 +3,7 @@ import Renderer from './base';
 export default class ActionRenderer extends Renderer {
     constructor(model, def) {
         super(model, def.markup + '<use xlink:href="#actionMoveTo" class="frappe-handle" width="72" height="72" />');
+        this.el.classList.add('frappe-action');
     }
 
     get handle() { return this.el.getElementsByClassName('frappe-handle')[0]; }
