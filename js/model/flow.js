@@ -6,6 +6,8 @@ export default class FlowModel extends Model {
         this.bottom = bottom || 0;
         this.right = right || 0;
         this.isDirty = true;
+
+        this.props.predicate = '';
     }
 
     get bottom() { return this.top + this.height; }

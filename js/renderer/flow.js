@@ -7,8 +7,6 @@ export default class FlowRenderer extends Renderer {
             <line class="frappe-flow-holder" />
             <use href="#flowSnapTo" class="frappe-handle" width="16" height="16" />
         `);
-
-        this.props.predicate = '';
     }
 
     get holder() { return this.el.getElementsByClassName('frappe-flow-holder')[0]; }
