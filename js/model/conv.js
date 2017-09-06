@@ -2,43 +2,10 @@ export default class {
     static import(pool, json) { pool, json; }
 
     static export(pool) {
-        const ret = new Node({}).prop({ name: pool.title, xmlns: 'uri:oozie:workflow:0.1' });
-        
-        pool.container.filter(v => !v.isFlow).forEach(v => {
-            let c;    // eslint no-case-declarations rule
-            switch(v.type) {
-            case 'start':
-                ret.tag('start').prop('to', v.nextAction.name);
-                break;
-            case 'end':
-                ret.tag('end').prop('name', v.name);
-                break;
-            case 'kill':
-                ret.tag('kill').prop('name', v.name).tag('message').text(v.props.message);
-                break;
-            case 'decision':
-                c = ret.tag('decision').prop('name', v.name).tag('switch');
-                v.next.forEach(f => c.tag('switch').text(f.props.predicate).prop('to', f.next[0].name));
-                break;
-            case 'fork':
-                c = ret.tag('fork').prop('name', v.name);
-                v.nextActions.forEach(a => c.tag('path').prop('start', a.name));
-                break;
-            case 'join':
-                ret.tag('join').prop('name', v.name).prop('to', v.nextAction.name);
-                break;
-            default:
-                c = ret.tag('action').prop('name', v.name);
-
-                v.nextActions.forEach(a => a.type == 'kill'
-                    ? c.tag('error').prop('to', a.name)
-                    : c.tag('ok').prop('to', a.name)
-                );
-                
-                c.tag(v.type, v.props);
-            }
-        });
-
+        const
+            ret = new Node({}).prop({ name: pool.title, xmlns: 'uri:oozie:workflow:0.1' }),
+            out = new Out();
+        pool.container.filter(v => !v.isFlow).forEach(v => out[v.type](ret, v));
         return ret;
     }
 }
@@ -53,7 +20,7 @@ class Node {
         else if(o instanceof Object)
             Object.keys(o).forEach(k => o.hasOwnProperty(k) && this.add(k, o[k]));
         
-        p && Object.defineProperty(this, 'parent', { get: () => p });
+        p && Object.defineProperty(this, 'parent', { value: p });
     }
 
     children(t) { return typeof this[t]=='undefined'? [] : [].concat(this[t]); }
@@ -80,7 +47,37 @@ class Node {
         return this;
     }
 
-    text(v) { return typeof v=='undefined'? this['#text'] : (this['#text'] = v), this; }
+    text(v) { return typeof v=='undefined'? this['#text'] : (this['#text'] = v.toString()), this; }
+}
+
+let actions = [ 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java' ],
+    out_instance;
+
+class Out {
+    constructor() {
+        if(out_instance) return out_instance;
+        out_instance = this;
+        // babel에서 proxy trap을 쓸 수가 없으니... 안타깝지말 할 수 없다 ㅠ
+        actions.forEach(k => this[k] = this.action);
+    }
+
+    start(r, v) { r.tag('start').prop('to', v.nextAction.name); }
+    end(r, v) { r.tag('end').prop('name', v.name); }
+    kill(r, v) { r.tag('kill').prop('name', v.name).tag('message').text(v.props.message); }
+    decision(r, v) {
+        const c = r.tag('decision').prop('name', v.name).tag('switch');
+        v.next.forEach(f => c.tag('case').text(f.props.predicate).prop('to', f.next[0].name));
+    }
+    fork(r, v) {
+        const c = r.tag('fork').prop('name', v.name);
+        v.nextActions.forEach(a => c.tag('path').prop('start', a.name));
+    }
+    join(r, v) { r.tag('join').prop('name', v.name).prop('to', v.nextAction.name); }
+    action(r, v) {
+        const c = r.tag('action').prop('name', v.name);
+        v.nextActions.forEach(a => c.tag(a.type=='kill'? 'error' : 'ok').prop('to', a.name));
+        c.tag(v.type, v.props);
+    }
 }
 
 // just 4 test

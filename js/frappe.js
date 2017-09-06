@@ -202,7 +202,7 @@ export default class {
             this.canvas.removeChild(ga.element);
             this.canvas.removeChild(gf.element);
         } else {
-            this.radial.open(this.canvas, x, y, ['fork', 'join', 'mapreduce', 'filesystem', 'spark', 'hive', 'java', 'pig', 'subworkflow']);
+            this.radial.open(this.canvas, x, y, ['fork', 'join', 'map-reduce', 'fs', 'spark', 'hive', 'java', 'pig', 'sub-workflow']);
             this.canvas.addEventListener('mousedown', fn);
         }
     }
@@ -252,7 +252,7 @@ export default class {
             listener: fn
         } = d;
 
-        this.radial.open(this.canvas, x, y, ['fork', 'join', 'mapreduce', 'filesystem', 'spark', 'hive', 'java', 'pig', 'subworkflow']);
+        this.radial.open(this.canvas, x, y, ['fork', 'join', 'map-reduce', 'fs', 'spark', 'hive', 'java', 'pig', 'sub-workflow']);
         this.canvas.addEventListener('mousedown', fn);
     }
 
