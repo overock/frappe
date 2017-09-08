@@ -5,10 +5,15 @@ export default class ActionModel extends Model {
     constructor(type, top, left) {
         super(type, top, left);
 
-        this.props = Object.assign({}, this.def.props);
+        this.props.merge(this.def.props); //Object.assign({}, this.def.props);
         
         this.def.width && (this.width = this.def.width);
         this.def.height && (this.height = this.def.height);
+
+        this.rules.min = this.rules.min || 0;
+        this.rules.max = this.rules.max || -1;
+        this.rules.maxFrom = this.rules.maxFrom || 1;
+        this.rules.maxNaxt = this.rules.maxNext || 1;
     }
 
     get def() { return actionDef[this.type]; }

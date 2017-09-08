@@ -1,4 +1,4 @@
-import Node from '../util/node';
+import Node from './node';
 
 export default class JSONConverter {
     static import(pool, json) {

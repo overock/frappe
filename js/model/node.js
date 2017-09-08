@@ -1,19 +1,23 @@
 // not a robust class. use at your own risk
 export default class Node {
     constructor(o, p) {
-        if(o instanceof Node)
+        if(o instanceof Node) {
+            p && Object.defineProperty(o, 'parent', { value: p });
             return o;
+        }
         else if(o instanceof Array)
-            return o.map(e => new Node(e));
-        else if(o instanceof Object)
-            Object.keys(o).forEach(k => o.hasOwnProperty(k) && this.add(k, o[k]));
-        
-        p && Object.defineProperty(this, 'parent', { value: p });
+            return o.map(e => new Node(e, p));
+        else if(o instanceof Object) {
+            this.merge(o);
+            p && Object.defineProperty(this, 'parent', { value: p });
+        }
     }
 
     children(t) { return typeof this[t]=='undefined'? [] : [].concat(this[t]); }
     
     add(k, v) { return k[0]=='@'? this.prop(k.slice(1), v) : k[0]=='#'? this.text(v) : this.tag(k, v); }
+
+    merge(o) { Object.keys(o).forEach(k => o.hasOwnProperty(k) && this.add(k, o[k])); }
 
     tag(t, c) {
         if(c instanceof Array) 
@@ -29,13 +33,13 @@ export default class Node {
         if(typeof k=='object')
             Object.keys(k).forEach(kk => this.prop(kk, k[kk]));
         else if(typeof v=='undefined')
-            return this['@'+k];
+            return this['@'+k] || '';
         else this['@'+k] = v.toString();
 
         return this;
     }
 
-    text(v) { return typeof v=='undefined'? this['#text'] : (this['#text'] = v.toString()), this; }
+    text(v) { return typeof v=='undefined'? this['#text'] || '' : (this['#text'] = v.toString()), this; }
 }
 
 // just 4 test

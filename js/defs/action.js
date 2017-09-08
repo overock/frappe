@@ -12,6 +12,8 @@ export default {
         height: 40,
         props: {},
         rules: {
+            min: 1,
+            max: 1,
             maxFrom: 0,
             maxNext: 1,
             before: [],
@@ -24,6 +26,8 @@ export default {
         height: 40,
         props: {},
         rules: {
+            min: 1,
+            max: 1,
             maxFrom: 1, // ?
             maxNext: 0,
             before: ['start', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java'],
@@ -34,6 +38,8 @@ export default {
         markup: '<image data-actiontype="kill" xlink:href="images/wd-kill.png" width="64" height="64"/>',
         props: { 'message': 'default error' },
         rules: {
+            min: 0,
+            max: -1,
             maxFrom: -1,
             maxNext: 0,
             before: ['map-reduce', 'pig', 'fs', 'sub-workflow', 'java'],
@@ -44,8 +50,6 @@ export default {
         markup: '<image data-actiontype="fork" xlink:href="images/wd-fork.png" width="64" height="64"/>',
         props: {},
         rules: {
-            maxFrom: 1,
-            maxNext: -1,
             before: ['start', 'decision', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java'],
             after: ['join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }

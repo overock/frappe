@@ -64,9 +64,9 @@ export default class Frappe {
                 [ x, y ] = this.canvas.getAttribute('viewBox').split(' ').map(v => v|0),
                 viewbox = `${x} ${y} ${width/z} ${height/z}`;
             
-            setTimeout(() => this.canvas.setAttribute('viewBox', viewbox), 133);
+            setTimeout(() => this.canvas.setAttribute('viewBox', viewbox), 16);
             this.event.viewBox = viewbox;
-        }, 133);
+        }, 16);
     }
     
     /**
