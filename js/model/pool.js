@@ -37,6 +37,14 @@ export default class ModelPool {
 
     render() { this.container.forEach(m => m.render()); }
 
+    // rulecheckers
+    warn() {
+    }
+
+    error() {
+
+    }
+
     // some iterator proxies
     filter(fn) { return this.container.filter(fn); }
     find(fn) { return this.container.find(fn); }

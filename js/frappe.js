@@ -43,7 +43,7 @@ export default class Frappe {
         window.addEventListener('frappe.snapstart', e => this.addGhostSnap(e.detail));
         window.addEventListener('frappe.snapend', e => this.confirmGhostSnap(e.detail));
         window.addEventListener('frappe.snapconfirm', e => this.removeGhostSnap(e.detail));
-
+        
         window.addEventListener('frappe.import', e => this.import(e.detail));
         window.addEventListener('frappe.export', () => this.export());  // 이렇게 해서 export 결과는 어떻게 받을건데??
     }

@@ -30,10 +30,11 @@ export default class ActionModel extends Model {
     isConnectedTo(target) {
         const
             _b = [],
-            _f = a => a.prevActions./*filter(b => _b.indexOf[b]==-1).*/some(c => {
-                if(c == target) return true;
-                _b.push(c);
-                return _f(c);
+            _f = a => a.prevActions.concat(a.nextActions).some(b => {
+                if(_b.indexOf(b)>=0) return false;
+                if(b == target) return true;
+                _b.push(b);
+                return _f(b);
             });
         
         return _f(this);

@@ -71,7 +71,7 @@ export default {
             maxFrom: 1,
             maxNext: 2,
             before: ['start', 'decision', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java'],
-            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
+            after: ['end', 'kill', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     pig: {
@@ -81,7 +81,7 @@ export default {
             maxFrom: 1,
             maxNext: 2,
             before: ['start', 'decision', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java'],
-            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
+            after: ['end', 'kill', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     fs: {
@@ -91,7 +91,7 @@ export default {
             maxFrom: 1,
             maxNext: 2,
             before: ['start', 'decision', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java'],
-            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
+            after: ['end', 'kill', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     'sub-workflow': {
@@ -101,7 +101,7 @@ export default {
             maxFrom: 1,
             maxNext: 2,
             before: ['start', 'decision', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java'],
-            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
+            after: ['end', 'kill', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     // streaming: {
@@ -116,7 +116,7 @@ export default {
             maxFrom: 1,
             maxNext: 2,
             before: ['start', 'decision', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java'],
-            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
+            after: ['end', 'kill', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     spark: {
@@ -126,7 +126,7 @@ export default {
             maxFrom: 1,
             maxNext: 2,
             before: ['start', 'decision', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java'],
-            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
+            after: ['end', 'kill', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     hive: {
@@ -136,7 +136,7 @@ export default {
             maxFrom: 1,
             maxNext: 2,
             before: ['start', 'decision', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java'],
-            after: ['end', 'kill', 'fork', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
+            after: ['end', 'kill', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
         }
     },
     
