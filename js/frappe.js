@@ -175,7 +175,7 @@ export default class Frappe {
             x = v.x + e.layerX/v.z,
             y = v.y + e.layerY/v.z,
             hover = this.pool
-                .filter(m => m!=lnFrom && !m.isFlow && !lnFrom.isAdjacentTo(m) && !lnFrom.isMakingCircuit(m))
+                .filter(m => m!=lnFrom && !m.isFlow && !lnFrom.isConnectedTo(m))
                 .find(m => m.top<=y && m.left<=x && m.bottom>=y && m.right>=x);
         if(lnTo!=hover) {   // switch link mode
             ga.element.style.visibility = hover? 'hidden' : '';
@@ -183,7 +183,7 @@ export default class Frappe {
         }
 
         lnTo? { top: ga.top, left: ga.left, width: ga.width, height: ga.height } = lnTo
-            : [ ga.width, ga.height ] = [64, 64];   // 임시방편같다;;
+            : [ ga.width, ga.height ] = [ 64, 64 ];   // 임시방편같다;;
 
         ga.render();
         gd.render();

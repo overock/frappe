@@ -1,4 +1,3 @@
-// TODO : class="frappe-action"은 action.js에서 addClass해버릴까
 // ['start', 'end', 'kill', 'decision', 'fork', 'join', 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java']
 export default {
     ghost: {
