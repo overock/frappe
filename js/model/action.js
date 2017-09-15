@@ -28,9 +28,11 @@ export default class ActionModel extends Model {
     get nextActions() { return this.next.map(f => f.next[0]); }
     
     isConnectedTo(target) {
+        // FIXME: 앞뒤를 모두 체크하니 join이 안 되는 문제가 발생.
+        // 추후 액션별 룰체크를 좀 더 강화하는 쪽으로 변경해야할듯
         const
             _b = [],
-            _f = a => a.prevActions.concat(a.nextActions).some(b => {
+            _f = a => a.prevActions./*concat(a.nextActions).*/some(b => {
                 if(_b.indexOf(b)>=0) return false;
                 if(b == target) return true;
                 _b.push(b);
