@@ -10,6 +10,8 @@ export default class FlowModel extends Model {
         this.props.tag('predicate').text('');
     }
 
+    set name(s) { this.props.prop('name', ''); }
+
     get bottom() { return this.top + this.height; }
     set bottom(bottom) { this.height = bottom - this.top; }
     get right() { return this.left + this.width; }

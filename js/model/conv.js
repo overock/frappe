@@ -1,9 +1,39 @@
 import Node from './node';
+import uuid from '../util/uuid';
 
 export default class JSONConverter {
     static import(pool, json) {
+        const
+            tags = Object.keys(json),
+            nameMap = new Map(),
+            rel = [];
+
+        // stage #1: collect names and create uuids
+        const findNames = o => {
+            let ret = [];
+            Object.keys(o).forEach(k => {
+                if(k=='@name')
+                    o[k] && ret.push(o[k]);
+                else if(typeof o[k] == 'object')
+                    ret = ret.concat(findNames(o[k]));
+            });
+            return ret;
+        };
+
+        findNames(json).forEach(s => nameMap.set(s, uuid()));   // 아, 덴쟝. uuid 부분이 꼬인다
+
+        // stage #2: trunk pool
+        pool.clear();
+
+        // stage #3: create actions
         const inp = new In();
-        pool, json, inp;
+        tags.forEach(t => [].concat(json[t]).forEach(p => pool.add(inp[t](p, nameMap, rel))));
+
+        // stage #4: create flows?
+        rel.forEach(r => r);
+
+        // stage #5: positioning
+        
     }
 
     static export(pool) {
@@ -15,16 +45,20 @@ export default class JSONConverter {
     }
 }
 
-let actions = [ 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java' ],
-    in_instance,
+const actions = [ 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java' ];
+let in_instance,
     out_instance;
 
 class In {
     constructor() {
         if(in_instance) return in_instance;
         in_instance = this;
-        actions.forEach(k => this[k] = this.action);
+        //actions.forEach(k => this[k] = this.action);
     }
+
+    link(from, to) { this.rel.push([from, to]); }
+
+    start(o, p, m, r) { o,p,m,r; }
 }
 
 class Out {

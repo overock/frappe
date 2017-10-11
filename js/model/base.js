@@ -18,7 +18,12 @@ export default class Model {
         this.renderer = RendererFactory.create(this);
     }
 
-    get name() { return this.props.name || this.uuid; }
+    get name() { return this.props.prop('name') || ''; }
+    set name(s) { this.props.prop('name', s); }
+
+    get id() { return this.uuid; }
+    set id(s) { this.uuid || (this.uuid = uuid()); }   // shield code
+
     get element() { return this.renderer.el; }
     get links() { return this.prev.concat(this.next); }
     get propKeys() { return Object.keys(this.props); }

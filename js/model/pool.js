@@ -8,6 +8,7 @@ export default class ModelPool {
         if(instance) return instance;
 
         this.container = [];
+        this.nameIdx = {};
         this.title = '';
 
         instance = this;
@@ -19,6 +20,7 @@ export default class ModelPool {
 
     add(model) {
         if(typeof model == 'string') model = ModelFactory.create(model);
+        model.name = model.name || this.name(model);
         this.container.push(model);
         return model;
     }
@@ -32,7 +34,21 @@ export default class ModelPool {
         i>=0 && this.container.splice(i, 1);
     }
 
-    import(json) { Converter.import(this, json); }
+    clear() { this.container = []; }
+
+    name(model) {
+        let t = model.type, c = this.nameIdx[t] || 0;
+
+        if(['start', 'end', 'kill'].indexOf(t)>=0) return t;
+
+        this.nameIdx[t] = ++c;
+        return `${t} ${c}`;
+    }
+
+    import(json) {
+        Converter.import(this, json);
+        this.render();
+    }
     export() { return Converter.export(this); }
 
     render() { this.container.forEach(m => m.render()); }
@@ -42,7 +58,6 @@ export default class ModelPool {
     }
 
     error() {
-
     }
 
     // some iterator proxies
