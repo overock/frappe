@@ -2,13 +2,13 @@
 export default class Node {
     constructor(o, p) {
         if(o instanceof Node) {
-            p && !this.parent && Object.defineProperty(o, 'parent', { value: p });
+            p && this.parent || Object.defineProperty(o, 'parent', { value: p });
             return o;
         } else if(o instanceof Array) {
             return o.map(e => new Node(e, p));
         } else if(o instanceof Object) {
             this.merge(o);
-            p && !this.parent && Object.defineProperty(this, 'parent', { value: p });
+            p && this.parent || Object.defineProperty(this, 'parent', { value: p });
         }
     }
 

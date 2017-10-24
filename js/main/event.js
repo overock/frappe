@@ -118,6 +118,9 @@ const
             }, release = () => {
                 window.removeEventListener('mousemove', hold);
                 window.removeEventListener('mouseup', release);
+
+                isDragging = false;
+                showHandle();
             };
 
         window.addEventListener('mousemove', hold);

@@ -10,14 +10,21 @@ svg {
     stroke-width: 2;
 }
 
-.frappe-decision {
+.frappe-flow {
     pointer-events: none;
     stroke: #000;
     stroke-width: 1.5;
     stroke-linecap: butt;
 }
 
-.frappe-decision-holder {
+.frappe-label {
+    stroke: none;
+    fill: #000;
+    text-anchor: middle;
+    font-family: 'Courier New';
+}
+
+.frappe-flow-holder {
     cursor: help;
     stroke: transparent;
     stroke-width: 12;
