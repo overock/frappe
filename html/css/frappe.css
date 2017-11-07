@@ -21,7 +21,8 @@ svg {
     stroke: none;
     fill: #000;
     text-anchor: middle;
-    font-family: 'Courier New';
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 10pt;
 }
 
 .frappe-flow-holder {
