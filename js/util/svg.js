@@ -46,7 +46,7 @@ export default class SVG {
     static get actionHandle() {
         return this.build(`
             <symbol id="actionMoveTo" viewBox="-4 -4 72 72">
-                <rect class="frappe-handle-bevel" x="0" y="0" width="64" height="64" rx="12" ry="12" />
+                <rect class="frappe-handle-bevel" x="2" y="2" width="60" height="60" rx="12" ry="12" />
                 <rect class="frappe-handle-symbol" x="0" y="0" width="64" height="64" rx="12" ry="12" />
             </symbol>
         `);

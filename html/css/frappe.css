@@ -55,8 +55,9 @@ svg {
     fill: none;
     pointer-events: visibleStroke;
     stroke: #fff;
-    stroke-width: 10;
+    stroke-width: 4;
     stroke-linecap: square;
+    opacity: 0.6;
 }
 
 .frappe-handle-joint {
