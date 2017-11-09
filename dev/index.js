@@ -1,6 +1,6 @@
 import Frappe from '../js/frappe.js';
 
-let frappe = new Frappe(document.body);
+let frappe = new Frappe(document.getElementById('test-canvas'));
     
 // for demo
 window.$f = frappe;

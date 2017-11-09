@@ -1,6 +1,7 @@
 import MdPool from '../model/pool';
 
 let instance,
+    metric, m,
     dx, dy, ox, oy,
     currentModel = null,
     isDragging = false;
@@ -99,16 +100,18 @@ const
         isDragging = true;
         hideHandle();
 
-        const ox = e.pageX, oy = e.pageY;
+        dx = e.pageX, dy = e.pageY;
 
         const
             hold = e => {
-                const dist = Math.pow(e.pageX - ox, 2) + Math.pow(e.pageY - oy, 2);
+                const dist = Math.pow(e.pageX - dx, 2) + Math.pow(e.pageY - dy, 2);
                 if(dist>64) {
                     window.removeEventListener('mousemove', hold);
                     window.removeEventListener('mouseup', release);
 
-                    [ evtProps.from, evtProps.top, evtProps.left ] = [ currentModel, e.pageY/viewBox.z + viewBox.y - 32, e.pageX/viewBox.z + viewBox.x - 32 ];
+                    m = metric();
+
+                    [ evtProps.from, evtProps.top, evtProps.left ] = [ currentModel, (e.pageY-m.top)/viewBox.z + viewBox.y - 32, (e.pageX-m.left)/viewBox.z + viewBox.x - 32 ];
 
                     emit('frappe.branchstart', { props: evtProps });
 
@@ -127,7 +130,7 @@ const
         window.addEventListener('mouseup', release);
     },
     branching = e => {
-        [ evtProps.top, evtProps.left ] = [ e.pageY/viewBox.z + viewBox.y - 32, e.pageX/viewBox.z + viewBox.x - 32 ];
+        [ evtProps.top, evtProps.left ] = [ (e.pageY-m.top)/viewBox.z + viewBox.y - 32, (e.pageX-m.left)/viewBox.z + viewBox.x - 32 ];
         const { ghostAction: action, top: top, left: left } = evtProps;
 
         action.moveTo(left, top);
@@ -160,16 +163,18 @@ const
         isDragging = true;
         hideHandle();
 
-        const ox = e.pageX, oy = e.pageY;
+        dx = e.pageX, dy = e.pageY;
 
         const
             hold = e => {
-                const dist = Math.pow(e.pageX - ox, 2) + Math.pow(e.pageY - oy, 2);
+                const dist = Math.pow(e.pageX - dx, 2) + Math.pow(e.pageY - dy, 2);
                 if(dist>64) {
                     window.removeEventListener('mousemove', hold);
                     window.removeEventListener('mouseup', release);
 
-                    [ evtProps.from, evtProps.top, evtProps.left] = [ currentModel, e.pageY/viewBox.z + viewBox.y - 32, e.pageX/viewBox.z + viewBox.x - 32 ];
+                    m = metric();
+
+                    [ evtProps.from, evtProps.top, evtProps.left] = [ currentModel, (e.pageY-m.top)/viewBox.z + viewBox.y - 32, (e.page-m.left)/viewBox.z + viewBox.x - 32 ];
 
                     emit('frappe.snapstart', { props: evtProps });
 
@@ -185,7 +190,7 @@ const
         window.addEventListener('mouseup', release);
     },
     snapping = e => {
-        [ evtProps.top, evtProps.left ] = [ e.pageY/viewBox.z + viewBox.y - 32, e.pageX/viewBox.z + viewBox.x - 32 ];
+        [ evtProps.top, evtProps.left ] = [ (e.pageY-m.top)/viewBox.z + viewBox.y - 32, (e.pageX-m.left)/viewBox.z + viewBox.x - 32 ];
         const { ghostAction: action, ghostFlow: flow1, ghostFlow2: flow2, top: top, left: left } = evtProps;
 
         action.moveTo(left, top);
@@ -225,6 +230,8 @@ export default class EventHandler {
         frappe.canvas.addEventListener('contextmenu', e => e.preventDefault());
         frappe.canvas.addEventListener('mousedown', canvasDragStart);
         frappe.canvas.addEventListener('mousewheel', canvasZoom);
+
+        metric = () => frappe.metric;
     }
 
     listen(model) { this._batch(model, 'addEventListener'); }
