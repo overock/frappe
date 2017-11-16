@@ -4,6 +4,8 @@ import MdPool from './model/pool';
 import SVG from './util/svg';
 import RadialMenu from './util/radial';
 
+import Node from './model/node';
+
 export default class Frappe {
     constructor(parent, width, height) {
         this.pool = new MdPool();
@@ -284,3 +286,4 @@ export default class Frappe {
 }
 
 window.Frappe = Frappe;
+window.Node = Node;
