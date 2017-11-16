@@ -135,7 +135,7 @@ const
 
         action.moveTo(left, top);
         
-        emit('frappe.checkarea', { viewBox: viewBox, props: evtProps, originalEvent: e });
+        emit('frappe.checkarea', { props: evtProps });
     },
     branchEnd = e => {
         window.removeEventListener('mousemove', branching);

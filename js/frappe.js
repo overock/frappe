@@ -171,17 +171,14 @@ export default class Frappe {
     }
 
     checkArea(d) {
-        const
-            { viewBox: v, props: p, originalEvent: e } = d,
-            { from: lnFrom, to: lnTo, ghostAction: ga, ghostFlow: gd } = p,
-            x = v.x + e.layerX/v.z,
-            y = v.y + e.layerY/v.z,
-            hover = this.pool
+        let { from: lnFrom, to: lnTo, ghostAction: ga, ghostFlow: gd, left: x, top: y } = d.props;
+        x+=32, y+=32;
+        const hover = this.pool
                 .filter(m => m!=lnFrom && !m.isFlow && !lnFrom.isConnectedTo(m))
                 .find(m => m.top<=y && m.left<=x && m.bottom>=y && m.right>=x);
         if(lnTo!=hover) {   // switch link mode
             ga.element.style.visibility = hover? 'hidden' : '';
-            p.to = hover || null;
+            d.props.to = hover || null;
         }
 
         lnTo? { top: ga.top, left: ga.left, width: ga.width, height: ga.height } = lnTo
@@ -286,4 +283,4 @@ export default class Frappe {
 }
 
 window.Frappe = Frappe;
-window.Node = Node;
+//window.Node = Node;
