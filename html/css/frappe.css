@@ -12,14 +12,19 @@ svg {
 
 .frappe-flow {
     pointer-events: none;
-    stroke: #000;
+    stroke: #fff;
     stroke-width: 1.5;
     stroke-linecap: butt;
 }
 
+.frappe-flow-marker {
+    fill: #fff;
+    stroke: none;
+}
+
 .frappe-label {
     stroke: none;
-    fill: #000;
+    fill: #fff;
     text-anchor: middle;
     font-family: "Roboto Condensed", sans-serif;
     font-size: 10pt;

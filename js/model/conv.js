@@ -43,6 +43,7 @@ export default class JSONConverter {
         pool.container.filter(v => !v.isFlow).forEach(v => out[v.type](ret, v));
         return ret;
     }
+
 }
 
 const actions = [ 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java' ];
@@ -66,9 +67,10 @@ class Out {
         if(out_instance) return out_instance;
         out_instance = this;
         // babel에서 proxy trap을 쓸 수가 없으니... 안타깝지말 할 수 없다 ㅠ
-        actions.forEach(k => this[k] = this.action);
+        //actions.forEach(k => this[k] = this.action);
     }
 
+    // control/flow
     start(r, v) { r.tag('start').prop('to', v.nextAction.name); }
     end(r, v) { r.tag('end').prop('name', v.name); }
     kill(r, v) { r.tag('kill').prop('name', v.name).tag('message').text(v.props.message); }
@@ -82,9 +84,22 @@ class Out {
         v.nextActions.forEach(a => c.tag('path').prop('start', a.name));
     }
     join(r, v) { r.tag('join').prop('name', v.name).prop('to', v.nextAction.name); }
-    action(r, v) {
+
+    //action
+    _action(r, v) {
         const c = r.tag('action').prop('name', v.name);
         v.nextActions.forEach(a => c.tag(a.type=='kill'? 'error' : 'ok').prop('to', a.name));
-        c.tag(v.type, v.props);
+        return c.tag(v.type);
+    }
+
+    ['map-reduce'](r, v) {
+        const body = this._action(r,v);
+        // general
+        // advanced
+    }
+
+    fs(r, v) {
+        const body = this._action(r,v);
+
     }
 }

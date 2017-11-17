@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>wd-start</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0 31.99985 0 0 64 0 64 31.99985 64 63.9997 0 63.9997"></polygon>
+        <path d="M32,49 C22.611,49 15,41.389 15,32 C15,22.611 22.611,15 32,15 C41.389,15 49,22.611 49,32 C49,41.389 41.389,49 32,49 M32,12 C20.954,12 12,20.954 12,32 C12,43.045 20.954,52 32,52 C43.046,52 52,43.045 52,32 C52,20.954 43.046,12 32,12" id="path-3"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="wd-start">
+            <g>
+                <g id="Group-3">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Clip-2"></g>
+                    <path d="M64,50.8047 L64,13.1957 C64,5.9377 58.062,-0.0003 50.805,-0.0003 L13.195,-0.0003 C5.938,-0.0003 0,5.9377 0,13.1957 L0,50.8047 C0,58.0617 5.938,63.9997 13.195,63.9997 L50.805,63.9997 C58.062,63.9997 64,58.0617 64,50.8047" id="Fill-1" fill="#EAEAEA" mask="url(#mask-2)"></path>
+                </g>
+                <mask id="mask-4" fill="white">
+                    <use xlink:href="#path-3"></use>
+                </mask>
+                <use id="Fill-4" fill="#000000" xlink:href="#path-3"></use>
+                <g id="99.Color/State/Blue" mask="url(#mask-4)" fill="#0080D7">
+                    <rect id="Rectangle-19-Copy-31" x="0" y="0" width="64" height="64"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>wd-stochastic</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0 31.99985 0 0 64 0 64 31.99985 64 63.9997 0 63.9997"></polygon>
+        <path d="M36,33 L32,26 L28,33 L30,33 L30,38.736 C26.556,37.845 24,34.72 24,31 C24,26.589 27.589,23 32,23 C36.411,23 40,26.589 40,31 C40,34.72 37.444,37.845 34,38.736 L34,33 L36,33 Z M32,48 C30.823,48 29.674,47.879 28.563,47.65 L34,45.978 L34,41.81 C39.119,40.868 43,36.391 43,31 C43,24.925 38.075,20 32,20 C25.925,20 21,24.925 21,31 C21,36.391 24.881,40.868 30,41.81 L30,43.022 L22.761,45.25 C18.097,42.216 15,36.967 15,31 C15,21.626 22.626,14 32,14 C41.374,14 49,21.626 49,31 C49,40.374 41.374,48 32,48 L32,48 Z M32,11 C20.954,11 12,19.954 12,31 C12,37.169 14.797,42.682 19.187,46.35 L11.912,48.589 L13.088,52.411 L23.657,49.159 C26.199,50.329 29.019,51 32,51 C43.046,51 52,42.046 52,31 C52,19.954 43.046,11 32,11 L32,11 Z" id="path-3"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="wd-stochastic">
+            <g>
+                <g id="Group-3">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Clip-2"></g>
+                    <path d="M64,50.8047 L64,13.1957 C64,5.9377 58.063,-0.0003 50.805,-0.0003 L13.195,-0.0003 C5.937,-0.0003 0,5.9377 0,13.1957 L0,50.8047 C0,58.0627 5.937,63.9997 13.195,63.9997 L50.805,63.9997 C58.063,63.9997 64,58.0627 64,50.8047" id="Fill-1" fill="#EAEAEA" mask="url(#mask-2)"></path>
+                </g>
+                <mask id="mask-4" fill="white">
+                    <use xlink:href="#path-3"></use>
+                </mask>
+                <use id="Fill-4" fill="#000000" xlink:href="#path-3"></use>
+                <g id="99.Color/State/Blue" mask="url(#mask-4)" fill="#0080D7">
+                    <rect id="Rectangle-19-Copy-31" x="0" y="0" width="64" height="64"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

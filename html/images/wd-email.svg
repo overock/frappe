@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
+    <title>wd-email</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <polygon id="path-1" points="0 31.99985 0 0 64 0 64 31.99985 64 63.9997 0 63.9997"></polygon>
+        <path d="M37.9307,30.8091 L46.9997,23.6061 L46.9997,39.8791 L37.9307,30.8091 Z M27.5647,32.6421 L31.4717,35.9381 L35.5667,32.6871 L44.8787,42.0001 L18.9267,42.0001 L27.5647,32.6421 Z M25.2687,30.7051 L16.9997,39.6631 L16.9997,23.7281 L25.2687,30.7051 Z M31.5287,32.0611 L19.6047,22.0001 L44.1997,22.0001 L31.5287,32.0611 Z M13.9997,45.0001 L49.9997,45.0001 L49.9997,19.0001 L13.9997,19.0001 L13.9997,45.0001 Z" id="path-3"></path>
+    </defs>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="wd-email">
+            <g>
+                <g id="Group-3">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <g id="Clip-2"></g>
+                    <path d="M64,50.8047 L64,13.1957 C64,5.9377 58.063,-0.0003 50.805,-0.0003 L13.195,-0.0003 C5.937,-0.0003 0,5.9377 0,13.1957 L0,50.8047 C0,58.0617 5.937,63.9997 13.195,63.9997 L50.805,63.9997 C58.063,63.9997 64,58.0617 64,50.8047" id="Fill-1" fill="#EAEAEA" mask="url(#mask-2)"></path>
+                </g>
+                <mask id="mask-4" fill="white">
+                    <use xlink:href="#path-3"></use>
+                </mask>
+                <use id="Fill-4" fill="#000000" xlink:href="#path-3"></use>
+                <g id="99.Color/State/Blue" mask="url(#mask-4)" fill="#0080D7">
+                    <rect id="Rectangle-19-Copy-31" x="0" y="0" width="64" height="64"></rect>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

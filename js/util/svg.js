@@ -38,7 +38,7 @@ export default class SVG {
     static get marker() {
         return this.create('defs', `
             <marker id="dest" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto">
-                <path d="m 0 0 L 8 4 L 0 8 z" />
+                <path  class="frappe-flow-marker" d="m 0 0 L 8 4 L 0 8 z" />
             </marker>
         `);
     }
