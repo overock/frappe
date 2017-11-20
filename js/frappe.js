@@ -6,8 +6,19 @@ import RadialMenu from './util/radial';
 
 import Node from './model/node';
 
+let instance = null;
+
 export default class Frappe {
     constructor(parent, width, height) {
+        if(instance) {
+            parent.appendChild(instance.canvas);
+            instance.canvas.style.width = width || '100%';
+            instance.canvas.style.height = height || '100%';
+            return instance;
+        }
+        
+        instance = this;
+
         this.pool = new MdPool();
         this.event = new Event();
         this.radial = new RadialMenu();

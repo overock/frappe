@@ -46,7 +46,7 @@ export default class JSONConverter {
 
 }
 
-const actions = [ 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java' ];
+//const actions = [ 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java' ];
 let in_instance,
     out_instance;
 
