@@ -12,4 +12,4 @@ const startDemo = () => {
 
 startDemo();
 
-window.addEventListener('frappe.edit', e => alert(e.detail.uuid));
+frappe.subscribe('frappe.edit', e => alert(e.detail.uuid));

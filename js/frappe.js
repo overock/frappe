@@ -4,9 +4,8 @@ import MdPool from './model/pool';
 import SVG from './util/svg';
 import RadialMenu from './util/radial';
 
-import Node from './model/node';
-
 let instance = null;
+const listeners = {};
 
 export default class Frappe {
     constructor(parent, width, height) {
@@ -35,8 +34,9 @@ export default class Frappe {
         parent.appendChild(this.canvas);
         this.event.bind(this);
 
-        // register observers
-        this._listeners = {
+        // flush & register observers
+        this.unsubscribeAll();
+        const evts = {
             //'resize': () => this.resize(),  // 얘만 빼면 canvas로 이벤트를 옮겨도 되는데...
             'frappe.add': e => this.add(e.detail.type, e.detail.top, e.detail.left, e.detail.bottom, e.detail.right),
             'frappe.remove': e => this.remove(e.detail.id),
@@ -61,11 +61,11 @@ export default class Frappe {
             'frappe.import': e => this.import(e.detail),
             'frappe.export': () => this.export()  // 이렇게 해서 export 결과는 어떻게 받을건데??
         }
-        Object.keys(this._listeners).forEach(k => this.subscribe(k, this._listeners[k]));
+        Object.keys(evts).forEach(k => this.subscribe(k, evts[k]));
     }
 
     destroy() {
-        Object.keys(this._listeners).forEach(k => this.unsubscribe(k, this._listeners[k]));
+        this.unsubscribeAll();
         this.canvas.parentNode.removeChild(this.canvas);
         instance = null;
     }
@@ -149,12 +149,23 @@ export default class Frappe {
     }
 
     subscribe(type, fn) {
-        window.removeEventListener(type, fn);
+        const pool = listeners[type] || (listeners[type] = []);
+
+        this.unsubscribe(type, fn);
+        pool.push(fn);
+
         return window.addEventListener(type, fn);
     }
 
     unsubscribe(type, fn) {
+        const p = listeners[type], idx = p.findIndex(v => v==fn);
+
+        idx>=0 && p.splice(idx, 1);
         return window.removeEventListener(type, fn);
+    }
+
+    unsubscribeAll() {
+        Object.keys(listeners).forEach(type => listeners[type].forEach(fn => this.unsubscribe(type, fn)));
     }
 
     setViewbox(d) {
