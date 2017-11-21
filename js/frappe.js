@@ -36,29 +36,38 @@ export default class Frappe {
         this.event.bind(this);
 
         // register observers
-        window.addEventListener('resize', () => this.resize());
-        window.addEventListener('frappe.add', e => this.add(e.detail.type, e.detail.top, e.detail.left, e.detail.bottom, e.detail.right));
-        window.addEventListener('frappe.remove', e => this.remove(e.detail.id));
-        window.addEventListener('frappe.link', e => this.link(e.detail.src, e.detail.dest));
-        window.addEventListener('frappe.replace', e => this.replace(e.detail.src, e.detail.dest));
-        window.addEventListener('frappe.render', () => this.render());
+        this._listeners = {
+            //'resize': () => this.resize(),  // 얘만 빼면 canvas로 이벤트를 옮겨도 되는데...
+            'frappe.add': e => this.add(e.detail.type, e.detail.top, e.detail.left, e.detail.bottom, e.detail.right),
+            'frappe.remove': e => this.remove(e.detail.id),
+            'frappe.link': e => this.link(e.detail.src, e.detail.dest),
+            'frappe.replace': e => this.replace(e.detail.src, e.detail.dest),
+            'frappe.render': () => this.render(),
+    
+            'frappe.canvasdrag': e => this.setViewbox(e.detail),
+            'frappe.canvaszoom': e => this.setZoom(e.detail),
+    
+            'frappe.newaction': e => this.addNewAction(e.detail),
+    
+            'frappe.branchstart': e => this.addGhost(e.detail),
+            'frappe.checkarea': e => this.checkArea(e.detail),
+            'frappe.branchend': e => this.confirmGhost(e.detail),
+            'frappe.branchconfirm': e => this.removeGhost(e.detail),
+    
+            'frappe.snapstart': e => this.addGhostSnap(e.detail),
+            'frappe.snapend': e => this.confirmGhostSnap(e.detail),
+            'frappe.snapconfirm': e => this.removeGhostSnap(e.detail),
+            
+            'frappe.import': e => this.import(e.detail),
+            'frappe.export': () => this.export()  // 이렇게 해서 export 결과는 어떻게 받을건데??
+        }
+        Object.keys(this._listeners).forEach(k => this.subscribe(k, this._listeners[k]));
+    }
 
-        window.addEventListener('frappe.canvasdrag', e => this.setViewbox(e.detail));
-        window.addEventListener('frappe.canvaszoom', e => this.setZoom(e.detail));
-
-        window.addEventListener('frappe.newaction', e => this.addNewAction(e.detail));
-
-        window.addEventListener('frappe.branchstart', e => this.addGhost(e.detail));
-        window.addEventListener('frappe.checkarea', e => this.checkArea(e.detail));
-        window.addEventListener('frappe.branchend', e => this.confirmGhost(e.detail));
-        window.addEventListener('frappe.branchconfirm', e => this.removeGhost(e.detail));
-
-        window.addEventListener('frappe.snapstart', e => this.addGhostSnap(e.detail));
-        window.addEventListener('frappe.snapend', e => this.confirmGhostSnap(e.detail));
-        window.addEventListener('frappe.snapconfirm', e => this.removeGhostSnap(e.detail));
-        
-        window.addEventListener('frappe.import', e => this.import(e.detail));
-        window.addEventListener('frappe.export', () => this.export());  // 이렇게 해서 export 결과는 어떻게 받을건데??
+    destroy() {
+        Object.keys(this._listeners).forEach(k => this.unsubscribe(k, this._listeners[k]));
+        this.canvas.parentNode.removeChild(this.canvas);
+        instance = null;
     }
 
     /**
@@ -66,21 +75,21 @@ export default class Frappe {
      */
     get metric() { return this.canvas.getBoundingClientRect(); }
 
-    resize() {
-        // TODO: chrome에서는 렌더링 이슈가 있어 부득이하게 timeout 걸어둠.
-        // 이후 코드를 분기했으면 한다.
-        clearTimeout(this.__delayed__);
-        this.__delayed__ = setTimeout(() => {
-            const
-                z = this.event.viewBox.z,
-                { width, height } = this.metric,
-                [ x, y ] = this.canvas.getAttribute('viewBox').split(' ').map(v => v|0),
-                viewbox = `${x} ${y} ${width/z} ${height/z}`;
+    // resize() {
+    //     // TODO: chrome에서는 렌더링 이슈가 있어 부득이하게 timeout 걸어둠.
+    //     // 이후 코드를 분기했으면 한다.
+    //     clearTimeout(this.__delayed__);
+    //     this.__delayed__ = setTimeout(() => {
+    //         const
+    //             z = this.event.viewBox.z,
+    //             { width, height } = this.metric,
+    //             [ x, y ] = this.canvas.getAttribute('viewBox').split(' ').map(v => v|0),
+    //             viewbox = `${x} ${y} ${width/z} ${height/z}`;
             
-            setTimeout(() => this.canvas.setAttribute('viewBox', viewbox), 16);
-            this.event.viewBox = viewbox;
-        }, 16);
-    }
+    //         setTimeout(() => this.canvas.setAttribute('viewBox', viewbox), 16);
+    //         this.event.viewBox = viewbox;
+    //     }, 167);
+    // }
     
     /**
      * core functions
@@ -137,6 +146,15 @@ export default class Frappe {
      */
     emit(type, param) {
         return window.dispatchEvent(new CustomEvent(type, { detail: param }));
+    }
+
+    subscribe(type, fn) {
+        window.removeEventListener(type, fn);
+        return window.addEventListener(type, fn);
+    }
+
+    unsubscribe(type, fn) {
+        return window.removeEventListener(type, fn);
     }
 
     setViewbox(d) {
