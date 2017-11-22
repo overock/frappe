@@ -3,6 +3,7 @@ import Event from './main/event';
 import MdPool from './model/pool';
 import SVG from './util/svg';
 import RadialMenu from './util/radial';
+import uuid from './util/uuid';
 
 let instance = null;
 const listeners = {};
@@ -23,6 +24,7 @@ export default class Frappe {
         this.radial = new RadialMenu();
 
         this.canvas = SVG.create('svg');
+        this.canvas.id = this.id = uuid();
         this.canvas.setAttribute('preserveAspectRatio', 'xMinYMin slice');
         this.canvas.style.width = width || '100%';
         this.canvas.style.height = height || '100%';
@@ -62,12 +64,22 @@ export default class Frappe {
             'frappe.export': () => this.export()  // 이렇게 해서 export 결과는 어떻게 받을건데??
         }
         Object.keys(evts).forEach(k => this.subscribe(k, evts[k]));
+
+        this.heartBeat();        
     }
 
     destroy() {
         this.unsubscribeAll();
-        this.canvas.parentNode.removeChild(this.canvas);
+        this.canvas.parentNode && this.canvas.parentNode.removeChild(this.canvas);
         instance = null;
+    }
+
+    heartBeat() {
+        if(document.getElementById(this.id)) {
+            requestAnimationFrame(() => this.heartBeat());
+        } else {
+            this.destroy();
+        }
     }
 
     /**
