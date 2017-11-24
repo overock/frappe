@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
-    <title>wd-decision</title>
-    <desc>Created with Sketch.</desc>
     <defs>
         <polygon id="path-1" points="31.99985 0 0 0 0 64 31.99985 64 63.9997 64 63.9997 0"></polygon>
         <path d="M13,32 L32,13 L51,32 L32,51 L13,32 Z M32,9 L9,32 L32,55 L55,32 L32,9 Z" id="path-3"></path>
@@ -20,7 +17,6 @@
                 <mask id="mask-4" fill="white">
                     <use xlink:href="#path-3"></use>
                 </mask>
-                <use id="Fill-4" fill="#000000" xlink:href="#path-3"></use>
                 <g id="99.Color/State/Blue" mask="url(#mask-4)" fill="#0080D7">
                     <rect id="Rectangle-19-Copy-31" x="0" y="0" width="64" height="64"></rect>
                 </g>

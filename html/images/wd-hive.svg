@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg width="64px" height="64px" viewBox="0 0 64 64" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-    <!-- Generator: Sketch 47.1 (45422) - http://www.bohemiancoding.com/sketch -->
-    <title>wd-hive</title>
-    <desc>Created with Sketch.</desc>
     <defs>
         <polygon id="path-1" points="0 31.99985 0 0 64 0 64 31.99985 64 63.9997 0 63.9997"></polygon>
         <path d="M26,23.4038 L32,19.4038 L38,23.4038 L38,29.4038 L32,33.4038 L26,29.4038 L26,23.4038 Z M19,35.1523 L25,31.1523 L31,35.1523 L31,41.1523 L25,45.1523 L19,41.1523 L19,35.1523 Z M33,35.1523 L39,31.1523 L45,35.1523 L45,41.1523 L39,45.1523 L33,41.1523 L33,35.1523 Z M32,13.3945 L30.336,14.5035 L22.336,19.8365 L21,20.7275 L21,22.3335 L21,27.8005 L15.333,31.5875 L14,32.4785 L14,34.0815 L14,42.2225 L14,43.8285 L15.336,44.7185 L23.336,50.0515 L25,51.1615 L26.664,50.0515 L32,46.4945 L37.336,50.0515 L39,51.1615 L40.664,50.0515 L48.664,44.7185 L50,43.8285 L50,42.2225 L50,34.0815 L50,32.4785 L48.667,31.5875 L43,27.8005 L43,22.3335 L43,20.7275 L41.664,19.8365 L33.664,14.5035 L32,13.3945 Z M32,16.9995 L40,22.3335 L40,29.4035 L47,34.0815 L47,42.2225 L39,47.5555 L32,42.8895 L25,47.5555 L17,42.2225 L17,34.0815 L24,29.4035 L24,22.3335 L32,16.9995 Z" id="path-3"></path>
@@ -20,7 +17,6 @@
                 <mask id="mask-4" fill="white">
                     <use xlink:href="#path-3"></use>
                 </mask>
-                <use id="Fill-10" fill="#000000" xlink:href="#path-3"></use>
                 <g id="99.Color/State/Blue" mask="url(#mask-4)" fill="#0080D7">
                     <rect id="Rectangle-19-Copy-31" x="0" y="0" width="64" height="64"></rect>
                 </g>

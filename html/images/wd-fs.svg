@@ -20,7 +20,6 @@
                 <mask id="mask-4" fill="white">
                     <use xlink:href="#path-3"></use>
                 </mask>
-                <use id="Fill-4" fill="#000000" xlink:href="#path-3"></use>
                 <g id="99.Color/State/Blue" mask="url(#mask-4)" fill="#0080D7">
                     <rect id="Rectangle-19-Copy-31" x="0" y="0" width="64" height="64"></rect>
                 </g>

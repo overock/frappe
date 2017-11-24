@@ -11,8 +11,11 @@ export default class RadialMenu {
         this.element = null;
 
         Object.keys(actionDef).forEach(k => {
-            this.icons[k] = SVG.build(actionDef[k].markup);
-            this.icons[k].classList.add('frappe-branch-confirm');
+            const icon = this.icons[k] = SVG.build(actionDef[k].markup);
+            icon.classList.add('frappe-branch-confirm');
+            icon.style.width = '40px';
+            icon.style.height = '40px';
+            icon.setAttribute('data-actiontype', k);
         });
 
         instance = this;
@@ -20,7 +23,7 @@ export default class RadialMenu {
 
     open(target, cx, cy, items) {
         this.element = SVG.create('g');
-        const n = items.length, th = Math.PI*2/n, r = 40 / Math.tan(th/2) + 24, ts = new Date();
+        const n = items.length, th = Math.PI*2/n, r = 24 / Math.tan(th/2) + 12, ts = new Date();
         const activeItems = items.map((k, i) => {
             const ret = {
                 ox: cx,

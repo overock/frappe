@@ -7,6 +7,7 @@ export default class ActionRenderer extends Renderer {
             <text class="frappe-label" font-size="15px"/>
             <use xlink:href="#actionMoveTo" class="frappe-handle" width="72" height="72" />`);
         this.el.classList.add('frappe-action');
+        this.el.setAttribute('data-actiontype', model.type);
     }
 
     get label() { return this.el.getElementsByClassName('frappe-label')[0]; }

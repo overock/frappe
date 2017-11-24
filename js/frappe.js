@@ -3,7 +3,7 @@ import Event from './main/event';
 import MdPool from './model/pool';
 import SVG from './util/svg';
 import RadialMenu from './util/radial';
-import uuid from './util/uuid';
+//import uuid from './util/uuid';
 
 let instance = null;
 const listeners = {};
@@ -24,7 +24,7 @@ export default class Frappe {
         this.radial = new RadialMenu();
 
         this.canvas = SVG.create('svg');
-        this.canvas.id = this.id = uuid();
+        //this.canvas.id = this.id = uuid();
         this.canvas.setAttribute('preserveAspectRatio', 'xMinYMin slice');
         this.canvas.style.width = width || '100%';
         this.canvas.style.height = height || '100%';
@@ -75,7 +75,8 @@ export default class Frappe {
     }
 
     heartBeat() {
-        if(document.getElementById(this.id)) {
+        //if(document.getElementById(this.id)) {
+        if(document.body.contains(this.canvas)) {
             requestAnimationFrame(() => this.heartBeat());
         } else {
             this.destroy();
@@ -253,7 +254,7 @@ export default class Frappe {
             this.canvas.removeChild(ga.element);
             this.canvas.removeChild(gf.element);
         } else {
-            this.radial.open(this.canvas, x, y, lnFrom.rules.after);
+            this.radial.open(this.canvas, x+12, y+12, lnFrom.rules.after);
             this.canvas.addEventListener('mousedown', fn);
         }
     }
