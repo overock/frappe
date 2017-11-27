@@ -52,12 +52,20 @@ export default class SVG {
         `);
     }
 
+    static get actionRemove() {
+        return this.build(`
+            <symbol id="actionRemove" viewBox="0 0 16 16">
+                <circle class="frappe-handle-remove" cx="8" cy="8" r="7" />
+                <path class="frappe-handle-remove" d="M5,5 l6,6 M5,11 l6,-6" />
+            </symbol>
+        `);
+    }
+
     static get flowHandle() {
         return this.build(`
             <symbol id="flowSnapTo" viewBox="0 0 16 16">
                 <circle class="frappe-handle-joint" cx="8" cy="8" r="7" />
-                <circle class="frappe-handle-joint frappe-handle-joint-deco" cx="8" cy="8" r="6" fill="#000" />
-                <path class="frappe-handle-joint" d="M4, 8 l8, 0 M8, 4 l0, 8" stroke="#fff"/>
+                <path class="frappe-handle-joint" d="M4,8 l8,0 M8,4 l0,8" />
             </symbol>
         `);
     }

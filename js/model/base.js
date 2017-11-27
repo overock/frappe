@@ -73,4 +73,8 @@ export default class Model {
     render() {
         this.renderer.update(this);
     }
+
+    remove() {
+        this.renderer.remove();
+    }
 }

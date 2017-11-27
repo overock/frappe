@@ -47,16 +47,16 @@ svg {
 }
 
 .frappe-handle-symbol {
+    cursor: move;
     fill: none;
     pointer-events: none;
     stroke: #000;
     stroke-width: 6;
     stroke-linecap: square;
-    
 }
 
 .frappe-handle-bevel {
-    cursor: pointer;
+    cursor: move;
     fill: none;
     pointer-events: visibleStroke;
     stroke: #fff;
@@ -67,12 +67,16 @@ svg {
 
 .frappe-handle-joint {
     cursor: cell;
-    fill: #fff;
+    fill: #000;
+    stroke: #fff;
     stroke-width: 2;
 }
 
-.frappe-handle-joint-deco {
+.frappe-handle-remove {
+    cursor: not-allowed;
     fill: #000;
+    stroke: #fff;
+    stroke-width: 2;
 }
 
 .frappe-branch-confirm {

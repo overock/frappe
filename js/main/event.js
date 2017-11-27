@@ -15,8 +15,18 @@ const
     emit = (type, param) => window.dispatchEvent(new CustomEvent(type, { detail: param })),
 
     // handle 아이콘 보이기/숨기기
-    showHandle = () => currentModel && currentModel.renderer.handle.classList.add('frappe-handle-hover'),
-    hideHandle = () => currentModel && currentModel.renderer.handle.classList.remove('frappe-handle-hover'),
+    showHandle = () => {
+        if(currentModel) {
+            currentModel.renderer.handle.classList.add('frappe-handle-hover');
+            currentModel.renderer.removeBtn && currentModel.renderer.removeBtn.classList.add('frappe-handle-hover');
+        }
+    },
+    hideHandle = () => {
+        if(currentModel) {
+            currentModel.renderer.handle.classList.remove('frappe-handle-hover');
+            currentModel.renderer.removeBtn && currentModel.renderer.removeBtn.classList.remove('frappe-handle-hover');
+        }
+    },
     showGadget = e => {
         if(isDragging) return;
         getModel(e.target);
@@ -28,6 +38,10 @@ const
         currentModel = null;
     },
     
+    /**
+     * 삭제
+     */
+    remove = e => emit('frappe.remove', { model: currentModel }),
     /**
      * 액션 드래그&드롭 이동
      */ 
@@ -222,6 +236,18 @@ export default class EventHandler {
         instance = this;
     }
 
+    hotKeys(e) {
+        console.log(e.key, e.keyCode);
+        switch(e.key || e.keyCode) {
+            case 'Backspace':   case 8:
+                e.preventDefault();
+
+            case 'Delete':      case 46:
+                currentModel && emit('frappe.remove', { model: currentModel });
+
+        }
+    }
+
     bind(frappe) {
         [ viewBox.x, viewBox.y, viewBox.w, viewBox.h ] = [ 0, 0, frappe.metric.width, frappe.metric.height ];
 
@@ -247,6 +273,7 @@ export default class EventHandler {
         if(model.isFlow) {
             model.renderer.handle[method]('mousedown', snapStart);
         } else {
+            model.renderer.removeBtn[method]('click', remove);
             model.renderer.handle[method]('mousedown', actionDragStart);
             model.renderer.element[method]('mousedown', branchStart);
         }

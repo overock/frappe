@@ -14,4 +14,8 @@ export default class Renderer {
         this.element.style.strokeDasharray = model.isGhost? '3, 4' : '';
         this.element.style.opacity = model.isGhost? 0.4 : 1;
     }
+
+    remove() {
+        this.el.parentNode.removeChild(this.el);
+    }
 }

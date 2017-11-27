@@ -28,10 +28,14 @@ export default class ModelPool {
     remove(model) {
         if(typeof model == 'string') model = this.item(model);
         if(!model) return;
+
+        model.isFlow || model.links.forEach(v => this.remove(v));
         model.unlinkAll();
 
         let i = this.indexOf(model.uuid);
         i>=0 && this.container.splice(i, 1);
+
+        model.remove();
     }
 
     clear() { this.container = []; }

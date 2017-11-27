@@ -5,13 +5,15 @@ export default class ActionRenderer extends Renderer {
         super(model, `
             ${def.markup}
             <text class="frappe-label" font-size="15px"/>
-            <use xlink:href="#actionMoveTo" class="frappe-handle" width="72" height="72" />`);
+            <use xlink:href="#actionMoveTo" class="frappe-handle" width="72" height="72" />
+            <use xlink:href="#actionRemove" class="frappe-handle" width="16" height="16" />`);
         this.el.classList.add('frappe-action');
         this.el.setAttribute('data-actiontype', model.type);
     }
 
     get label() { return this.el.getElementsByClassName('frappe-label')[0]; }
     get handle() { return this.el.getElementsByClassName('frappe-handle')[0]; }
+    get removeBtn() { return this.el.getElementsByClassName('frappe-handle')[1]; }
 
     update(model) {
         super.update(model);
@@ -23,6 +25,8 @@ export default class ActionRenderer extends Renderer {
             offY = (this.element.getAttribute('height') - this.handle.getAttribute('height'))/2 + 4;
         this.handle.setAttribute('x', model.left + offX);
         this.handle.setAttribute('y', model.top + offY);
+        this.removeBtn.setAttribute('x', model.left + offX + 56);
+        this.removeBtn.setAttribute('y', model.top + offY + 56);
 
         if(model.isGhost) {
             this.label.style.display = 'none';

@@ -31,6 +31,7 @@ export default class Frappe {
 
         this.canvas.appendChild(SVG.marker);
         this.canvas.appendChild(SVG.actionHandle);
+        this.canvas.appendChild(SVG.actionRemove);
         this.canvas.appendChild(SVG.flowHandle);
 
         parent.appendChild(this.canvas);
@@ -40,8 +41,10 @@ export default class Frappe {
         this.unsubscribeAll();
         const evts = {
             //'resize': () => this.resize(),  // 얘만 빼면 canvas로 이벤트를 옮겨도 되는데...
+            'keydown': this.event.hotKeys,
+
             'frappe.add': e => this.add(e.detail.type, e.detail.top, e.detail.left, e.detail.bottom, e.detail.right),
-            'frappe.remove': e => this.remove(e.detail.id),
+            'frappe.remove': e => this.remove(e.detail.model),
             'frappe.link': e => this.link(e.detail.src, e.detail.dest),
             'frappe.replace': e => this.replace(e.detail.src, e.detail.dest),
             'frappe.render': () => this.render(),
@@ -124,7 +127,7 @@ export default class Frappe {
     }
 
     remove(model) {
-        this.pool.remove(model.uuid);
+        this.pool.remove(model.id);
         model.element.parentNode && this.canvas.removeChild(model.element);
     }
 
