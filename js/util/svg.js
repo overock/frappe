@@ -46,7 +46,7 @@ export default class SVG {
     static get actionHandle() {
         return this.build(`
             <symbol id="actionMoveTo" viewBox="-4 -4 72 72">
-                <rect class="frappe-handle-bevel" x="2" y="2" width="60" height="60" rx="12" ry="12" />
+                <rect class="frappe-handle-bevel" x="4" y="4" width="56" height="56" rx="10" ry="10" />
                 <rect class="frappe-handle-symbol" x="0" y="0" width="64" height="64" rx="12" ry="12" />
             </symbol>
         `);
@@ -54,9 +54,9 @@ export default class SVG {
 
     static get actionRemove() {
         return this.build(`
-            <symbol id="actionRemove" viewBox="0 0 16 16">
-                <circle class="frappe-handle-remove" cx="8" cy="8" r="7" />
-                <path class="frappe-handle-remove" d="M5,5 l6,6 M5,11 l6,-6" />
+            <symbol id="actionRemove" viewBox="0 0 20 20">
+                <circle class="frappe-handle-remove" cx="10" cy="10" r="9" />
+                <path class="frappe-handle-remove" d="M6,6 l8,8 M6,14 l8,-8" />
             </symbol>
         `);
     }

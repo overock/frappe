@@ -49,7 +49,7 @@ svg {
 .frappe-handle-symbol {
     cursor: move;
     fill: none;
-    pointer-events: none;
+    pointer-events: visibleStroke;
     stroke: #000;
     stroke-width: 6;
     stroke-linecap: square;

@@ -6,7 +6,7 @@ export default class ActionRenderer extends Renderer {
             ${def.markup}
             <text class="frappe-label" font-size="15px"/>
             <use xlink:href="#actionMoveTo" class="frappe-handle" width="72" height="72" />
-            <use xlink:href="#actionRemove" class="frappe-handle" width="16" height="16" />`);
+            <use xlink:href="#actionRemove" class="frappe-handle" width="20" height="20" />`);
         this.el.classList.add('frappe-action');
         this.el.setAttribute('data-actiontype', model.type);
     }
@@ -26,7 +26,7 @@ export default class ActionRenderer extends Renderer {
         this.handle.setAttribute('x', model.left + offX);
         this.handle.setAttribute('y', model.top + offY);
         this.removeBtn.setAttribute('x', model.left + offX + 56);
-        this.removeBtn.setAttribute('y', model.top + offY + 56);
+        this.removeBtn.setAttribute('y', model.top + offY - 2);
 
         if(model.isGhost) {
             this.label.style.display = 'none';
