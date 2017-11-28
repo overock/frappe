@@ -127,6 +127,91 @@ const startDemo = () => {
         }
       }
 
+      const shell = frappe.add('shell', 200, 500);
+      shell.props = {
+        "name": 'shell',
+        "general": {
+          "config": {
+            "capture-output": true,
+            "execOption": "script"
+          },
+          "exec": {
+            "exec": "./script.sh"
+          }
+        },
+        "advanced": {
+          "env-var":["var1","var2"],
+          "prepare": [
+            {
+              "key": "mkdir",
+              "values": {
+                "path": "hdfs://foo:8020/usr/tucu/temp-data_folder2"
+              }
+            }
+          ],
+          "argument": [
+            "argument1"
+          ],
+          "configuration": [
+            {
+              "name": "key",
+              "value": "value"
+            }
+          ],
+          "file": [
+            "name.file"
+          ],
+          "archive": [
+            "name.archive"
+          ]
+        }
+      }
+
+      const spark = frappe.add('spark', 200, 600);
+      spark.props = {
+        "name": "spark",
+        "general": {
+          "config": {
+            "name": "SparkTestApp",
+            "jar": "sparkTestApp.jar",
+            "class": "org.apache.spark.examples.SparkTest",
+            "master": "yarn-cluster"
+          }
+        },
+        "option": {
+          "args": [
+            "inputpath=hdfs://localhost/input/text/test.txt"
+          ],
+          "option": {
+            "spark-opts": "--executor-memory 20G",
+            "mode": "cluster"
+          }
+        },
+        "advanced": {
+          "prepare": [
+            {
+              "key": "mkdir",
+              "values": {
+                "path": "./new"
+              }
+            }
+          ],
+          "configuration": [
+            {
+              "name": "key",
+              "value": "value"
+            }
+          ],
+          "file": [
+            "new.file"
+          ],
+          "archive": [
+            "new.archive"
+          ]
+        }
+      }
+
+
       frappe.link(hive, fs);
 
 

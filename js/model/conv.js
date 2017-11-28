@@ -152,6 +152,24 @@ class Out {
     }
 
     shell(r, v) {
+        const
+            body = this._action(r, v),
+            { general: gen, advanced: adv } = v.props;
+        
+        body.tag('exec').text(gen.exec.exec);
+        gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
+        
+        adv.prepare.forEach((o, i) => {
+            const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
+            Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
+        });
+
+        adv.configuration.forEach((o, i) => {
+            const cmd = body.tag('configuration').tag('property');
+            Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
+        });
+
+        ['argument', 'env-var', 'archive', 'file'].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }
 
     hive(r, v) {
@@ -171,7 +189,7 @@ class Out {
             Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
         });
 
-        ['argument', 'param', 'archive', 'file'].forEach(k => adv[k].forEach(t => body.tag(k).text(t)));
+        ['argument', 'param', 'archive', 'file'].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }
 
     sqoop(r, v) {
@@ -181,6 +199,30 @@ class Out {
     }
 
     spark(r, v) {
+        const
+            body = this._action(r, v),
+            { general: gen, option: opt, advanced: adv } = v.props;
+
+        body.tag('name').text(gen.config.name);
+        body.tag('jar').text(gen.config.jar);
+        body.tag('class').text(gen.config.class);
+        body.tag('master').text(gen.config.master);
+
+        opt.args.forEach(t => body.tag('arg').text(t));
+        body.tag('spark-opts').text(opt.option['spark-opts']);
+        body.tag('mode').text(opt.option.mode);
+
+        adv.prepare.forEach((o, i) => {
+            const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
+            Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
+        });
+
+        adv.configuration.forEach((o, i) => {
+            const cmd = body.tag('configuration').tag('property');
+            Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
+        });
+
+        ['archive', 'file'].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }
 
     hive2(r, v) {
