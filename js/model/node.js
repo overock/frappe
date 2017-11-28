@@ -12,9 +12,21 @@ export default class Node {
         }
     }
 
-    children(t) { return typeof this[t]=='undefined'? [] : [].concat(this[t]); }
+    tags(t) {
+        if(['@', '#', '!'].indexOf(t[0])>=0) return;
+        const ret = this[t];
+        return (ret instanceof Array && ret.length==1)? ret[0] : ret;
+    }
     
-    add(k, v) { return k[0]=='@'? this.prop(k.slice(1), v) : k[0]=='#'? this.text(v) : this.tag(k, v); }
+    add(k, v) {
+        return k[0]=='@'
+            ? this.prop(k.slice(1), v)
+            : k[0]=='#'
+                ? this.text(v)
+                : k[0]=='!'
+                    ? this.option(k, v)
+                    : this.tag(k, v);
+    }
 
     merge(o) { Object.keys(o).forEach(k => o.hasOwnProperty(k) && this.add(k, o[k])); }
 
@@ -41,4 +53,16 @@ export default class Node {
     }
 
     text(v) { return typeof v=='undefined'? this['#text'] || '' : (this['#text'] = v.toString()), this; }
+
+    option(k, v) {
+        if(typeof k=='object') {
+            Object.keys(k).forEach(kk => this.option(kk, k[kk]));
+        } else if(typeof v=='undefined') {
+            return this['!'+k] || '';
+        } else {
+            this['!'+k] = v.toString();
+        }
+
+        return this;
+    }
 }

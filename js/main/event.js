@@ -237,7 +237,7 @@ export default class EventHandler {
     }
 
     hotKeys(e) {
-        console.log(e.key, e.keyCode);
+//        console.log(e.key, e.keyCode);
         switch(e.key || e.keyCode) {
             case 'Backspace':   case 8:
                 e.preventDefault();

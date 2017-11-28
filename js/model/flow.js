@@ -1,16 +1,16 @@
 import Model from './base';
 
-export default class FlowModel extends Model {
+export default class Flow extends Model {
     constructor(top, left, bottom, right) {
         super('flow', top, left);
         this.bottom = bottom || 0;
         this.right = right || 0;
         this.isDirty = true;
 
-        this.props.tag('predicate').text('');
+        this.props.predicate = '';
     }
 
-    set name(s) { this.props.prop('name', ''); }
+    set name(s) { this.props.name = ''; }
 
     get bottom() { return this.top + this.height; }
     set bottom(bottom) { this.height = bottom - this.top; }

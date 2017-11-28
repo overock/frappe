@@ -1,11 +1,11 @@
 import Model from './base';
 import actionDef from '../defs/action.js';
 
-export default class ActionModel extends Model {
+export default class Action extends Model {
     constructor(type, top, left) {
         super(type, top, left);
 
-        this.props.merge(this.def.props); //Object.assign({}, this.def.props);
+        Object.assign(this.props, this.def.props || {});
         
         this.def.width && (this.width = this.def.width);
         this.def.height && (this.height = this.def.height);

@@ -66,8 +66,6 @@ class Out {
     constructor() {
         if(out_instance) return out_instance;
         out_instance = this;
-        // babel에서 proxy trap을 쓸 수가 없으니... 안타깝지말 할 수 없다 ㅠ
-        //actions.forEach(k => this[k] = this.action);
     }
 
     // control/flow
@@ -98,8 +96,93 @@ class Out {
         // advanced
     }
 
-    fs(r, v) {
-        const body = this._action(r,v);
+    pig(r, v) {
+    }
 
+    fs(r, v) {
+        const
+            body = this._action(r, v),
+            { command: cmd, configuration: conf } = v.props.general;
+
+        // key를 가지고 switch 
+        cmd.forEach((c, i) => {
+            const tag = body.tag(`${c.key}!${i}`), val = c.values;
+            switch(c.key) {
+                case 'mkdir':
+                case 'touchz':
+                case 'delete':
+                case 'move':
+                    Object.keys(val).forEach(k => tag.prop(k, val[k]));
+                    break;
+                case 'chmod':
+                    tag.prop('path', val.path);
+                    const permissions = [0, 0, 0];
+                    ['owner', 'group', 'others'].forEach((u, j) => ['read', 'write', 'execute'].forEach(p => permissions[j] += val[`permissions.${u}.${p}`]|0));
+                    tag.prop('permissions', permissions.join(''));
+                    val['dir-files'] && tag.prop('dir-files', val['dir-files']);
+                    val.recursive && val.recursive=='true' && tag.tag('recursive');
+                    break;
+                case 'chgrp':
+                    tag.prop('path', val.path);
+                    tag.prop('group', val.group);
+                    val['dir-files'] && tag.prop('dir-files', val['dir-files']);
+                    val.recursive && val.recursive=='true' && tag.tag('recursive');
+                    break;
+            }
+
+        });
+
+        conf.forEach((o, i) => {
+            const cmd = body.tag('configuration').tag('property');
+            Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
+        });
+    }
+
+    ssh(r, v) {
+    }
+
+    ['sub-workflow'](r, v) {
+
+    }
+
+    java(r, v) {
+    }
+
+    email(r, v) {
+    }
+
+    shell(r, v) {
+    }
+
+    hive(r, v) {
+        const
+            body = this._action(r, v),
+            { general: gen, advanced: adv } = v.props,
+            w = gen.config.hiveOption;
+        body.tag(w).text(gen[w][w]);
+
+        adv.prepare.forEach((o, i) => {
+            const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
+            Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
+        });
+
+        adv.configuration.forEach((o, i) => {
+            const cmd = body.tag('configuration').tag('property');
+            Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
+        });
+
+        ['argument', 'param', 'archive', 'file'].forEach(k => adv[k].forEach(t => body.tag(k).text(t)));
+    }
+
+    sqoop(r, v) {
+    }
+
+    distcp(r, v) {
+    }
+
+    spark(r, v) {
+    }
+
+    hive2(r, v) {
     }
 }

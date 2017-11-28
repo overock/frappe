@@ -11,15 +11,15 @@ export default class Model {
         this.width = typeof width !== 'undefined'? width : 64;
         this.height = typeof height !== 'undefined'? height: 64;
 
-        this.props = new Node();
+        this.props = {}
         this._prev_ = [];
         this._next_ = [];
 
         this.renderer = RendererFactory.create(this);
     }
 
-    get name() { return this.props.prop('name') || ''; }
-    set name(s) { this.props.prop('name', s); }
+    get name() { return this.props.name || ''; }
+    set name(s) { this.props.name = s; }
 
     get id() { return this.uuid; }
     set id(s) { this.uuid || (this.uuid = uuid()); }   // shield code
