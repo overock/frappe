@@ -12,12 +12,12 @@
                         <use xlink:href="#path-1"></use>
                     </mask>
                     <g id="Clip-2"></g>
-                    <path d="M64,50.8047 L64,13.1957 C64,5.9377 58.062,-0.0003 50.805,-0.0003 L13.195,-0.0003 C5.938,-0.0003 0,5.9377 0,13.1957 L0,50.8047 C0,58.0617 5.938,63.9997 13.195,63.9997 L50.805,63.9997 C58.062,63.9997 64,58.0617 64,50.8047" id="Fill-1" fill="#EAEAEA" mask="url(#mask-2)"></path>
+                    <path d="M64,50.8047 L64,13.1957 C64,5.9377 58.062,-0.0003 50.805,-0.0003 L13.195,-0.0003 C5.938,-0.0003 0,5.9377 0,13.1957 L0,50.8047 C0,58.0617 5.938,63.9997 13.195,63.9997 L50.805,63.9997 C58.062,63.9997 64,58.0617 64,50.8047" id="Fill-1" fill="#6DA8E4" mask="url(#mask-2)"></path>
                 </g>
                 <mask id="mask-4" fill="white">
                     <use xlink:href="#path-3"></use>
                 </mask>
-                <g id="99.Color/State/Blue" mask="url(#mask-4)" fill="#0080D7">
+                <g id="99.Color/State/Blue" mask="url(#mask-4)" fill="#FFF300">
                     <rect id="Rectangle-19-Copy-31" x="0" y="0" width="64" height="64"></rect>
                 </g>
             </g>
