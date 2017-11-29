@@ -1,10 +1,11 @@
 import MdPool from '../model/pool';
-
+import LineEditor from '../util/lineeditor';
 let instance,
     metric, m,
     dx, dy, ox, oy,
     currentModel = null,
-    isDragging = false;
+    oldLabel = '',
+    editMode = false;
 
 const
     viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
@@ -28,12 +29,12 @@ const
         }
     },
     showGadget = e => {
-        if(isDragging) return;
+        if(editMode) return;
         getModel(e.target);
         showHandle();
     },
     hideGadget = () => {
-        if(isDragging) return;
+        if(editMode) return;
         hideHandle();
         currentModel = null;
     },
@@ -42,12 +43,13 @@ const
      * 삭제
      */
     remove = e => emit('frappe.remove', { model: currentModel }),
+
     /**
      * 액션 드래그&드롭 이동
      */ 
     actionDragStart = e => {
-        if(isDragging) return;
-        isDragging = true;
+        if(editMode) return;
+        editMode = true;
 
         e.preventDefault();
         
@@ -63,7 +65,7 @@ const
         window.removeEventListener('mousemove', actionDragging);
         window.removeEventListener('mouseup', actionDragEnd);
         actionDragging(e);
-        isDragging = false;
+        editMode = false;
     },
 
     /**
@@ -71,12 +73,35 @@ const
      */
     propEditor = () => emit('frappe.edit', currentModel),
 
+    textInput = new LineEditor(),
+    editText = e => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        editMode = true;
+        hideHandle();
+
+        const
+            rect = e.target.getBoundingClientRect(),
+            cX = rect.x + rect.width/2,
+            cY = rect.y + rect.height/2;
+
+        textInput.show(cX, cY, (oldLabel = currentModel.name), currentModel.angle/Math.PI*180, viewBox.z, editTextEnd);
+        currentModel.name = ' ';
+        currentModel.render();
+    },
+    editTextEnd = () => {
+        currentModel.name = textInput.text || oldLabel;
+        currentModel.render();
+        editMode = false;
+    },
+
     /**
      * 캔버스 이동/줌
      */
     canvasDragStart = e => {
-        if(isDragging) return;
-        isDragging = true;
+        if(editMode) return;
+        editMode = true;
 
         dx = e.pageX/viewBox.z, dy = e.pageY/viewBox.z, ox = viewBox.x, oy = viewBox.y;
         window.addEventListener('mousemove', canvasDragging);
@@ -91,12 +116,12 @@ const
         window.removeEventListener('mousemove', canvasDragging);
         window.removeEventListener('mouseup', canvasDragEnd);
         canvasDragging(e);
-        isDragging = false;
+        editMode = false;
     },
     canvasZoom = e => {
         e.preventDefault();
         e.stopPropagation();
-        if(isDragging) return;
+        if(editMode) return;
         
         emit('frappe.canvaszoom', { viewBox: viewBox, originalEvent: e });
     },
@@ -111,7 +136,7 @@ const
     },
     branchStart = e => {
         e.preventDefault();
-        isDragging = true;
+        editMode = true;
         hideHandle();
 
         dx = e.pageX, dy = e.pageY;
@@ -136,7 +161,7 @@ const
                 window.removeEventListener('mousemove', hold);
                 window.removeEventListener('mouseup', release);
 
-                isDragging = false;
+                editMode = false;
                 showHandle();
             };
 
@@ -158,7 +183,7 @@ const
         branching(e);
         emit('frappe.branchend', { props: evtProps, listener: branchSelect });
 
-        isDragging = false;
+        editMode = false;
     },
     branchSelect = e => {
         emit('frappe.branchconfirm', {
@@ -174,7 +199,7 @@ const
      */
     snapStart = e => {
         e.preventDefault();
-        isDragging = true;
+        editMode = true;
         hideHandle();
 
         dx = e.pageX, dy = e.pageY;
@@ -219,7 +244,7 @@ const
         snapping(e);
         emit('frappe.snapend', { props: evtProps, listener: snapSelect });
 
-        isDragging = false;
+        editMode = false;
     },
     snapSelect = e => {
         emit('frappe.snapconfirm', {
@@ -237,10 +262,11 @@ export default class EventHandler {
     }
 
     hotKeys(e) {
+        if(editMode) return;
 //        console.log(e.key, e.keyCode);
         switch(e.key || e.keyCode) {
             case 'Backspace':   case 8:
-                e.preventDefault();
+            //    e.preventDefault();
 
             case 'Delete':      case 46:
                 currentModel && emit('frappe.remove', { model: currentModel });
@@ -263,19 +289,19 @@ export default class EventHandler {
     listen(model) { this._batch(model, 'addEventListener'); }
     deafen(model) { this._batch(model, 'removeEventListener'); }
 
-    _batch(model, method) {
+    _batch(model, _) {
         // action/flow 공통
-        model.renderer.element[method]('dblclick', propEditor);
-
-        model.element[method]('mouseover', showGadget);
-        model.element[method]('mouseout', hideGadget);
+        model.element[_]('mouseover', showGadget);
+        model.element[_]('mouseout', hideGadget);
+        model.renderer.label[_]('click', editText);
         // action 전용
         if(model.isFlow) {
-            model.renderer.handle[method]('mousedown', snapStart);
+            model.renderer.handle[_]('mousedown', snapStart);
         } else {
-            model.renderer.removeBtn[method]('click', remove);
-            model.renderer.handle[method]('mousedown', actionDragStart);
-            model.renderer.element[method]('mousedown', branchStart);
+            model.renderer.element[_]('dblclick', propEditor);            
+            model.renderer.removeBtn[_]('click', remove);
+            model.renderer.handle[_]('mousedown', actionDragStart);
+            model.renderer.element[_]('mousedown', branchStart);
         }
     }
 

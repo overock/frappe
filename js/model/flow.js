@@ -10,12 +10,16 @@ export default class Flow extends Model {
         this.props.predicate = '';
     }
 
-    set name(s) { this.props.name = ''; }
+    // decision flow는 name을 cond로 쓴다.
+    get name() { return !this.isGhost && this.isCase? this.props.case || 'condition' : ''; }
+    set name(s) { this.isCase && (this.props.case = s); }
 
     get bottom() { return this.top + this.height; }
     set bottom(bottom) { this.height = bottom - this.top; }
     get right() { return this.left + this.width; }
     set right(right) { this.width = right - this.left; }
+
+    get angle() { return Math.atan2(this.height, this.width); }
 
     get prev() {
         let len = this._prev_.length;
@@ -29,7 +33,8 @@ export default class Flow extends Model {
         return this._next_;
     }
 
-    get isFlow() { return true; }    
+    get isFlow() { return true; }
+    get isCase() { return this.prev[0] && this.prev[0].type == 'decision'; }
 
     // TODO: dirty check로 불필요한 계산 반복하지 않도록 처리해 보자.
     fitToNodes() {

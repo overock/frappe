@@ -23,15 +23,25 @@ svg {
 }
 
 .frappe-label {
+    cursor: text;
     stroke: none;
     fill: #fff;
     text-anchor: middle;
     font-family: "Roboto Condensed", sans-serif;
-    font-size: 10pt;
+    font-size: 15px;
+}
+
+.frappe-textinput {
+    position: absolute;
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 15px;
+    color: #fff;
+    text-align: center;
+    display: none;
+    transform-origin: 50% 50%;
 }
 
 .frappe-flow-holder {
-    cursor: help;
     stroke: transparent;
     stroke-width: 12;
 }

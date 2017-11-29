@@ -30,9 +30,7 @@ export default class SVG {
     
     static build(html) {
         container.innerHTML = html;
-        const ret = container.firstElementChild;
-        container.removeChild(ret);
-        return ret;
+        return container.removeChild(container.firstElementChild);
     }
 
     static get marker() {
