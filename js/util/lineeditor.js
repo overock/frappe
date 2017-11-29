@@ -34,8 +34,8 @@ export default class LineEditor {
         this.el.style.display = 'block';
         
         const width = this.el.offsetWidth, height = this.el.offsetHeight;
-        this.el.style.left = x - width/2;
-        this.el.style.top = y - height/2;
+        this.el.style.left = (x - width/2) + 'px';
+        this.el.style.top = (y - height/2) + 'px';
         this.el.style.transform = `rotate(${deg||0}deg) scale(${scale||1})`;
         this.el.focus();
 
