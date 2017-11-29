@@ -3,7 +3,7 @@ const MARGIN_WIDTH = 32;
 let instance = null,
     cbDone = null,
     cbCancel = null,
-    success = true;
+    cancel = false;
 
 export default class LineEditor {
     constructor() {
@@ -46,18 +46,17 @@ export default class LineEditor {
         sel.addRange(rng);
 
         cbDone = done;
-        cbCancel = cancel;
-        success = true;
     }
 
     hide() {
         this.el.display = '';
         this.el.parentElement && this.el.parentElement.removeChild(this.el);
-        success? cbDone() : cbCancel();
+        cbDone(cancel);
+        cancel = false;
     }
 
     fit(align) {
-        let oX = parseInt(this.el.style.left), oW = parseInt(this.el.style.width);
+        const oX = parseInt(this.el.style.left), oW = parseInt(this.el.style.width);
 
         this._p.innerHTML = this.text;
         document.body.appendChild(this._p);
@@ -69,7 +68,7 @@ export default class LineEditor {
     checkKeys(e) {
         if(e.ctrlKey || e.metaKey || e.key=='Enter' || e.keyCode == 13) e.preventDefault();
         if(e.key=='Escape' || e.keyCode=='27') {
-            success = false;
+            cancel = true;
             this.el.blur();
         }
     }

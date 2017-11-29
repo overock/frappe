@@ -75,6 +75,8 @@ const
 
     textInput = new LineEditor(),
     editText = e => {
+        if(editMode) return;
+
         e.preventDefault();
         e.stopPropagation();
 
@@ -86,19 +88,14 @@ const
             cX = rect.x + rect.width/2,
             cY = rect.y + rect.height/2;
 
-        textInput.show(cX, cY, (oldLabel = currentModel.name), currentModel.angle/Math.PI*180, viewBox.z, editTextDone, editTextCancel);
+        textInput.show(cX, cY, (oldLabel = currentModel.name), currentModel.angle/Math.PI*180, viewBox.z, editTextDone);
         currentModel.name = ' ';
         currentModel.render();
     },
-    editTextDone = () => {
-        currentModel.name = textInput.text || oldLabel;
+    editTextDone = bCancel => {
+        currentModel.name = bCancel? oldLabel : textInput.text || oldLabel;
         currentModel.render();
-        editMode = false;
-    },
-    editTextCancel = () => {
-        currentModel.name = oldLabel;
-        currentModel.render();
-        editMode = false;
+        setTimeout(() => { editMode = false; }, 500);
     },
 
     /**

@@ -49,6 +49,10 @@ export default class ModelPool {
         return `${t} ${c}`;
     }
 
+    resetNameIndex() {
+        this.nameIdx = {};
+    }
+
     import(json) {
         Converter.import(this, json);
         this.render();
