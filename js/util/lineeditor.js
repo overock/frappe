@@ -2,8 +2,8 @@ const MARGIN_WIDTH = 32;
 
 let instance = null,
     cbDone = null,
-    cbCancel = null,
-    cancel = false;
+    cancel = false,
+    center = undefined;
 
 export default class LineEditor {
     constructor() {
@@ -15,7 +15,7 @@ export default class LineEditor {
         this.el.contentEditable = 'true';
         this.el.addEventListener('blur', () => this.hide());
         this.el.addEventListener('keydown', e => this.checkKeys(e));
-        this.el.addEventListener('keyup', () => this.fit(true));
+        this.el.addEventListener('keyup', () => this.fit());
 
         this._p = document.createElement('div');
         this._p.className = 'frappe-textinput';
@@ -27,18 +27,17 @@ export default class LineEditor {
     set text(s) { this.el.innerHTML = s; }
 
     show(x, y, text, deg, scale, done, cancel) {
+        center = x;
         document.body.appendChild(this.el);
         this.text = text || ' ';
-        this.fit();
         
         this.el.style.display = 'block';
-        
-        const width = this.el.offsetWidth, height = this.el.offsetHeight;
-        this.el.style.left = (x - width/2) + 'px';
-        this.el.style.top = (y - height/2) + 'px';
+        this.el.style.top = (y - this.el.offsetHeight/2) + 'px';
         this.el.style.transform = `rotate(${deg||0}deg) scale(${scale||1})`;
         this.el.focus();
 
+        this.fit();
+        
         // select all
         const rng = document.createRange(), sel = window.getSelection();
         rng.selectNodeContents(this.el);
@@ -55,13 +54,11 @@ export default class LineEditor {
         cancel = false;
     }
 
-    fit(align) {
-        const oX = parseInt(this.el.style.left), oW = parseInt(this.el.style.width);
-
-        this._p.innerHTML = this.text;
+    fit() {
         document.body.appendChild(this._p);
+        this._p.innerHTML = this.text;
         this.el.style.width = (this._p.offsetWidth + MARGIN_WIDTH) + 'px';
-        align && (this.el.style.left = oX + (oW - this._p.offsetWidth - MARGIN_WIDTH)/2);
+        this.el.style.left = (center - this.el.offsetWidth/2) + 'px';
         document.body.removeChild(this._p);
     }
 

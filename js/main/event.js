@@ -75,7 +75,7 @@ const
 
     textInput = new LineEditor(),
     editText = e => {
-        if(editMode) return;
+        if(editMode || !currentModel) return;
 
         e.preventDefault();
         e.stopPropagation();
@@ -95,6 +95,8 @@ const
     editTextDone = bCancel => {
         currentModel.name = bCancel? oldLabel : textInput.text || oldLabel;
         currentModel.render();
+        // FIXME: 완전한 해결책이 아님
+        currentModel = null;
         setTimeout(() => { editMode = false; }, 500);
     },
 
