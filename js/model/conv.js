@@ -91,12 +91,38 @@ class Out {
     }
 
     ['map-reduce'](r, v) {
-        const body = this._action(r,v);
-        // general
-        // advanced
+        const body = this._action(r,v),
+        { general : gen, advanced : adv } = v.props;
+        gen.configuration.forEach((o, i) => {
+            const cmd = body.tag('configuration').tag('property');
+            Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
+        });
+        adv.prepare.forEach((o, i) => {
+            const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
+            Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
+        });
+
+        ['archive', 'file'].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
+
     }
 
     pig(r, v) {
+        const body = this._action(r,v),
+        { general : gen, advanced : adv } = v.props;
+        body.tag('script').text(gen.config.script);
+        
+        adv.prepare.forEach((o, i) => {
+            const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
+            Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
+        })
+
+        adv.configuration.forEach((o, i) => {
+            const cmd = body.tag('configuration').tag('property');
+            Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
+        });
+
+        ['argument', 'param', 'archive', 'file'].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
+
     }
 
     fs(r, v) {
@@ -139,16 +165,47 @@ class Out {
     }
 
     ssh(r, v) {
+        const body = this._action(r,v),
+        { general : gen } = v.props;
+        body.tag('host').text(gen.config.host);
+        body.tag('command').text(gen.config.command);
+        ['argument'].forEach(k => gen.config[k] && gen.config[k].forEach(t => body.tag(k).text(t)));
+        gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
     }
 
     ['sub-workflow'](r, v) {
-
+        const body = this._action(r,v),
+        { config : rconf, configuration : oconf  } = v.props.general;
+        body.tag('app-path').text(rconf['app-path']);
+        rconf['propagate-configuration'] && rconf['propagate-configuration'] == true && body.tag('propagate-configuration');
+        oconf.forEach((o, i) => {
+            const cmd = body.tag('configuration').tag('property');
+            Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
+        });
     }
 
     java(r, v) {
+        const body = this._action(r,v),
+        { general : gen, advanced : adv } = v.props;
+        body.tag('main-class').text(gen.config['main-class']);
+        gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
+        gen.config['java-opts'] && body.tag('java-opts').text(gen.config['java-opts']);
+        
+        adv.prepare.forEach((o, i) => {
+            const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
+            Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
+        })
+        adv.configuration.forEach((o, i) => {
+            const cmd = body.tag('configuration').tag('property');
+            Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
+        });
+        ['arg', 'archive', 'file'].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }
 
     email(r, v) {
+        const body = this._action(r,v),
+        { config : conf } = v.props.general;
+        Object.keys(conf).forEach(k => body.tag(k).text(conf[k]));
     }
 
     shell(r, v) {
@@ -193,9 +250,40 @@ class Out {
     }
 
     sqoop(r, v) {
+        const body = this._action(r,v),
+            { general : gen, advanced : adv } = v.props,
+            conf = gen.config;
+
+        conf.command && body.tag('command').text(conf.command);
+        conf.arg && ['arg'].forEach(k => conf[k] && conf[k].forEach(t => body.tag(k).text(t))); 
+        // choice command arg , configuration  prepare file archive
+        adv.prepare.forEach((o, i) => {
+            const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
+            Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
+        });
+
+        adv.configuration.forEach((o, i) => {
+            const cmd = body.tag('configuration').tag('property');
+            Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
+        });
+        ['archive', 'file'].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }
 
     distcp(r, v) {
+        const body = this._action(r,v),
+            { general : gen, advanced : adv } = v.props;
+
+        gen.config['java-opts'] && body.tag('java-opts').text(gen.config['java-opts']);
+        ['arg'].forEach(k => gen[k] && gen[k].forEach(t => body.tag(k).text(t)));  
+
+        adv.prepare.forEach((o, i) => {
+            const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
+            Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
+        });
+        adv.configuration.forEach((o, i) => {
+            const cmd = body.tag('configuration').tag('property');
+            Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
+        });
     }
 
     spark(r, v) {
@@ -209,8 +297,8 @@ class Out {
         body.tag('master').text(gen.config.master);
 
         opt.args.forEach(t => body.tag('arg').text(t));
-        body.tag('spark-opts').text(opt.option['spark-opts']);
-        body.tag('mode').text(opt.option.mode);
+        opt.option['spark-opts'] && body.tag('spark-opts').text(opt.option['spark-opts']);
+        opt.option.mode && body.tag('mode').text(opt.option.mode);
 
         adv.prepare.forEach((o, i) => {
             const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
@@ -226,5 +314,24 @@ class Out {
     }
 
     hive2(r, v) {
+        const
+        body = this._action(r, v),
+        { general: gen, advanced: adv } = v.props,
+            w = gen.config.hiveOption;
+        body.tag(w).text(gen[w][w]);
+        body.tag('jdbc-url').text(gen.config['jdbc-url']);
+        gen.config.password && body.tag('password').text(gen.config.password);
+
+        adv.prepare.forEach((o, i) => {
+            const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
+            Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
+        });
+
+        adv.configuration.forEach((o, i) => {
+            const cmd = body.tag('configuration').tag('property');
+            Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
+        });
+
+        ['argument', 'param', 'archive', 'file'].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }
 }
