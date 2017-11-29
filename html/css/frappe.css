@@ -41,6 +41,10 @@ svg {
     transform-origin: 50% 50%;
 }
 
+.frappe-textinput:focus {
+    outline: #20aaf7 auto 3px;
+}
+
 .frappe-flow-holder {
     stroke: transparent;
     stroke-width: 12;
