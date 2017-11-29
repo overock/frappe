@@ -1,7 +1,9 @@
 const MARGIN_WIDTH = 32;
 
 let instance = null,
-    callback = null;
+    cbDone = null,
+    cbCancel = null,
+    success = true;
 
 export default class LineEditor {
     constructor() {
@@ -12,7 +14,7 @@ export default class LineEditor {
         this.el.className = 'frappe-textinput';
         this.el.contentEditable = 'true';
         this.el.addEventListener('blur', () => this.hide());
-        this.el.addEventListener('keydown', this.checkKeys);
+        this.el.addEventListener('keydown', e => this.checkKeys(e));
         this.el.addEventListener('keyup', () => this.fit(true));
 
         this._p = document.createElement('div');
@@ -24,7 +26,7 @@ export default class LineEditor {
     get text() { return this.el.innerText; }
     set text(s) { this.el.innerHTML = s; }
 
-    show(x, y, text, deg, scale, cb) {
+    show(x, y, text, deg, scale, done, cancel) {
         document.body.appendChild(this.el);
         this.text = text || ' ';
         this.fit();
@@ -43,13 +45,15 @@ export default class LineEditor {
         sel.removeAllRanges();
         sel.addRange(rng);
 
-        callback = cb;
+        cbDone = done;
+        cbCancel = cancel;
+        success = true;
     }
 
     hide() {
         this.el.display = '';
         this.el.parentElement && this.el.parentElement.removeChild(this.el);
-        callback();
+        success? cbDone() : cbCancel();
     }
 
     fit(align) {
@@ -64,5 +68,9 @@ export default class LineEditor {
 
     checkKeys(e) {
         if(e.ctrlKey || e.metaKey || e.key=='Enter' || e.keyCode == 13) e.preventDefault();
+        if(e.key=='Escape' || e.keyCode=='27') {
+            success = false;
+            this.el.blur();
+        }
     }
 }

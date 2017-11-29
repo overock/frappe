@@ -86,12 +86,17 @@ const
             cX = rect.x + rect.width/2,
             cY = rect.y + rect.height/2;
 
-        textInput.show(cX, cY, (oldLabel = currentModel.name), currentModel.angle/Math.PI*180, viewBox.z, editTextEnd);
+        textInput.show(cX, cY, (oldLabel = currentModel.name), currentModel.angle/Math.PI*180, viewBox.z, editTextDone, editTextCancel);
         currentModel.name = ' ';
         currentModel.render();
     },
-    editTextEnd = () => {
+    editTextDone = () => {
         currentModel.name = textInput.text || oldLabel;
+        currentModel.render();
+        editMode = false;
+    },
+    editTextCancel = () => {
+        currentModel.name = oldLabel;
         currentModel.render();
         editMode = false;
     },
