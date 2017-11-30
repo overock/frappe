@@ -213,7 +213,7 @@ class Out {
             body = this._action(r, v),
             { general: gen, advanced: adv } = v.props;
         
-        body.tag('exec').text(gen.exec.exec);
+        body.tag('exec').text(gen.exec[gen.config.execOption]);
         gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
         
         adv.prepare.forEach((o, i) => {
