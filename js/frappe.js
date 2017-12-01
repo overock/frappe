@@ -23,13 +23,13 @@ export default class Frappe {
         this.pool = new MdPool();
         this.event = new Event();
         this.canvas = SVG.create('svg');
+        this.canvas.classList.add('frappe-canvas');
         //this.canvas.id = this.id = uuid();
         this.canvas.setAttribute('preserveAspectRatio', 'xMinYMin slice');
         this.canvas.style.width = width || '100%';
         this.canvas.style.height = height || '100%';
 
         this.radial = new RadialMenu(this.defs);
-        console.log(this.defs);
         this.defs.appendChild(SVG.marker);
         this.defs.appendChild(SVG.actionHandle);
         this.defs.appendChild(SVG.actionRemove);
@@ -41,7 +41,7 @@ export default class Frappe {
         // flush & register observers
         this.unsubscribeAll();
         const evts = {
-            //'resize': () => this.resize(),  // 얘만 빼면 canvas로 이벤트를 옮겨도 되는데...
+        //    'resize': () => this.resize(),  // 얘만 빼면 canvas로 이벤트를 옮겨도 되는데...
             'keydown': this.event.hotKeys,
 
             'frappe.add': e => this.add(e.detail.type, e.detail.top, e.detail.left, e.detail.bottom, e.detail.right),
@@ -79,8 +79,18 @@ export default class Frappe {
     }
 
     heartBeat() {
-        //if(document.getElementById(this.id)) {
         if(document.body.contains(this.canvas)) {
+            // check resize
+            const
+                z = this.event.viewBox.z,
+                { width, height } = this.metric,
+                [ x, y, w, h ] = this.canvas.getAttribute('viewBox').split(' ').map(v => v|0);
+
+            if(height!=h || width!=w) {
+                const viewbox = `${x} ${y} ${width/z} ${height/z}`;
+                this.canvas.setAttribute('viewBox', viewbox);
+                this.event.viewBox = viewbox;
+            }
             requestAnimationFrame(() => this.heartBeat());
         } else {
             this.destroy();
@@ -92,21 +102,16 @@ export default class Frappe {
      */
     get metric() { return this.canvas.getBoundingClientRect(); }
 
-    // resize() {
-    //     // TODO: chrome에서는 렌더링 이슈가 있어 부득이하게 timeout 걸어둠.
-    //     // 이후 코드를 분기했으면 한다.
-    //     clearTimeout(this.__delayed__);
-    //     this.__delayed__ = setTimeout(() => {
-    //         const
-    //             z = this.event.viewBox.z,
-    //             { width, height } = this.metric,
-    //             [ x, y ] = this.canvas.getAttribute('viewBox').split(' ').map(v => v|0),
-    //             viewbox = `${x} ${y} ${width/z} ${height/z}`;
+    resize() {
+        const
+            z = this.event.viewBox.z,
+            { width, height } = this.metric,
+            [ x, y ] = this.canvas.getAttribute('viewBox').split(' ').map(v => v|0),
+            viewbox = `${x} ${y} ${width/z} ${height/z}`;
             
-    //         setTimeout(() => this.canvas.setAttribute('viewBox', viewbox), 16);
-    //         this.event.viewBox = viewbox;
-    //     }, 167);
-    // }
+        this.canvas.setAttribute('viewBox', viewbox);
+        this.event.viewBox = viewbox;
+    }
 
     get defs() { return this.canvas.querySelector('defs') || this.canvas.appendChild(SVG.create('defs')); }
     

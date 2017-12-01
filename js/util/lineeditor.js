@@ -63,10 +63,20 @@ export default class LineEditor {
     }
 
     checkKeys(e) {
-        if(e.ctrlKey || e.metaKey || e.key=='Enter' || e.keyCode == 13) e.preventDefault();
-        if(e.key=='Escape' || e.keyCode=='27') {
-            cancel = true;
-            this.el.blur();
+        if(e.ctrlKey || e.metaKey) {
+            e.preventDefault();
+            return;
+        }
+
+        switch(e.key || e.keyCode) {
+            case 'Enter': case '13':
+                e.preventDefault();
+                this.el.blur();
+                break;
+            case 'Escape': case '27':
+                cancel = true;
+                this.el.blur();
+                break;
         }
     }
 }

@@ -10,9 +10,9 @@ let instance,
 const
     viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
     pool = new MdPool(),
-    getModel = el => (currentModel = pool.item(el.closest('g').getAttribute('id'))),
 
-    // 이벤트 발생기
+    // codelets
+    getModel = el => (currentModel = pool.item(el.closest('g').getAttribute('id'))),
     emit = (type, param) => window.dispatchEvent(new CustomEvent(type, { detail: param })),
 
     // handle 아이콘 보이기/숨기기
@@ -76,11 +76,11 @@ const
     textInput = new LineEditor(),
     editText = e => {
         if(editMode || !currentModel) return;
-
+        editMode = true;
+        
         e.preventDefault();
         e.stopPropagation();
 
-        editMode = true;
         hideHandle();
 
         const
@@ -95,9 +95,8 @@ const
     editTextDone = bCancel => {
         currentModel.name = bCancel? oldLabel : textInput.text || oldLabel;
         currentModel.render();
-        // FIXME: 완전한 해결책이 아님
         currentModel = null;
-        setTimeout(() => { editMode = false; }, 500);
+        editMode = false;
     },
 
     /**

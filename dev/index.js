@@ -1,7 +1,9 @@
 import Frappe from '../js/frappe.js';
 import Node from '../js/model/node.js';
 
-let frappe = new Frappe(document.getElementById('test-canvas'));
+//let frappe = new Frappe(document.getElementById('test-canvas'));
+const frappe = new Frappe(document.body);
+document.body.style.backgroundColor = '#777';
     
 // for demo
 window.$f = frappe;
