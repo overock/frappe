@@ -74,14 +74,14 @@ class Out {
     kill(r, v) { r.tag('kill').prop('name', v.name).tag('message').text(v.props.message); }
     decision(r, v) {
         const c = r.tag('decision').prop('name', v.name).tag('switch');
-        v.next.forEach(f => c.tag('case').text(f.props.predicate).prop('to', f.next[0].name));
+        v.next.forEach(f => c.tag('case').text(f.name).prop('to', f.next[0].name));
         // TODO: default는 언제? 어떻게? 넣지?
     }
     fork(r, v) {
         const c = r.tag('fork').prop('name', v.name);
         v.nextActions.forEach(a => c.tag('path').prop('start', a.name));
     }
-    join(r, v) { r.tag('join').prop('name', v.name).prop('to', v.nextAction.name); }
+    join(r, v) { r.tag('join').prop('name', v.props.cond).prop('to', v.nextAction.name); }
 
     //action
     _action(r, v) {

@@ -94,6 +94,7 @@ svg {
 }
 
 .frappe-branch-confirm {
-    filter: grayscale(100%);
-    opacity: 0.8;
+    cursor: pointer;
+    stroke: #fff;
+    stroke-width: 3;
 }

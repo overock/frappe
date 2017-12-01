@@ -29,7 +29,7 @@ export default class LineEditor {
     show(x, y, text, deg, scale, done, cancel) {
         center = x;
         document.body.appendChild(this.el);
-        this.text = text || ' ';
+        this.text = text || '';
         
         this.el.style.display = 'block';
         this.el.style.top = (y - this.el.offsetHeight/2) + 'px';

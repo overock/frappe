@@ -22,18 +22,18 @@ export default class Frappe {
 
         this.pool = new MdPool();
         this.event = new Event();
-        this.radial = new RadialMenu();
-
         this.canvas = SVG.create('svg');
         //this.canvas.id = this.id = uuid();
         this.canvas.setAttribute('preserveAspectRatio', 'xMinYMin slice');
         this.canvas.style.width = width || '100%';
         this.canvas.style.height = height || '100%';
 
-        this.canvas.appendChild(SVG.marker);
-        this.canvas.appendChild(SVG.actionHandle);
-        this.canvas.appendChild(SVG.actionRemove);
-        this.canvas.appendChild(SVG.flowHandle);
+        this.radial = new RadialMenu(this.defs);
+        console.log(this.defs);
+        this.defs.appendChild(SVG.marker);
+        this.defs.appendChild(SVG.actionHandle);
+        this.defs.appendChild(SVG.actionRemove);
+        this.defs.appendChild(SVG.flowHandle);
 
         parent.appendChild(this.canvas);
         this.event.bind(this);
@@ -88,7 +88,7 @@ export default class Frappe {
     }
 
     /**
-     * canvas size & viewport
+     * canvas handling
      */
     get metric() { return this.canvas.getBoundingClientRect(); }
 
@@ -107,6 +107,8 @@ export default class Frappe {
     //         this.event.viewBox = viewbox;
     //     }, 167);
     // }
+
+    get defs() { return this.canvas.querySelector('defs') || this.canvas.appendChild(SVG.create('defs')); }
     
     /**
      * core functions
@@ -258,7 +260,7 @@ export default class Frappe {
             this.canvas.removeChild(ga.element);
             this.canvas.removeChild(gf.element);
         } else {
-            this.radial.open(this.canvas, x+12, y+12, lnFrom.rules.after);
+            this.radial.open(this.canvas, x+32, y+32, lnFrom.rules.after);
             this.canvas.addEventListener('mousedown', fn);
         }
     }
@@ -310,7 +312,7 @@ export default class Frappe {
             pList = lnFrom.prev[0].rules.after,
             nList = lnFrom.next[0].rules.before;
             
-        this.radial.open(this.canvas, x, y, pList.filter(v => nList.indexOf(v)>=0));
+        this.radial.open(this.canvas, x+32, y+32, pList.filter(v => nList.indexOf(v)>=0));
         this.canvas.addEventListener('mousedown', fn);
     }
 
