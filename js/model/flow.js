@@ -11,7 +11,7 @@ export default class Flow extends Model {
     }
 
     // decision flow는 name을 cond로 쓴다.
-    get name() { return !this.isGhost && this.isCase? this.props.case || 'condition' : ''; }
+    get name() { return !this.isGhost && this.isCase? this.props.case || 'predicate' : ''; }
     set name(s) { this.isCase && (this.props.case = s); }
 
     get bottom() { return this.top + this.height; }

@@ -107,7 +107,7 @@ class Out {
     kill(r, v) {
         const tag = r.tag('kill');
         this._geometry(tag, v);
-        tag.prop('name', v.name).tag('message').text(v.props.message);
+        tag.prop('name', v.name).tag('message').text(v.props.general.config.message);
     }
     decision(r, v) {
         const c = r.tag('decision').prop('name', v.name).tag('switch');
