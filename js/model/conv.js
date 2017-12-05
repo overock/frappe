@@ -52,7 +52,6 @@ export default class JSONConverter {
 
 }
 
-//const actions = [ 'map-reduce', 'pig', 'fs', 'sub-workflow', 'java' ];
 let in_instance,
     out_instance;
 
@@ -60,12 +59,12 @@ class In {
     constructor() {
         if(in_instance) return in_instance;
         in_instance = this;
-        //actions.forEach(k => this[k] = this.action);
     }
 
     link(from, to) { this.rel.push([from, to]); }
 
     start(o, p, m, r) { o,p,m,r; }
+
 }
 
 class Out {
@@ -74,10 +73,42 @@ class Out {
         out_instance = this;
     }
 
+    // common
+    _geometry(n, v) {
+        n.option('left', v.left);
+        n.option('top', v.top);
+    }
+
+    _action(r, v, bBypass) {
+        const c = r.tag('action').prop('name', v.name);
+        this._geometry(c, v);
+        v.nextActions.forEach(a => c.tag(a.type=='kill'? 'error' : 'ok').prop('to', a.name));
+
+        const ret = c.tag(v.type);
+
+        if(!bBypass) {
+            ret.tag('job-tracker').text('${jobTracker}');
+            ret.tag('name-node').text('${nameNode}');
+        }
+        return ret;
+    }
+
     // control/flow
-    start(r, v) { r.tag('start').prop('to', v.nextAction.name); }
-    end(r, v) { r.tag('end').prop('name', v.name); }
-    kill(r, v) { r.tag('kill').prop('name', v.name).tag('message').text(v.props.message); }
+    start(r, v) {
+        const tag = r.tag('start');
+        this._geometry(tag, v);
+        tag.prop('to', v.nextAction.name);
+    }
+    end(r, v) {
+        const tag = r.tag('end');
+        this._geometry(tag, v);
+        tag.prop('name', v.name);
+    }
+    kill(r, v) {
+        const tag = r.tag('kill');
+        this._geometry(tag, v);
+        tag.prop('name', v.name).tag('message').text(v.props.message);
+    }
     decision(r, v) {
         const c = r.tag('decision').prop('name', v.name).tag('switch');
         v.next.forEach(f => c.tag('case').text(f.name).prop('to', f.next[0].name));
@@ -90,16 +121,6 @@ class Out {
     join(r, v) { r.tag('join').prop('name', v.props.cond).prop('to', v.nextAction.name); }
 
     //action
-    _action(r, v, bBypass) {
-        const c = r.tag('action').prop('name', v.name);
-        v.nextActions.forEach(a => c.tag(a.type=='kill'? 'error' : 'ok').prop('to', a.name));
-        if(!bBypass) {
-            c.tag('job-tracker').text('${jobTracker}');
-            c.tag('name-node').text('${nameNode}');
-        }
-        return c.tag(v.type);
-    }
-
     ['map-reduce'](r, v) {
         const
             body = this._action(r, v),

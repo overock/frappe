@@ -46,7 +46,7 @@ export default class ModelPool {
         if(['start', 'end', 'kill'].indexOf(t)>=0) return t;
 
         this.nameIdx[t] = ++c;
-        return `${t} ${c}`;
+        return `${t}_${c}`;
     }
 
     resetNameIndex() {
