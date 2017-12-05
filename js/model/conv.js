@@ -90,15 +90,21 @@ class Out {
     join(r, v) { r.tag('join').prop('name', v.props.cond).prop('to', v.nextAction.name); }
 
     //action
-    _action(r, v) {
+    _action(r, v, bBypass) {
         const c = r.tag('action').prop('name', v.name);
         v.nextActions.forEach(a => c.tag(a.type=='kill'? 'error' : 'ok').prop('to', a.name));
+        if(!bBypass) {
+            c.tag('job-tracker').text('${jobTracker}');
+            c.tag('name-node').text('${nameNode}');
+        }
         return c.tag(v.type);
     }
 
     ['map-reduce'](r, v) {
-        const body = this._action(r,v),
-        { general : gen, advanced : adv } = v.props;
+        const
+            body = this._action(r, v),
+            { general : gen, advanced : adv } = v.props;
+        
         gen.configuration.forEach((o, i) => {
             const cmd = body.tag('configuration').tag('property');
             Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
@@ -113,14 +119,16 @@ class Out {
     }
 
     pig(r, v) {
-        const body = this._action(r,v),
-        { general : gen, advanced : adv } = v.props;
+        const
+            body = this._action(r, v),
+            { general : gen, advanced : adv } = v.props;
+        
         body.tag('script').text(gen.config.script);
         
         adv.prepare.forEach((o, i) => {
             const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
             Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
-        })
+        });
 
         adv.configuration.forEach((o, i) => {
             const cmd = body.tag('configuration').tag('property');
@@ -171,8 +179,10 @@ class Out {
     }
 
     ssh(r, v) {
-        const body = this._action(r,v),
-        { general : gen } = v.props;
+        const
+            body = this._action(r, v, true),
+            { general : gen } = v.props;
+
         body.tag('host').text(gen.config.host);
         body.tag('command').text(gen.config.command);
         ['argument'].forEach(k => gen.config[k] && gen.config[k].forEach(t => body.tag(k).text(t)));
@@ -180,8 +190,10 @@ class Out {
     }
 
     ['sub-workflow'](r, v) {
-        const body = this._action(r,v),
-        { config : rconf, configuration : oconf  } = v.props.general;
+        const
+            body = this._action(r, v, true),
+            { config : rconf, configuration : oconf  } = v.props.general;
+
         body.tag('app-path').text(rconf['app-path']);
         rconf['propagate-configuration'] && rconf['propagate-configuration'] == true && body.tag('propagate-configuration');
         oconf.forEach((o, i) => {
@@ -191,8 +203,10 @@ class Out {
     }
 
     java(r, v) {
-        const body = this._action(r,v),
-        { general : gen, advanced : adv } = v.props;
+        const
+            body = this._action(r, v),
+            { general : gen, advanced : adv } = v.props;
+
         body.tag('main-class').text(gen.config['main-class']);
         gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
         gen.config['java-opts'] && body.tag('java-opts').text(gen.config['java-opts']);
@@ -209,8 +223,9 @@ class Out {
     }
 
     email(r, v) {
-        const body = this._action(r,v),
-        { config : conf } = v.props.general;
+        const
+            body = this._action(r, v, true),
+            { config : conf } = v.props.general;
         Object.keys(conf).forEach(k => body.tag(k).text(conf[k]));
     }
 
@@ -256,7 +271,8 @@ class Out {
     }
 
     sqoop(r, v) {
-        const body = this._action(r,v),
+        const
+            body = this._action(r, v),
             { general : gen, advanced : adv } = v.props,
             conf = gen.config;
 
@@ -276,7 +292,8 @@ class Out {
     }
 
     distcp(r, v) {
-        const body = this._action(r,v),
+        const
+            body = this._action(r, v),
             { general : gen, advanced : adv } = v.props;
 
         gen.config['java-opts'] && body.tag('java-opts').text(gen.config['java-opts']);
@@ -321,8 +338,8 @@ class Out {
 
     hive2(r, v) {
         const
-        body = this._action(r, v),
-        { general: gen, advanced: adv } = v.props,
+            body = this._action(r, v),
+            { general: gen, advanced: adv } = v.props,
             w = gen.config.hiveOption;
         body.tag(w).text(gen[w][w]);
         body.tag('jdbc-url').text(gen.config['jdbc-url']);
