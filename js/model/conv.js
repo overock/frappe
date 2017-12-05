@@ -77,7 +77,7 @@ class Out {
     // control/flow
     start(r, v) { r.tag('start').prop('to', v.nextAction.name); }
     end(r, v) { r.tag('end').prop('name', v.name); }
-    kill(r, v) { r.tag('kill').prop('name', v.name).tag('message').text(v.props.message); }
+    kill(r, v) { r.tag('kill').prop('name', v.name).tag('message').text(v.props.general.config.message); }
     decision(r, v) {
         const c = r.tag('decision').prop('name', v.name).tag('switch');
         v.next.forEach(f => c.tag('case').text(f.name).prop('to', f.next[0].name));
@@ -140,6 +140,7 @@ class Out {
         const
             body = this._action(r, v),
             { command: cmd, configuration: conf } = v.props.general;
+        body.tag('name-node').text('${nameNode}');    
         conf.forEach((o, i) => {
             const cmd = body.tag('configuration').tag('property');
             Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));

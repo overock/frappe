@@ -215,7 +215,24 @@ const startDemo = () => {
 
 
       frappe.link(hive, fs);
+      const ssh = frappe.add('ssh', 200, 700);
+      ssh.props = {
+        "name": "ssh",
+        "general": {
+            "config": {
+                "host": "foo@bar.com",
+                "command": "uploaddata",
+                "argument": [
+                    "jdbc:derby://bar.com:1527/myDB",
+                    "hdfs://foobar.com:8020/usr/tucu/myData"
+                ],
+                "capture-output": true // recursive가 true 일 때 는 "recursive": "" 로 컨버팅, false 일 때는 삭제
+            }
+        }
+      }
 
+
+      frappe.link(fs, ssh);
 
 
 
