@@ -52,7 +52,7 @@ export default {
     },
     kill: {
         markup: '<image xlink:href="images/wd-kill.svg" width="64" height="64"/>',
-        props: { 'message': 'default error' },
+        props: { 'general': { 'config': { 'message': 'default error' }}},
         rules: {
             min: 0,
             max: Infinity,
