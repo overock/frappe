@@ -161,6 +161,7 @@ class Out {
         const
             body = this._action(r, v),
             { command: cmd, configuration: conf } = v.props.general;
+        body.tag('name-node').text('${nameNode}');    
         conf.forEach((o, i) => {
             const cmd = body.tag('configuration').tag('property');
             Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
