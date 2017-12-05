@@ -20,8 +20,6 @@ export default class Frappe {
         
         instance = this;
 
-        this.pool = new MdPool();
-        this.event = new Event();
         this.canvas = SVG.create('svg');
         this.canvas.classList.add('frappe-canvas');
         //this.canvas.id = this.id = uuid();
@@ -29,19 +27,22 @@ export default class Frappe {
         this.canvas.style.width = width || '100%';
         this.canvas.style.height = height || '100%';
 
-        this.radial = new RadialMenu(this.defs);
         this.defs.appendChild(SVG.marker);
         this.defs.appendChild(SVG.actionHandle);
         this.defs.appendChild(SVG.actionRemove);
         this.defs.appendChild(SVG.flowHandle);
 
         parent.appendChild(this.canvas);
+
+        this.pool = new MdPool();
+        this.event = new Event();
+        this.radial = new RadialMenu(this.defs);
+        
         this.event.bind(this);
 
         // flush & register observers
         this.unsubscribeAll();
         const evts = {
-        //    'resize': () => this.resize(),  // 얘만 빼면 canvas로 이벤트를 옮겨도 되는데...
             'keydown': this.event.hotKeys,
 
             'frappe.add': e => this.add(e.detail.type, e.detail.top, e.detail.left, e.detail.bottom, e.detail.right),

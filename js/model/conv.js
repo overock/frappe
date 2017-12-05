@@ -21,26 +21,32 @@ export default class JSONConverter {
         };
 
         findNames(json).forEach(s => nameMap.set(s, uuid()));   // 아, 덴쟝. uuid 부분이 꼬인다
+        console.log(nameMap);
 
         // stage #2: trunk pool
         pool.clear();
 
         // stage #3: create actions
         const inp = new In();
-        tags.forEach(t => [].concat(json[t]).forEach(p => pool.add(inp[t](p, nameMap, rel))));
+       // tags.forEach(t => [].concat(json[t]).forEach(p => pool.add(inp[t](p, nameMap, rel))));
 
         // stage #4: create flows?
         rel.forEach(r => r);
 
         // stage #5: positioning
+        const cursor = { x: 50, y: 50 }
         
     }
 
     static export(pool) {
         const
             ret = new Node({}).prop({ name: pool.title, xmlns: 'uri:oozie:workflow:0.1' }),
-            out = new Out();
-        pool.container.filter(v => !v.isFlow).forEach(v => out[v.type](ret, v));
+            out = new Out(),
+            proc = v => out[v.type](ret, v);
+        pool.container.filter(v => v.type=='start').forEach(proc);
+        pool.container.filter(v => !v.isFlow && ['start', 'end', 'kill'].indexOf(v.type)==-1).forEach(proc);
+        pool.container.filter(v => v.type=='kill').forEach(proc);
+        pool.container.filter(v => v.type=='end').forEach(proc);
         return ret;
     }
 

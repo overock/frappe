@@ -21,7 +21,7 @@ export default {
             min: 1,
             max: 1,
             maxFrom: 0,
-            maxNext: 1,
+            maxTo: 1,
             before: [],
             after: [
                 'decision', 'fork',                 // control
@@ -38,8 +38,8 @@ export default {
         rules: {
             min: 1,
             max: 1,
-            maxFrom: 1, // ?
-            maxNext: 0,
+            maxFrom: Infinity, // ?
+            maxTo: 0,
             before: [
                 'decision', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -55,9 +55,9 @@ export default {
         props: { 'message': 'default error' },
         rules: {
             min: 0,
-            max: -1,
+            max: Infinity,
             maxFrom: -1,
-            maxNext: 0,
+            maxTo: 0,
             before: [
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
                 'shell', 'hive', 'sqoop',                                           // 3.2.0
@@ -71,6 +71,10 @@ export default {
         markup: '<image xlink:href="images/wd-decision.svg" width="64" height="64"/>',
         props: {},
         rules: {
+            min: 0,
+            max: Infinity,
+            maxFrom: 1,
+            maxTo: Infinity,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -91,6 +95,10 @@ export default {
         markup: '<image xlink:href="images/wd-fork.svg" width="64" height="64"/>',
         props: {},
         rules: {
+            min: 0,
+            max: Infinity,
+            maxFrom: 1,
+            maxTo: Infinity,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -111,8 +119,10 @@ export default {
         markup: '<image xlink:href="images/wd-join.svg" width="64" height="64"/>',
         props: {},
         rules: {
-            maxFrom: -1,
-            maxNext: 1,
+            min: 0,
+            max: Infinity,
+            maxFrom: Infinity,
+            maxTo: 1,
             before: [
                 'decision', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -134,8 +144,10 @@ export default {
         markup: '<image xlink:href="images/wd-mapreduce.svg" width="64" height="64"/>',
         props: {},
         rules: {
+            min: 0,
+            max: Infinity,
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -157,7 +169,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -179,7 +191,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -201,7 +213,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -223,7 +235,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -245,7 +257,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -267,7 +279,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -289,7 +301,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -311,7 +323,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -333,7 +345,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -355,7 +367,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -377,7 +389,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
@@ -399,7 +411,7 @@ export default {
         props: {},
         rules: {
             maxFrom: 1,
-            maxNext: 2,
+            maxTo: 2,
             before: [
                 'start', 'decision', 'fork', 'join',                 // control
                 'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email',  // 3.1.3
