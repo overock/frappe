@@ -180,7 +180,102 @@ class In {
     _sqoop(model, tagBody) {}
     _distcp(model, tagBody) {}
     _spark(model, tagBody) {}
-    _hive2(model, tagBody) {}
+    _hive2(model, tagBody) {
+        model.props = {
+            "general": {
+              "config": {
+                "jdbc-url": tagBody['jdbc-url']['#text'],
+                "password": tagBody['password']['#text'],
+                "hiveOption": tagBody.script? "script" : "query"
+              }
+            },
+            "advanced": {
+            }
+          };
+        tagBody.script ? model.props.general.script = { script : tagBody.script['#text']} :  model.props.general.query = { query : tagBody.query['#text']}
+        // const pre = tagBody.prepare, adv = model.props.advanced;
+        // pre ? adv.prepare = _convertPrepare(pre) : ''
+        
+        // const conf = tagBody.configuration;
+        // [].concat(conf).forEach(k => {  
+        //     !adv.configuration? adv.configuration = []  : ''
+        //     adv.configuration.push({ name : k.property.name['#text'], value : k.property.value['#text'] })
+        // });
+        let targetMap = {
+            'prepare': 'general.prepare'
+        };
+   
+        ['argument','param','archive','file','prepare'].forEach(k => {
+            this._addProp(model.props, k, this._convert(k,tagBody[k]));
+        });
+        console.log( JSON.stringify(model.props));
+    }
+    _addProp(props, propKey, propValue, targetMap) {
+        // target으로 property를 추가하는 함수
+        
+        let default_target = {
+            'prepare': 'advanced.prepare',
+            'archive' : 'advanced.archive',
+            'file' : 'advanced.file',
+            'argument' : 'advanced.argument',
+            'param' : 'advanced.param'
+        }
+        Object.assign(default_target, targetMap);
+        let target = default_target[propKey];
+        
+        if(!propValue) {
+            return
+        }
+        // 2depth 이상일 경우 
+        let p = target.split('.');
+        !props[p[0]] ? props[p[0]] = {} : '';
+            
+        props[p[0]][p[1]] = propValue;
+    }
+    
+    _convert(key, value) {
+        // key에 따라서 convert 함수를 호출하는 wrapper
+
+        // value가 없으면 undefined return
+        if(!value) {
+            return
+        }
+        let keyMap = {
+            prepare : 'prepare',
+            argument : 'dynamic',
+            archive : 'dynamic',
+            file : 'dynamic',
+            param : 'dynamic',
+        }
+        console.log(key, keyMap[key]);
+        return this[`_convert_${keyMap[key]}`](value);
+    }
+    _convert_dynamic(text) {
+        let arr = [];
+        [].concat(text).forEach(i => {
+            arr.push(i['#text'])
+        })
+        return arr;
+    }
+    _convert_prepare(pre) {
+        let arr = [];
+        Object.keys(pre).forEach(k => {
+            const cmd = k.split('!')[0] ;
+            let values = {};
+            Object.keys(pre[k]).forEach( a => {
+                values[a.split('@')[1]] = pre[k][a];
+            })
+            arr.push({'key' : cmd, 'values': values });
+        });
+        return arr;
+    }
+    _convert_configuration(conf) {
+        let arr = [];
+        [].concat(conf).forEach(k => {        
+            arr.push({ name : k.property.name['#text'], value : k.property.value['#text'] })
+        });
+        return arr;
+    }
 }
 
 class Out {
