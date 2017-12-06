@@ -187,7 +187,7 @@ class Out {
         const c = r.tag('fork').prop('name', v.name);
         v.nextActions.forEach(a => c.tag('path').prop('start', a.name));
     }
-    join(r, v) { r.tag('join').prop('name', v.props.cond).prop('to', v.nextAction.name); }
+    join(r, v) { r.tag('join').prop('name', v.props.name).prop('to', v.nextAction.name); }
 
     //action
     ['map-reduce'](r, v) {

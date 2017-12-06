@@ -214,7 +214,7 @@ const startDemo = () => {
       }
 
 
-      frappe.link(hive, fs);
+      
       const ssh = frappe.add('ssh', 200, 700);
       ssh.props = {
         "name": "ssh",
@@ -231,9 +231,15 @@ const startDemo = () => {
         }
       }
 
-
-      frappe.link(fs, ssh);
-
+      const fork = frappe.add('fork', 300, 700);
+      const join = frappe.add('join', 300, 600);
+      const decision = frappe.add('decision', 300, 500);
+      frappe.link(hive, fork);
+      frappe.link(fork, fs);
+      frappe.link(fork, spark);
+      frappe.link(fs, join);
+      frappe.link(spark, join);
+      frappe.link(join, ssh);
 
 
 
