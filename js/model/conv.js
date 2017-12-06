@@ -112,18 +112,37 @@ class In {
         return ret;
     }
     decision(body, rel) {
-        const ret = ModelFactory.create('decision');
+        const 
+            ret = ModelFactory.create('decision'),
+            { '!left': left = 0, '!top': top = 0, '@name': name, 
+                'switch': { 
+                    'case' : node
+                }  } = body;     
         
+
+        ret.moveTo(left, top);
+        node.forEach((o,i) =>{
+            rel.push([ 'decision', o['@to'] ]);
+        });  
         return ret;        
     }
     fork(body, rel) {
-        const ret = ModelFactory.create('fork');
+        const ret = ModelFactory.create('fork'),
+        { '!left': left = 0, '!top': top = 0, '@name': name, 'path': path } = body;     
         
+        ret.moveTo(left, top);
+        path.forEach((o,i) =>{
+            rel.push([ 'fork', o['@start'] ]);
+        });   
+
         return ret;
     }
     join(body, rel) {
-        const ret = ModelFactory.create('join');
-        
+        const ret = ModelFactory.create('join'),
+        { '!left': left = 0, '!top': top = 0, '@name': name, '@to': next  } = body;   
+
+        ret.moveTo(left, top);
+        rel.push([ 'join', next ]);
         return ret;
     }
 
@@ -216,7 +235,7 @@ class Out {
         const c = r.tag('fork').prop('name', v.name);
         v.nextActions.forEach(a => c.tag('path').prop('start', a.name));
     }
-    join(r, v) { r.tag('join').prop('name', v.props.cond).prop('to', v.nextAction.name); }
+    join(r, v) { r.tag('join').prop('name', v.props.name).prop('to', v.nextAction.name); }
 
     //action
     ['map-reduce'](r, v) {
