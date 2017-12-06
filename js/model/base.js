@@ -11,7 +11,7 @@ export default class Model {
         this.width = typeof width !== 'undefined'? width : 64;
         this.height = typeof height !== 'undefined'? height: 64;
 
-        this.props = {}
+        this.props = {};
         this._prev_ = [];
         this._next_ = [];
 

@@ -1,10 +1,10 @@
 import Node from './node';
+import ModelFactory from '../main/modelfactory';
 import uuid from '../util/uuid';
 
 export default class JSONConverter {
     static import(pool, json) {
         const
-            tags = Object.keys(json),
             nameMap = new Map(),
             rel = [];
 
@@ -28,19 +28,26 @@ export default class JSONConverter {
 
         // stage #3: create actions
         const inp = new In();
-       // tags.forEach(t => [].concat(json[t]).forEach(p => pool.add(inp[t](p, nameMap, rel))));
+        Object.keys(json)
+            .filter(tag => ['@', '#', '!'].indexOf(tag[0])==-1)
+            .forEach(tag => [].concat(tag).forEach(body => {
+                console.log(tag, inp, inp[tag]);
+                pool.add(inp[tag](body, nameMap, rel));
+            }));
 
         // stage #4: create flows?
-        rel.forEach(r => r);
+        rel.forEach(r => {
+
+        });
 
         // stage #5: positioning
-        const cursor = { x: 50, y: 50 }
+        const cursor = { x: 50, y: 50 };
         
     }
 
     static export(pool) {
         const
-            ret = new Node({}).prop({ name: pool.title, xmlns: 'uri:oozie:workflow:0.1' }),
+            ret = new Node({}).prop({ name: pool.title, xmlns: 'uri:oozie:workflow:0.5' }),
             out = new Out(),
             proc = v => out[v.type](ret, v);
         pool.container.filter(v => v.type=='start').forEach(proc);
@@ -49,7 +56,6 @@ export default class JSONConverter {
         pool.container.filter(v => v.type=='end').forEach(proc);
         return ret;
     }
-
 }
 
 let in_instance,
@@ -61,10 +67,50 @@ class In {
         in_instance = this;
     }
 
-    link(from, to) { this.rel.push([from, to]); }
+    start(body, nameMap, rel) {
+        const ret = ModelFactory.create('start');
+        ret.moveTo(body['!left'] || 0, body['!top'] || 0);
+        nameMap.set('start', ret.id);
 
-    start(o, p, m, r) { o,p,m,r; }
+        return ret;
+    }
+    end(body, nameMap, rel) {
+        const ret = ModelFactory.create('end');
+        ret.moveTo(body['!left'] || 0, body['!top'] || 0);
+        nameMap.set('end', ret.id);
+        return ret;
+    }
+    kill(body, nameMap, rel) {
+        const ret = ModelFactory.create('kill');
 
+        return ret;
+    }
+    decision(body, nameMap, rel) {
+        const ret = ModelFactory.create('decision');
+        
+        return ret;        
+    }
+    fork(body, nameMap, rel) {
+        const ret = ModelFactory.create('fork');
+        
+        return ret;
+    }
+    join(body, nameMap, rel) {
+        const ret = ModelFactory.create('join');
+        
+        return ret;
+    }
+
+    action(body, nameMap, rel) {
+        const ret = ModelFactory.create('kill');
+        // name
+        // xmlns
+        //.... 
+        // 액션명(tag)
+        //this.pig(body, nameMap, rel);
+        return ret;
+    }
+    ['map-reduce'](body, nameMap, rel) {}
 }
 
 class Out {
