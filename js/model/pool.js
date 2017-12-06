@@ -38,7 +38,7 @@ export default class ModelPool {
         model.remove();
     }
 
-    clear() { this.container = []; }
+    clear() { this.container.forEach(v => this.remove(v)); }
 
     name(model) {
         let t = model.type, c = this.nameIdx[t] || 0;
