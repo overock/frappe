@@ -238,7 +238,10 @@ const startDemo = () => {
 
 
       /***************** */
-      console.log(JSON.stringify($f.pool.export()));
+      let exp = $f.pool.export(), imp = $f.pool.import(exp);
+      console.log(JSON.stringify(exp));
+      console.log(exp);
+      console.log($f.pool.container);
 };
 
 startDemo();
