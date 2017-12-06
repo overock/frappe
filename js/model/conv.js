@@ -39,6 +39,8 @@ export default class JSONConverter {
 
             const flow = ModelFactory.create('flow');
             
+            flow.name = r[2] || '';
+
             f.linkBefore(flow);
             t.linkAfter(flow);
         });
@@ -72,34 +74,27 @@ class In {
 
     start(body, rel) {
         const
-            ret = ModelFactory.create('start'),
-            { '!left': left = 0, '!top': top = 0, '@to': next } = body;
+            { '!left': left = 0, '!top': top = 0, '@to': next } = body,
+            ret = ModelFactory.create('start', top, left);
         
-        ret.moveTo(left, top);
         rel.push([ 'start', next ]);
 
         return ret;
     }
     end(body, rel) {
-        const
-            ret = ModelFactory.create('end'),
-            { '!left': left = 0, '!top': top = 0 } = body;
-
-        ret.moveTo(left, top);
-
-        return ret;
+        const { '!left': left = 0, '!top': top = 0 } = body;
+        return ModelFactory.create('end', top, left);
     }
     kill(body, rel) {
         const
-            ret = ModelFactory.create('kill'),
             {
                 '!left': left = 0,
                 '!top': top = 0,
                 '@name': name,
                 message: { '#text': message }
-            } = body;
-        
-        ret.moveTo(left, top);
+            } = body,
+            ret = ModelFactory.create('kill', top, left);
+
         ret.props = {
             name: name,
             general: {
@@ -113,36 +108,36 @@ class In {
     }
     decision(body, rel) {
         const 
-            ret = ModelFactory.create('decision'),
             { '!left': left = 0, '!top': top = 0, '@name': name, 
                 'switch': { 
-                    'case' : node
-                }  } = body;     
-        
+                    'case' : node = [],
+                    'default' : defNode = ''
+                }
+            } = body,
+            ret = ModelFactory.create('decision', top, left);
 
-        ret.moveTo(left, top);
-        node.forEach((o,i) =>{
-            rel.push([ 'decision', o['@to'] ]);
-        });  
+        ret.name = name;
+        node.concat(defNode).forEach(o => rel.push([ name, o['@to'] ]));  
         return ret;        
     }
     fork(body, rel) {
-        const ret = ModelFactory.create('fork'),
-        { '!left': left = 0, '!top': top = 0, '@name': name, 'path': path } = body;     
+        const 
+            { '!left': left = 0, '!top': top = 0, '@name': name, 'path': path = [] } = body,
+            ret = ModelFactory.create('fork', top, left);
         
-        ret.moveTo(left, top);
-        path.forEach((o,i) =>{
-            rel.push([ 'fork', o['@start'] ]);
-        });   
+        ret.name = name;
+        path.forEach(o => rel.push([ name, o['@start'] ]));
 
         return ret;
     }
     join(body, rel) {
-        const ret = ModelFactory.create('join'),
-        { '!left': left = 0, '!top': top = 0, '@name': name, '@to': next  } = body;   
+        const
+            { '!left': left = 0, '!top': top = 0, '@name': name, '@to': next } = body,
+            ret = ModelFactory.create('join', top, left);
 
-        ret.moveTo(left, top);
-        rel.push([ 'join', next ]);
+        ret.name = name;
+        rel.push([ name, next ]);
+        
         return ret;
     }
 
@@ -152,7 +147,7 @@ class In {
                 '!top': top = 0,
                 '@name': name,
                 'ok': okNode = {},
-                'error': errNode = {}
+                'error': errNode = {}        
             } = body,
             { '@to': okTo } = okNode,
             { '@error': errTo } = errNode,
