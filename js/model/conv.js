@@ -4,37 +4,43 @@ import uuid from '../util/uuid';
 
 export default class JSONConverter {
     static import(pool, json) {
-        const
-            nameMap = new Map(),
-            rel = [];
-
-        // stage #1: collect names and create uuids
-        const findNames = o => {
-            let ret = [];
-            Object.keys(o).forEach(k => {
-                if(k=='@name')
-                    o[k] && ret.push(o[k]);
-                else if(typeof o[k] == 'object')
-                    ret = ret.concat(findNames(o[k]));
-            });
-            return ret;
-        };
-
-        findNames(json).forEach(s => nameMap.set(s, uuid()));   // 아, 덴쟝. uuid 부분이 꼬인다
-        console.log(nameMap);
-
-        // stage #2: trunk pool
         pool.clear();
 
-        // stage #3: create actions
-        const inp = new In();
+        // stage #1: create actions
+        const inp = new In(), rel = [];
         Object.keys(json)
             .filter(tag => ['@', '#', '!'].indexOf(tag[0])==-1)
-            .forEach(tag => [].concat(json[tag]).forEach(body => pool.add(inp[tag](body, nameMap, rel))));
+            .forEach(tag => [].concat(json[tag]).forEach(body => pool.add(inp[tag](body, rel))));
+        
+        // stage #2: build nameMap;
+        const
+            nameMap = new Map(),
+            findNames = o => {
+                let ret = [];
+                Object.keys(o).forEach(k => {
+                    if(k=='@name')
+                        o[k] && ret.push(o[k]);
+                    else if(typeof o[k] == 'object')
+                        ret = ret.concat(findNames(o[k]));
+                });
+                return ret;
+            };
 
-        // stage #4: create flows?
+        findNames(json).forEach(s => nameMap.set(s, uuid()));
+        nameMap.set('start', pool.find(v => v.type=='start').id);
+        nameMap.set('end', pool.find(v => v.type=='end').id);
+        
+        console.log(nameMap, rel);
+
+        // stage #4: create flows
         rel.forEach(r => {
+            const [ f, t ] = r.map(v => pool.item(nameMap.get(v)));
+            if(!f || !t) return;    // 모델이 없는 경우가 있음
 
+            const flow = ModelFactory.create('flow');
+            
+            f.linkBefore(flow);
+            t.linkAfter(flow);
         });
 
         // stage #5: positioning
@@ -64,28 +70,26 @@ class In {
         in_instance = this;
     }
 
-    start(body, nameMap, rel) {
+    start(body, rel) {
         const
             ret = ModelFactory.create('start'),
             { '!left': left = 0, '!top': top = 0, '@to': next } = body;
         
         ret.moveTo(left, top);
-        nameMap.set('start', ret.id);
-        rel.push({ prev: ret.id, next: nameMap.get(next) });
+        rel.push([ 'start', next ]);
 
         return ret;
     }
-    end(body, nameMap, rel) {
+    end(body, rel) {
         const
             ret = ModelFactory.create('end'),
             { '!left': left = 0, '!top': top = 0 } = body;
-        
+
         ret.moveTo(left, top);
-        nameMap.set('end', ret.id);
 
         return ret;
     }
-    kill(body, nameMap, rel) {
+    kill(body, rel) {
         const
             ret = ModelFactory.create('kill'),
             {
@@ -107,23 +111,23 @@ class In {
 
         return ret;
     }
-    decision(body, nameMap, rel) {
+    decision(body, rel) {
         const ret = ModelFactory.create('decision');
         
         return ret;        
     }
-    fork(body, nameMap, rel) {
+    fork(body, rel) {
         const ret = ModelFactory.create('fork');
         
         return ret;
     }
-    join(body, nameMap, rel) {
+    join(body, rel) {
         const ret = ModelFactory.create('join');
         
         return ret;
     }
 
-    action(body, nameMap, rel) {
+    action(body, rel) {
         const ret = ModelFactory.create('kill');
         // name
         // xmlns
@@ -132,7 +136,7 @@ class In {
         //this.pig(body, nameMap, rel);
         return ret;
     }
-    ['map-reduce'](body, nameMap, rel) {}
+    ['map-reduce'](body, rel) {}
 }
 
 class Out {
@@ -352,9 +356,7 @@ class Out {
 
     hive(r, v) {
         return this._action(r, v, body => {
-            const
-                { general: gen, advanced: adv } = v.props,
-                w = gen.config.hiveOption;
+            const { general: gen, advanced: adv } = v.props, w = gen.config.hiveOption;
             adv.prepare.forEach((o, i) => {
                 const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
                 Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
@@ -375,9 +377,7 @@ class Out {
 
     sqoop(r, v) {
         return this._action(r, v, body => {
-            const
-                { general : gen, advanced : adv } = v.props,
-                conf = gen.config;
+            const { general : gen, advanced : adv } = v.props, conf = gen.config;
 
             adv.prepare.forEach((o, i) => {
                 const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
@@ -448,9 +448,7 @@ class Out {
 
     hive2(r, v) {
         return this._action(r, v, body => {
-            const
-                { general: gen, advanced: adv } = v.props,
-                w = gen.config.hiveOption;
+            const { general: gen, advanced: adv } = v.props, w = gen.config.hiveOption;
             adv.prepare.forEach((o, i) => {
                 const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
                 Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
