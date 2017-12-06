@@ -244,10 +244,13 @@ const startDemo = () => {
 
 
       /***************** */
-      let exp = $f.pool.export(), imp = $f.pool.import(exp);
-      console.log(JSON.stringify(exp));
-      console.log(exp);
-      console.log($f.pool.container);
+      window.test = () => {
+        console.log('original: ', $f.pool.container);
+        let exp = $f.pool.export(), imp = $f.pool.import(exp);
+        //      console.log(JSON.stringify(exp));
+          console.log('export: ', exp);
+          console.log('import: ', $f.pool.container);
+      };
 };
 
 startDemo();

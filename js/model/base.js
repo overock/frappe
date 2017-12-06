@@ -6,10 +6,10 @@ export default class Model {
     constructor(type, top, left, width, height) {
         this.uuid = uuid();
         this.type = type || 'nil';
-        this.top = top || 0;
-        this.left = left || 0;
-        this.width = typeof width !== 'undefined'? width : 64;
-        this.height = typeof height !== 'undefined'? height: 64;
+        this.top = parseFloat(top) || 0;
+        this.left = parseFloat(left) || 0;
+        this.width = typeof width !== 'undefined'? parseFloat(width) : 64;
+        this.height = typeof height !== 'undefined'? parseFloat(height): 64;
 
         this.props = {};
         this._prev_ = [];

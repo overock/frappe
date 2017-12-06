@@ -30,24 +30,24 @@ export default class JSONConverter {
         nameMap.set('start', pool.find(v => v.type=='start').id);
         nameMap.set('end', pool.find(v => v.type=='end').id);
         
+        // stage #3: create flows
         console.log(nameMap, rel);
-
-        // stage #4: create flows
         rel.forEach(r => {
-            const [ f, t ] = r.map(v => pool.item(nameMap.get(v)));
+            const [ f, t ] = r.map(v => pool.find(m => m.name == v));
             if(!f || !t) return;    // 모델이 없는 경우가 있음
 
             const flow = ModelFactory.create('flow');
-            
             flow.name = r[2] || '';
 
             f.linkBefore(flow);
             t.linkAfter(flow);
+            pool.add(flow);
         });
 
-        // stage #5: positioning
+        // stage #4: positioning
         const cursor = { x: 50, y: 50 };
         
+        pool.render();
     }
 
     static export(pool) {
@@ -88,9 +88,7 @@ class In {
     kill(body, rel) {
         const
             {
-                '!left': left = 0,
-                '!top': top = 0,
-                '@name': name,
+                '!left': left = 0, '!top': top = 0, '@name': name,
                 message: { '#text': message }
             } = body,
             ret = ModelFactory.create('kill', top, left);
@@ -108,7 +106,8 @@ class In {
     }
     decision(body, rel) {
         const 
-            { '!left': left = 0, '!top': top = 0, '@name': name, 
+            {
+                '!left': left = 0, '!top': top = 0, '@name': name, 
                 'switch': { 
                     'case' : node = [],
                     'default' : defNode = ''
@@ -137,12 +136,13 @@ class In {
 
         ret.name = name;
         rel.push([ name, next ]);
-        
+
         return ret;
     }
 
     action(body, rel) {
-        const {
+        const
+            {
                 '!left': left = 0,
                 '!top': top = 0,
                 '@name': name,
@@ -150,9 +150,9 @@ class In {
                 'error': errNode = {}        
             } = body,
             { '@to': okTo } = okNode,
-            { '@error': errTo } = errNode,
+            { '@to': errTo } = errNode,
             tagName = Object.keys(body).filter(k => ['@', '#', '!'].indexOf(k[0])==-1 && ['ok', 'error'].indexOf(k)==-1)[0],
-            ret = ModelFactory.create(tagName, left, top);
+            ret = ModelFactory.create(tagName, top, left);
         
         this[`_${tagName}`](ret, body[tagName]);
 
@@ -222,15 +222,22 @@ class Out {
         tag.prop('name', v.name).tag('message').text(v.props.general.config.message);
     }
     decision(r, v) {
-        const c = r.tag('decision').prop('name', v.name).tag('switch');
-        v.next.forEach(f => c.tag('case').text(f.name).prop('to', f.next[0].name));
+        const
+            tag = r.tag('decision').prop('name', v.name),
+            pred = tag.tag('switch');
+        this._geometry(tag, v);
+        v.next.forEach(f => pred.tag('case').text(f.name).prop('to', f.next[0].name));
         // TODO: default는 언제? 어떻게? 넣지?
     }
     fork(r, v) {
-        const c = r.tag('fork').prop('name', v.name);
-        v.nextActions.forEach(a => c.tag('path').prop('start', a.name));
+        const tag = r.tag('fork').prop('name', v.name);
+        this._geometry(tag, v);
+        v.nextActions.forEach(a => tag.tag('path').prop('start', a.name));
     }
-    join(r, v) { r.tag('join').prop('name', v.props.name).prop('to', v.nextAction.name); }
+    join(r, v) {
+        const tag = r.tag('join').prop('name', v.props.name).prop('to', v.nextAction.name);
+        this._geometry(tag, v);
+    }
 
     //action
     ['map-reduce'](r, v) {
