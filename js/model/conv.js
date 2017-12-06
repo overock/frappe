@@ -128,15 +128,40 @@ class In {
     }
 
     action(body, rel) {
-        const ret = ModelFactory.create('kill');
-        // name
-        // xmlns
-        //.... 
-        // 액션명(tag)
-        //this.pig(body, nameMap, rel);
+        const {
+                '!left': left = 0,
+                '!top': top = 0,
+                '@name': name,
+                'ok': okNode = {},
+                'error': errNode = {}
+            } = body,
+            { '@to': okTo } = okNode,
+            { '@error': errTo } = errNode,
+            tagName = Object.keys(body).filter(k => ['@', '#', '!'].indexOf(k[0])==-1 && ['ok', 'error'].indexOf(k)==-1)[0],
+            ret = ModelFactory.create(tagName, left, top);
+        
+        this[`_${tagName}`](ret, body[tagName]);
+
+        ret.name = name;
+        rel.push([ name, okTo ]);
+        rel.push([ name, errTo ]);
+
         return ret;
     }
-    ['map-reduce'](body, rel) {}
+
+    ['_map-reduce'](model, tagBody) {}
+    _pig(model, tagBody) {}
+    _fs(model, tagBody) {}
+    _ssh(model, tagBody) {}
+    ['_sub-workflow'](model, tagBody) {}
+    _java(model, tagBody) {}
+    _email(model, tagBody) {}
+    _shell(model, tagBody) {}
+    _hive(model, tagBody) {}
+    _sqoop(model, tagBody) {}
+    _distcp(model, tagBody) {}
+    _spark(model, tagBody) {}
+    _hive2(model, tagBody) {}
 }
 
 class Out {
