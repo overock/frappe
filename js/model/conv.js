@@ -209,17 +209,16 @@ class In {
     model.props = {
       'general': {
         'config': {
-          'host': tagBody.host['#text'],
-          'command': tagBody.command['#text'],
-          'argument': [],
+          'host': this._getText(tagBody.host),
+          'command': this._getText(tagBody.command),
           'capture-output': tagBody['capture-output'] ? true : false,
         }
       }
     };
     let targetMap = {
-      'argument': 'advanced.config.argument'
+      'args': 'general.config.argument'
     };
-    [ 'argument' ].forEach(k => {
+    [ 'args' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
   }
@@ -238,7 +237,7 @@ class In {
       'advanced': {}
     };
     let g = model.props.general;
-    g.exec[g.config.execOption] = tagBody.exec['#text'];
+    g.exec[g.config.execOption] = this._getText(tagBody.exec);
     let targetMap = {
       'env-var': 'advanced.env-var'
     };
@@ -247,25 +246,88 @@ class In {
     });
   }
   _hive(model, tagBody) {}
-  _sqoop(model, tagBody) {}
-  _distcp(model, tagBody) {}
-  _spark(model, tagBody) {}
+  _sqoop(model, tagBody) {
+    model.props = {
+      'general': { 
+        'config': {}
+      },
+      'advanced': {}
+    };
+    
+    let targetMap = {
+      'command': 'general.config.command',
+      'arg': 'general.config.arg'
+    };
+    let isArg, isCmd;
+    tagBody.arg? isArg = 'arg': isCmd = 'command' ;
+    [ isCmd ].forEach(k => {
+      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
+    });
+    [ isArg, 'prepare', 'configuration', 'file', 'archive' ].forEach(k => {
+      this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
+    });
+  }
+  _distcp(model, tagBody) {
+    model.props = {
+      'general': { 
+      },
+      'advanced': {}
+    };
+    
+    let targetMap = {
+      'java-opts': 'general.config.java-opts'
+    };
+
+    [ 'java-opts' ].forEach(k => {
+      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
+    });
+    [ 'prepare', 'configuration', 'arg' ].forEach(k => {
+      this._addProp(model.props, k, this._convert(k, tagBody[k]));
+    });
+  }
+  _spark(model, tagBody) {
+    model.props = {
+      'general': { 
+        'config': {
+          'name': this._getText(tagBody.name),
+          'class': this._getText(tagBody.class),
+          'jar': this._getText(tagBody.jar)
+        }
+      },
+      'option': {},
+      'advanced': {}
+    };
+    
+    let targetMap = {
+      'spark-opts': 'option.option.spark-opts',
+      'master': 'general.config.master',
+      'arg': 'option.option.arg'
+    };
+
+    [ 'master', 'spark-opts' ].forEach(k => {
+      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
+    });
+    [ 'prepare', 'configuration', 'arg', 'archive', 'file' ].forEach(k => {
+      this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
+    });
+  }
   _hive2(model, tagBody) {
     model.props = {
       'general': {
         'config': {
-          'jdbc-url': tagBody['jdbc-url']['#text'],
-          'password': tagBody['password']['#text'],
+          'jdbc-url': this._getText(tagBody['jdbc-url']),
+          'password': this._getText(tagBody['password']),
           'hiveOption': tagBody.script ? 'script' : 'query'
         }
       },
       'advanced': {}
     };
     tagBody.script ? model.props.general.script = {
-      script: tagBody.script['#text']
+      script: tagBody.script['#text'] 
     } : model.props.general.query = {
       query: tagBody.query['#text']
     };
+    
     [ 'argument', 'param', 'archive', 'file', 'prepare', 'configuration' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });
@@ -279,28 +341,26 @@ class In {
       'archive': 'advanced.archive',
       'file': 'advanced.file',
       'argument': 'advanced.argument',
+      'arg': 'advanced.arg',
       'param': 'advanced.param',
       'configuration': 'advanced.configuration'
     };
     Object.assign(default_target, targetMap);
     let target = default_target[propKey];
-
     if(!propValue) return;
     // 2depth 이상일 경우 
     let p = target.split('.');
     let pr = props;
     for(let i = 0; i < p.length - 1; i++) {
+      !pr[p[i]] ? pr[p[i]] = {} : '';
       pr = pr[p[i]];
-      !pr ? pr = {} : '';
     }
     pr[p[p.length - 1]] = propValue;
-
   }
 
   // convert wrapper 역할. 값 체크와 세부 convert로 분기를 함
   _convert(key, value) {
     // key에 따라서 convert 함수를 호출하는 wrapper
-
     // value가 없으면 undefined return
     if(!value) return;
     let keyMap = {
@@ -310,15 +370,16 @@ class In {
       archive: 'dynamic',
       file: 'dynamic',
       param: 'dynamic',
-      'env-var': 'dynamic'
+      args: 'dynamic',
+      arg: 'dynamic',
+      'env-var': 'dynamic',
     };
-    console.log(key, keyMap[key]);
     return this[`_convert_${keyMap[key]}`](value);
   }
   // 세부 convert 함수들
   _convert_dynamic(text) {
     let arr = [];
-    [].concat(text).forEach(i => arr.push(i['#text']));
+    [].concat(text).forEach(i => arr.push( this._getText(i)));
     return arr;
   }
   _convert_prepare(pre) {
@@ -341,11 +402,15 @@ class In {
     let arr = [];
     [].concat(conf).forEach(k => {
       arr.push({
-        name: k.property.name['#text'],
-        value: k.property.value['#text']
+        name: this._getText(k.property.name),
+        value: this._getText(k.property.value)
       });
     });
     return arr;
+  }
+  _getText(obj){
+    if(!obj) return;
+    return obj['#text'];
   }
 }
 
@@ -657,12 +722,12 @@ class Out {
         Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
       });
       body.tag('master').text(gen.config.master);
-      opt.option.mode && body.tag('mode').text(opt.option.mode);
+      opt.option && opt.option.mode && body.tag('mode').text(opt.option.mode);
       body.tag('name').text(gen.config.name);
       body.tag('class').text(gen.config.class);
       body.tag('jar').text(gen.config.jar);
 
-      opt.option['spark-opts'] && body.tag('spark-opts').text(opt.option['spark-opts']);
+      opt.option && opt.option['spark-opts'] && body.tag('spark-opts').text(opt.option['spark-opts']);
       opt.args.forEach(t => body.tag('arg').text(t));
 
       [ 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
