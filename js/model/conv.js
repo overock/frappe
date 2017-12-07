@@ -182,7 +182,25 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
   }
-  ['_sub-workflow'](model, tagBody) {}
+  ['_sub-workflow'](model, tagBody) {
+    model.props = {
+      'general': { 
+        'config': {
+          'app-path': this._getText(tagBody['app-path']),
+          'propagate-configuration': tagBody['propagate-configuration'] ? true : false,
+        },
+        'configuration': []
+      }
+    };
+    
+    let targetMap = {
+      'configuration': 'general.configuration'
+    };
+
+    [ 'configuration' ].forEach(k => {
+      this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
+    });  
+  }
   _java(model, tagBody) {
     model.props = {
       'general': { 
