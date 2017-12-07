@@ -222,7 +222,7 @@ class In {
       'arg': 'general.config.arg'
     };
     let isArg, isCmd;
-    tagBody.arg? isArg = 'arg': isCmd = 'command' ;
+    tagBody.arg? isArg = 'arg': isCmd = 'command';
     [ isCmd ].forEach(k => {
       this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
     });
