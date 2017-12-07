@@ -227,6 +227,7 @@ class In {
 
     model.props.general.command = commandArr;
   }
+  
   _ssh(model, tagBody) {
     model.props = {
       'general': {    
@@ -244,6 +245,7 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
   }
+
   ['_sub-workflow'](model, tagBody) {
     model.props = {
       'general': { 
@@ -263,6 +265,7 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });  
   }
+
   _java(model, tagBody) {
     model.props = {
       'general': { 
@@ -285,6 +288,7 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });   
   }
+
   _email(model, tagBody) {
     model.props = {
       'general': { 
@@ -305,6 +309,7 @@ class In {
       this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
     });
   }
+
   _shell(model, tagBody) {
     model.props = {
       'general': {
@@ -325,6 +330,7 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
   }
+
   _hive(model, tagBody) {
     model.props = {
       'general': {
@@ -344,6 +350,7 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });
   }
+
   _sqoop(model, tagBody) {
     model.props = {
       'general': { 
@@ -365,6 +372,7 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
   }
+
   _distcp(model, tagBody) {
     model.props = {
       'general': { 
@@ -383,6 +391,7 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });
   }
+
   _spark(model, tagBody) {
     model.props = {
       'general': { 
@@ -409,6 +418,7 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
   }
+
   _hive2(model, tagBody) {
     model.props = {
       'general': {
@@ -430,10 +440,8 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });
   }
-  _addProp(props, propKey, propValue, targetMap) {
-    // target으로 property를 추가하는 함수
-    // targetMap 인자를 이용해서 위치 지정 가능
 
+  _addProp(props, propKey, propValue, targetMap) {
     let default_target = {
       'prepare': 'advanced.prepare',
       'archive': 'advanced.archive',
@@ -446,7 +454,6 @@ class In {
     Object.assign(default_target, targetMap);
     let target = default_target[propKey];
     if(!propValue) return;
-    // 2depth 이상일 경우 
     let p = target.split('.');
     let pr = props;
     for(let i = 0; i < p.length - 1; i++) {
@@ -456,10 +463,7 @@ class In {
     pr[p[p.length - 1]] = propValue;
   }
 
-  // convert wrapper 역할. 값 체크와 세부 convert로 분기를 함
   _convert(key, value) {
-    // key에 따라서 convert 함수를 호출하는 wrapper
-    // value가 없으면 undefined return
     if(!value) return;
     let keyMap = {
       configuration: 'configuration',
@@ -474,12 +478,13 @@ class In {
     };
     return this[`_convert_${keyMap[key]}`](value);
   }
-  // 세부 convert 함수들
+
   _convert_dynamic(text) {
     let arr = [];
     [].concat(text).forEach(i => arr.push( this._getText(i)));
     return arr;
   }
+
   _convert_prepare(pre) {
     let arr = [];
     [].concat(pre).forEach(k => {
@@ -493,6 +498,7 @@ class In {
     });
     return arr;
   }
+
   _convert_configuration(conf) {
     let arr = [];
     [].concat(conf).forEach(k => {
@@ -503,6 +509,7 @@ class In {
     });
     return arr;
   }
+
   _getText(obj){
     if(!obj) return;
     return obj['#text'];
