@@ -147,22 +147,20 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });
   }
-  _pig(model, tagBody) {
+  _pig(model, tagBody) {    
     model.props = {
       'general': {},
       'advanced': {}
     };
 
     [ 'script' ].forEach(k => {
-      this._addProp(model.props, k, this._getText(k, tagBody[k]), { 'script': 'genaral.config.script' });
+      this._addProp(model.props, k, this._getText(tagBody[k]), { 'script': 'general.config.script' });
     });  
 
 
     [ 'prepare', 'configuration', 'param', 'argument', 'file', 'archive' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });  
-
-    console.log(JSON.stringify(model.props));
   }
   _fs(model, tagBody) {
     // 기본 properties 구조 선언
@@ -195,12 +193,13 @@ class In {
             // permissions 처리
             if(valueKey == 'permissions') {
               const targets = [ 'owner', 'group', 'others' ],
-                    actions = [ 'read', 'write', 'execute' ];
+                    actions = [ 'execute', 'write', 'read' ];
               
               oldValue[k].split('').forEach((u, i) => {
                 const bin = (u|0).toString(2).split('');
                 new Array(3 - bin.length).fill('0').concat(bin).forEach((p, j) => {
-                  newValue.values[`${valueKey}.${targets[i]}.${actions[j]}`] = (p|0)*Math.pow(2, j);
+                  const permValue = (p|0)*Math.pow(2, j);
+                  permValue != 0 && (newValue.values[`${valueKey}.${targets[i]}.${actions[j]}`] = permValue);
                 });
               });
             } else {
@@ -230,6 +229,8 @@ class In {
     });
 
     model.props.general.command = commandArr;
+
+    console.log(JSON.stringify(model.props));
   }
   
   _ssh(model, tagBody) {
@@ -446,7 +447,7 @@ class In {
   }
 
   _addProp(props, propKey, propValue, targetMap) {
-    console.log(propKey, targetMap);
+    //console.log(propKey, targetMap);
     let default_target = {
       'prepare': 'advanced.prepare',
       'archive': 'advanced.archive',
@@ -458,8 +459,9 @@ class In {
     };
     Object.assign(default_target, targetMap);
     let target = default_target[propKey];
-    console.log('target', target);
+
     if(!propValue) return;
+
     let p = target.split('.');
     let pr = props;
     for(let i = 0; i < p.length - 1; i++) {
