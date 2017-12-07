@@ -145,7 +145,21 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });
   }
-  _pig(model, tagBody) {}
+  _pig(model, tagBody) {
+    model.props = {
+      'general': {},
+      'advanced': {}
+    };
+
+    [ 'script' ].forEach(k => {
+      this._addProp(model.props, k, this._getText(k, tagBody[k]));
+    });  
+
+
+    [ 'prepare', 'configuration', 'param', 'argument', 'file', 'archive' ].forEach(k => {
+      this._addProp(model.props, k, this._convert(k, tagBody[k]));
+    });  
+  }
   _fs(model, tagBody) {
     // 기본 properties 구조 선언
     model.props = { 'general': {} };
@@ -201,7 +215,7 @@ class In {
               newValue.values[valueKey] = oldValue[k];
             }
             // recursive 처리
-            oldValue.recursive ? (newValue.values['recursive'] = true) : (newValue.values['recursive'] = false);
+            newValue.values['recursive'] = oldValue.recursive ? true : false;
           });
           break;
         case 'chgrp':
