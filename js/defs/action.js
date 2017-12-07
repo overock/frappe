@@ -55,14 +55,14 @@ export default {
     props: {
       'general': {
         'config': {
-          'message': 'default error'
+          'message': 'error'
         }
       }
     },
     rules: {
       min: 0,
       max: Infinity,
-      maxFrom: -1,
+      maxFrom: Infinity,
       maxTo: 0,
       before: [
         'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
