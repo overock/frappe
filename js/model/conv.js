@@ -147,8 +147,6 @@ class In {
   }
   _pig(model, tagBody) {}
   _fs(model, tagBody) {
-    console.log('fs: ', JSON.stringify(tagBody));
-
     // 기본 properties 구조 선언
     model.props = { 'general': {} };
 
@@ -161,13 +159,77 @@ class In {
     });
 
     // fs 전용 컨버트
+    let commandArr = [];
+    // convert 함수
+    let convertCmdValue = function(cmd, oldValue) {
+      let newValue = { key: cmd, values: {} };
 
+      switch(cmd) {
+        case 'mkdir':
+        case 'touchz':
+        case 'delete':
+        case 'move':
+          Object.keys(oldValue).forEach(k => {
+            newValue.values[k.replace('@', '')] = oldValue[k];
+          });
+          break;
+        case 'chmod':
+          Object.keys(oldValue).forEach(k => {
+            let valueKey = k.replace('@', '');
+            // permissions 처리
+            if(valueKey == 'permissions') {
+              let targets = [ 'owner', 'group', 'others' ];
+              let actions = [ 'read', 'write', 'execute' ];
+              let actionValues = [ 4, 2, 1 ];
+              let permissions = oldValue[k];
+              for(let i = 0 ; i < permissions.length ; i++) {
+                let permission = parseInt(oldValue[k][i]).toString(2); // ex. 7 -> 111
+                let tmpStr = '';
+                for(let i = 0 ; i < 3 - permission.length ; i++) {
+                  tmpStr += '0';
+                }
+                permission = tmpStr + permission; // 3자리 이진수로 변환
 
-    console.log(JSON.stringify(model.props));
+                for(let j = 0 ; j < permission.length ; j ++) {
+                  if(permission[j] == '1') {
+                    newValue.values[valueKey+'.'+targets[i]+'.'+actions[j]] = actionValues[j];
+                  }
+                }
+              }
+            }
+            else {
+              newValue.values[valueKey] = oldValue[k];
+            }
+            // recursive 처리
+            oldValue.recursive ? (newValue.values['recursive'] = true) : (newValue.values['recursive'] = false);
+          });
+          break;
+        case 'chgrp':
+          Object.keys(oldValue).forEach(k => {
+            newValue.values[k.replace('@', '')] = oldValue[k];
+          });
+          // recursive 처리
+          oldValue.recursive ? (newValue.values['recursive'] = true) : (newValue.values['recursive'] = false);
+          break;
+      }
+
+      return newValue;
+    };
+    // convert 실행
+    Object.keys(tagBody).forEach(k => {
+      let cmdReg = /^[a-z]+![0-9]+/; // ex. mkdir!0
+      if(cmdReg.test(k)){
+        let cmd = k.split('!')[0];
+        let index = k.split('!')[1];
+        commandArr[index] = convertCmdValue(cmd, tagBody[k]);
+      }       
+    });
+
+    model.props.general.command = commandArr;
   }
   _ssh(model, tagBody) {
     model.props = {
-      'general': {
+      'general': {    
         'config': {
           'host': this._getText(tagBody.host),
           'command': this._getText(tagBody.command),
