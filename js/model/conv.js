@@ -1,6 +1,5 @@
 import Node from './node';
 import ModelFactory from '../main/modelfactory';
-import uuid from '../util/uuid';
 
 export default class JSONConverter {
     static import(pool, json) {
@@ -31,6 +30,7 @@ export default class JSONConverter {
 
         // stage #4: positioning
         const cursor = { x: 50, y: 50 };
+        cursor;
         
         pool.render();
     }
@@ -66,11 +66,11 @@ class In {
 
         return ret;
     }
-    end(body, rel) {
+    end(body) {
         const { '!left': left = 0, '!top': top = 0 } = body;
         return ModelFactory.create('end', top, left);
     }
-    kill(body, rel) {
+    kill(body) {
         const
             {
                 '!left': left = 0, '!top': top = 0, '@name': name,
@@ -162,16 +162,16 @@ class In {
     _spark(model, tagBody) {}
     _hive2(model, tagBody) {
         model.props = {
-            "general": {
-              "config": {
-                "jdbc-url": tagBody['jdbc-url']['#text'],
-                "password": tagBody['password']['#text'],
-                "hiveOption": tagBody.script? "script" : "query"
-              }
+            'general': {
+                'config': {
+                    'jdbc-url': tagBody['jdbc-url']['#text'],
+                    'password': tagBody['password']['#text'],
+                    'hiveOption': tagBody.script? 'script' : 'query'
+                }
             },
-            "advanced": {
+            'advanced': {
             }
-          };
+        };
         tagBody.script ? model.props.general.script = { script : tagBody.script['#text']} :  model.props.general.query = { query : tagBody.query['#text']}
         // const pre = tagBody.prepare, adv = model.props.advanced;
         // pre ? adv.prepare = _convertPrepare(pre) : ''
@@ -199,13 +199,11 @@ class In {
             'file' : 'advanced.file',
             'argument' : 'advanced.argument',
             'param' : 'advanced.param'
-        }
+        };
         Object.assign(default_target, targetMap);
         let target = default_target[propKey];
         
-        if(!propValue) {
-            return
-        }
+        if(!propValue) return;
         // 2depth 이상일 경우 
         let p = target.split('.');
         !props[p[0]] ? props[p[0]] = {} : '';
@@ -217,24 +215,20 @@ class In {
         // key에 따라서 convert 함수를 호출하는 wrapper
 
         // value가 없으면 undefined return
-        if(!value) {
-            return
-        }
+        if(!value) return;
         let keyMap = {
             prepare : 'prepare',
             argument : 'dynamic',
             archive : 'dynamic',
             file : 'dynamic',
             param : 'dynamic',
-        }
+        };
         console.log(key, keyMap[key]);
         return this[`_convert_${keyMap[key]}`](value);
     }
     _convert_dynamic(text) {
         let arr = [];
-        [].concat(text).forEach(i => {
-            arr.push(i['#text'])
-        })
+        [].concat(text).forEach(i => arr.push(i['#text']));
         return arr;
     }
     _convert_prepare(pre) {
@@ -244,7 +238,7 @@ class In {
             let values = {};
             Object.keys(pre[k]).forEach( a => {
                 values[a.split('@')[1]] = pre[k][a];
-            })
+            });
             arr.push({'key' : cmd, 'values': values });
         });
         return arr;
@@ -252,7 +246,7 @@ class In {
     _convert_configuration(conf) {
         let arr = [];
         [].concat(conf).forEach(k => {        
-            arr.push({ name : k.property.name['#text'], value : k.property.value['#text'] })
+            arr.push({ name : k.property.name['#text'], value : k.property.value['#text'] });
         });
         return arr;
     }
@@ -327,7 +321,7 @@ class Out {
                 const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
                 Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
             });       
-            gen.configuration.forEach((o, i) => {
+            gen.configuration.forEach(o => {
                 const cmd = body.tag('configuration').tag('property');
                 Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
             });
@@ -347,7 +341,7 @@ class Out {
                 Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
             });
 
-            adv.configuration.forEach((o, i) => {
+            adv.configuration.forEach(o => {
                 const cmd = body.tag('configuration').tag('property');
                 Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
             });        
@@ -363,7 +357,7 @@ class Out {
     fs(r, v) {
         return this._action(r, v, body => {
             const { command: cmd, configuration: conf } = v.props.general;
-            conf.forEach((o, i) => {
+            conf.forEach(o => {
                 const cmd = body.tag('configuration').tag('property');
                 Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
             });
@@ -416,7 +410,7 @@ class Out {
 
             body.tag('app-path').text(rconf['app-path']);
             rconf['propagate-configuration'] && rconf['propagate-configuration'] == true && body.tag('propagate-configuration');
-            oconf.forEach((o, i) => {
+            oconf.forEach(o => {
                 const cmd = body.tag('configuration').tag('property');
                 Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
             });
@@ -430,15 +424,15 @@ class Out {
             adv.prepare.forEach((o, i) => {
                 const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
                 Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
-            })
-            adv.configuration.forEach((o, i) => {
+            });
+            adv.configuration.forEach(o => {
                 const cmd = body.tag('configuration').tag('property');
                 Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
             });            
             body.tag('main-class').text(gen.config['main-class']);
             gen.config['java-opts'] && body.tag('java-opts').text(gen.config['java-opts']);
             ['arg', 'archive', 'file'].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
-        gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
+            gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
         }, {
             jobTracker: true,
             nameNode: true
@@ -467,7 +461,7 @@ class Out {
                 Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
             });
 
-            adv.configuration.forEach((o, i) => {
+            adv.configuration.forEach(o => {
                 const cmd = body.tag('configuration').tag('property');
                 Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
             });        
@@ -488,7 +482,7 @@ class Out {
                 Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
             });
         
-            adv.configuration.forEach((o, i) => {
+            adv.configuration.forEach(o => {
                 const cmd = body.tag('configuration').tag('property');
                 Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
             });
@@ -510,7 +504,7 @@ class Out {
                 Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
             });
 
-            adv.configuration.forEach((o, i) => {
+            adv.configuration.forEach(o => {
                 const cmd = body.tag('configuration').tag('property');
                 Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
             });           
@@ -531,7 +525,7 @@ class Out {
                 const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
                 Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
             });
-            adv.configuration.forEach((o, i) => {
+            adv.configuration.forEach(o => {
                 const cmd = body.tag('configuration').tag('property');
                 Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
             });
@@ -552,7 +546,7 @@ class Out {
                 Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
             });
 
-            adv.configuration.forEach((o, i) => {
+            adv.configuration.forEach(o => {
                 const cmd = body.tag('configuration').tag('property');
                 Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
             });
@@ -579,7 +573,7 @@ class Out {
                 const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
                 Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
             });  
-            adv.configuration.forEach((o, i) => {
+            adv.configuration.forEach(o => {
                 const cmd = body.tag('configuration').tag('property');
                 Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
             });  

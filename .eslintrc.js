@@ -28,7 +28,12 @@ module.exports = {
             "error",
             "always"
         ],
-        "no-fallthrough": []
+        "no-fallthrough": [
+            "off"
+        ],
+        "no-case-declarations": [
+            "off"
+        ]
     },
     "globals": {
         "define": true,
