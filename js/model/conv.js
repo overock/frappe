@@ -31,11 +31,8 @@ export default class JSONConverter {
     });
 
     // stage #4: positioning
-    const cursor = {
-      x: 50,
-      y: 50
-    };
-    cursor;
+    const cursor = { x: 50, y: 50 };
+    (cursor);
 
     pool.render();
   }
@@ -476,7 +473,7 @@ class Out {
             break;
           case 'chmod':
             tag.prop('path', val.path);
-            const permissions = [ 0, 0, 0] ;
+            const permissions = [ 0, 0, 0 ];
             [ 'owner', 'group', 'others' ].forEach((u, j) => [ 'read', 'write', 'execute' ].forEach(p => permissions[j] += val[`permissions.${u}.${p}`] | 0));
             tag.prop('permissions', permissions.join(''));
             val['dir-files'] && tag.prop('dir-files', val['dir-files']);
@@ -679,7 +676,7 @@ class Out {
     return this._action(r, v, body => {
       const { general: gen, advanced: adv } = v.props,
             w = gen.config.hiveOption;
-            
+
       adv.prepare.forEach((o, i) => {
         const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
         Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));

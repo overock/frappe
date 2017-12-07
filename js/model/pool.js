@@ -8,7 +8,6 @@ export default class ModelPool {
     if(instance) return instance;
 
     this.container = [];
-    this.nameIdx = {};
     this.title = '';
 
     instance = this;
@@ -44,16 +43,14 @@ export default class ModelPool {
   }
 
   name(model) {
-    let t = model.type,
-        c = this.nameIdx[t] || 0;
+    const tag = model.type;
+    if([ 'start', 'end', 'kill' ].indexOf(tag) >= 0) return tag;
 
-    if([ 'start', 'end', 'kill' ].indexOf(t) >= 0) return t;
-
-    this.nameIdx[t] = ++c;
-    return `${t}_${c}`;
+    let i = 1;
+    while(this.find(m => m.name == `${tag}_${i}`)) ++i;
+    
+    return `${tag}_${i}`;
   }
-
-  resetNameIndex() { this.nameIdx = {}; }
 
   import (json) {
     Converter.import(this, json);
@@ -77,10 +74,7 @@ export default class ModelPool {
   error() {}
 
   // some iterator proxies
-  filter(fn) {
-    return this.container.filter(fn);
-  }
-  find(fn) {
-    return this.container.find(fn);
-  }
+  filter(fn) { return this.container.filter(fn); }
+  find(fn) { return this.container.find(fn); }
+  map(fn) { return this.container.map(fn); }
 }
