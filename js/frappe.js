@@ -65,8 +65,8 @@ export default class Frappe {
             'frappe.snapend': e => this.confirmGhostSnap(e.detail),
             'frappe.snapconfirm': e => this.removeGhostSnap(e.detail),
             
-            'frappe.import': e => this.import(e.detail),
-            'frappe.export': () => this.export()  // 이렇게 해서 export 결과는 어떻게 받을건데??
+            'frappe.import': e => this.pool.import(e.detail),
+            'frappe.export': () => this.pool.export()  // 이렇게 해서 export 결과는 어떻게 받을건데??
         }
         Object.keys(evts).forEach(k => this.subscribe(k, evts[k]));
 
@@ -124,12 +124,6 @@ export default class Frappe {
         if(typeof model=='string') model = ModelFactory.create(model, top, left, bottom, right);
 
         this.pool.add(model);
-        if(model.isFlow) {
-            this.canvas.insertBefore(model.element, this.canvas.firstElementChild);
-        } else {
-            this.canvas.appendChild(model.element);
-        }
-        this.event.listen(model);
         this.render();
 
         return model;
@@ -149,7 +143,7 @@ export default class Frappe {
             dest.linkAfter(src);
         }
 
-        this.render();
+        this.render(true);
     }
 
     replace(oldModel, type) {
@@ -159,12 +153,21 @@ export default class Frappe {
         oldModel.prev.forEach(p => this.link(p, newModel));
         oldModel.next.forEach(n => this.link(newModel, n));
         this.remove(oldModel);
-        this.render();
+        this.render(true);
 
         return newModel;
     }
 
-    render() { this.pool.render(); }
+    render(bUpdateOnly) {
+        this.pool.render(bUpdateOnly? undefined : this.canvas, model => this.event.listen(model));
+    }
+
+    import(json) {
+        typeof json == 'string' && (json = JSON.parse(json));
+        this.pool.import(json);
+        this.render();
+    }
+    export() { return this.pool.export(); }
 
     /**
      * event emitters to interact event.js or any other modules

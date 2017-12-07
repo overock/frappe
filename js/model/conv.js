@@ -13,34 +13,19 @@ export default class JSONConverter {
             .forEach(tag => [].concat(json[tag]).forEach(body => pool.add(inp[tag](body, rel))));
         
         // stage #2: build nameMap;
-        const
-            nameMap = new Map(),
-            findNames = o => {
-                let ret = [];
-                Object.keys(o).forEach(k => {
-                    if(k=='@name')
-                        o[k] && ret.push(o[k]);
-                    else if(typeof o[k] == 'object')
-                        ret = ret.concat(findNames(o[k]));
-                });
-                return ret;
+        rel.map(r => {
+            return {
+                f: pool.find(m => m.name == r[0] || m.type == r[0]),
+                t: pool.find(m => m.name == r[1] || m.type == r[1]),
+                pred: r[2]
             };
-
-        findNames(json).forEach(s => nameMap.set(s, uuid()));
-        nameMap.set('start', pool.find(v => v.type=='start').id);
-        nameMap.set('end', pool.find(v => v.type=='end').id);
-        
-        // stage #3: create flows
-        console.log(nameMap, rel);
-        rel.forEach(r => {
-            const [ f, t ] = r.map(v => pool.find(m => m.name == v));
-            if(!f || !t) return;    // 모델이 없는 경우가 있음
+        }).forEach(r => {
+            if(!r.f || !r.t) return;    // 모델이 없는 경우가 있음
 
             const flow = ModelFactory.create('flow');
-            flow.name = r[2] || '';
-
-            f.linkBefore(flow);
-            t.linkAfter(flow);
+            flow.name = r.pred || '';
+            r.f.linkBefore(flow);
+            r.t.linkAfter(flow);
             pool.add(flow);
         });
 

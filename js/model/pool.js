@@ -38,7 +38,10 @@ export default class ModelPool {
         model.remove();
     }
 
-    clear() { this.container.forEach(v => this.remove(v)); }
+    clear() {
+        this.container.forEach(v => v.remove());
+        this.container = [];
+    }
 
     name(model) {
         let t = model.type, c = this.nameIdx[t] || 0;
@@ -59,7 +62,17 @@ export default class ModelPool {
     }
     export() { return Converter.export(this); }
 
-    render() { this.container.forEach(m => m.render()); }
+    render(canvas, callback) {
+        this.container.forEach(m => {
+            if(canvas && !canvas.contains(m.element)) {
+                m.isFlow
+                    ? canvas.insertBefore(m.element, canvas.firstElementChild)
+                    : canvas.appendChild(m.element);
+                callback && callback(m);
+            }
+            m.render();
+        });
+    }
 
     // rulecheckers
     warn() {

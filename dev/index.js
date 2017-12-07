@@ -246,7 +246,7 @@ const startDemo = () => {
       /***************** */
       window.test = () => {
         console.log('original: ', $f.pool.container);
-        let exp = $f.pool.export(), imp = $f.pool.import(exp);
+        let exp = $f.export(), imp = $f.import(exp);
         //      console.log(JSON.stringify(exp));
           console.log('export: ', exp);
           console.log('import: ', $f.pool.container);
