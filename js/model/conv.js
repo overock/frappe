@@ -39,10 +39,7 @@ export default class JSONConverter {
 
   static
   export (pool) {
-    const ret = new Node({}).prop({
-            name: pool.title,
-            xmlns: 'uri:oozie:workflow:0.5'
-          }),
+    const ret = new Node({}).prop({ name: pool.title, xmlns: 'uri:oozie:workflow:0.5' }),
           out = new Out(),
           proc = v => out[v.type](ret, v);
     pool.container.filter(v => v.type == 'start').forEach(proc);
@@ -63,11 +60,7 @@ class In {
   }
 
   start(body, rel) {
-    const {
-            '!left': left = 0,
-            '!top': top = 0,
-            '@to': next
-          } = body,
+    const { '!left': left = 0, '!top': top = 0, '@to': next } = body,
           ret = ModelFactory.create('start', top, left);
 
     rel.push([ 'start', next ]);
@@ -75,21 +68,11 @@ class In {
     return ret;
   }
   end(body) {
-    const {
-            '!left': left = 0,
-            '!top': top = 0
-          } = body;
+    const { '!left': left = 0, '!top': top = 0 } = body;
     return ModelFactory.create('end', top, left);
   }
   kill(body) {
-    const {
-            '!left': left = 0,
-            '!top': top = 0,
-            '@name': name,
-            message: {
-              '#text': message
-            }
-          } = body,
+    const { '!left': left = 0, '!top': top = 0, '@name': name, message: { '#text': message } } = body,
           ret = ModelFactory.create('kill', top, left);
 
     ret.props = {
@@ -105,13 +88,8 @@ class In {
   }
   decision(body, rel) {
     const {
-            '!left': left = 0,
-            '!top': top = 0,
-            '@name': name,
-            'switch': {
-              'case': node = [],
-              'default': defNode = ''
-            }
+            '!left': left = 0, '!top': top = 0, '@name': name,
+            'switch': { 'case': node = [], 'default': defNode = '' }
           } = body,
           ret = ModelFactory.create('decision', top, left);
 
@@ -120,12 +98,7 @@ class In {
     return ret;
   }
   fork(body, rel) {
-    const {
-            '!left': left = 0,
-            '!top': top = 0,
-            '@name': name,
-            'path': path = []
-          } = body,
+    const { '!left': left = 0, '!top': top = 0, '@name': name, 'path': path = [] } = body,
           ret = ModelFactory.create('fork', top, left);
 
     ret.name = name;
@@ -134,12 +107,7 @@ class In {
     return ret;
   }
   join(body, rel) {
-    const {
-            '!left': left = 0,
-            '!top': top = 0,
-            '@name': name,
-            '@to': next
-          } = body,
+    const { '!left': left = 0, '!top': top = 0, '@name': name, '@to': next } = body,
           ret = ModelFactory.create('join', top, left);
 
     ret.name = name;
@@ -150,16 +118,11 @@ class In {
 
   action(body, rel) {
     const {
-            '!left': left = 0,
-            '!top': top = 0,
-            '@name': name,
-            'ok': okNode = {},
-            'error': errNode = {}
-          } = body, {
-            '@to': okTo
-          } = okNode, {
-            '@to': errTo
-          } = errNode,
+            '!left': left = 0, '!top': top = 0, '@name': name,
+            'ok': okNode = {}, 'error': errNode = {}
+          } = body,
+          { '@to': okTo } = okNode,
+          { '@to': errTo } = errNode,
           tagName = Object.keys(body).filter(k => [ '@', '#', '!' ].indexOf(k[0]) == -1 && [ 'ok', 'error' ].indexOf(k) == -1)[0],
           ret = ModelFactory.create(tagName, top, left);
 
@@ -330,10 +293,7 @@ class In {
       Object.keys(k[ocmd]).forEach(a => {
         values[a.split('@')[1]] = k[ocmd][a];
       });
-      arr.push({
-        'key': cmd,
-        'values': values
-      });
+      arr.push({ key: cmd, values: values });
     });
     return arr;
   }
@@ -364,10 +324,7 @@ class Out {
   _action(r, v, $h, o) {
     const a = r.tag('action').prop('name', v.name),
           b = a.tag(v.type),
-          {
-            jobTracker: j,
-            nameNode: n
-          } = o || {};
+          { jobTracker: j, nameNode: n } = o || {};
 
     this._geometry(a, v);
     j && b.tag('job-tracker').text('${jobTracker}');
