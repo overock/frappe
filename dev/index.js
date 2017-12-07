@@ -438,8 +438,8 @@ const startDemo = () => {
         //      console.log(JSON.stringify(exp));
           console.log('export: ', exp);
           console.log('import: ', $f.pool.container);
-        //console.log('diff: ', eq(oldModel, $f.pool.container
-        //     , ['uuid', 'renderer'], false));
+        console.log('diff: ', eq(oldModel, $f.pool.container
+            , ['uuid', 'renderer'], false));
       };
 };
 
