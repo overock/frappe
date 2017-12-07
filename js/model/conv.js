@@ -148,14 +148,86 @@ class In {
         return ret;
     }
 
-    ['_map-reduce'](model, tagBody) {}
+    ['_map-reduce'](model, tagBody) {
+        model.props = {
+            'general': {
+            },
+            'advanced': {
+            }
+        };
+        let targetMap = {
+            'configuration': 'general.configuration'
+        };
+   
+        ['configuration','prepare','file','archive'].forEach(k => {
+            this._addProp(model.props, k, this._convert(k,tagBody[k]), targetMap);
+        });
+    }
     _pig(model, tagBody) {}
-    _fs(model, tagBody) {}
-    _ssh(model, tagBody) {}
+    _fs(model, tagBody) {
+        console.log('fs: ', JSON.stringify(tagBody));
+
+        // 기본 properties 구조 선언
+        model.props = {
+            "general": {}
+        };
+
+        // 공통 컨버트 메소드 사용
+        let targetMap = {
+            'configuration': 'general.configuration'
+        };
+        ['configuration'].forEach(k => {
+            this._addProp(model.props, k, this._convert(k,tagBody[k]), targetMap);
+        });
+
+        // fs 전용 컨버트
+
+
+        console.log( JSON.stringify(model.props));
+    }
+    _ssh(model, tagBody) {
+        model.props = {
+            'general': {
+                'config': {
+                    'host': tagBody.host['#text'],
+                    'command': tagBody.command['#text'],
+                    'argument' : [],
+                    'capture-output': tagBody['capture-output']? true : false,
+                }
+            }
+        };
+        let targetMap = {
+            'argument': 'advanced.config.argument'
+        };
+        ['argument'].forEach(k => {
+            this._addProp(model.props, k, this._convert(k,tagBody[k]), targetMap);
+        });
+    }
     ['_sub-workflow'](model, tagBody) {}
     _java(model, tagBody) {}
     _email(model, tagBody) {}
-    _shell(model, tagBody) {}
+    _shell(model, tagBody) {
+        model.props = {
+            'general': {
+                'config': {
+                    'capture-output': tagBody['capture-output']? true : false,
+                    'execOption': tagBody['exec']['script']? 'script' : 'command'
+                },
+                'exec': {
+                }
+            },
+            'advanced': {
+            }
+        };
+        let g = model.props.general;
+        g.exec[g.config.execOption] = tagBody.exec['#text'];
+        let targetMap = {
+            'env-var': 'advanced.env-var'
+        };
+        ['env-var','prepare','configuration','argument','archive','file'].forEach(k => {
+            this._addProp(model.props, k, this._convert(k,tagBody[k]), targetMap);
+        });
+    }
     _hive(model, tagBody) {}
     _sqoop(model, tagBody) {}
     _distcp(model, tagBody) {}
@@ -172,33 +244,22 @@ class In {
             'advanced': {
             }
         };
-        tagBody.script ? model.props.general.script = { script : tagBody.script['#text']} :  model.props.general.query = { query : tagBody.query['#text']}
-        // const pre = tagBody.prepare, adv = model.props.advanced;
-        // pre ? adv.prepare = _convertPrepare(pre) : ''
-        
-        // const conf = tagBody.configuration;
-        // [].concat(conf).forEach(k => {  
-        //     !adv.configuration? adv.configuration = []  : ''
-        //     adv.configuration.push({ name : k.property.name['#text'], value : k.property.value['#text'] })
-        // });
-        let targetMap = {
-            'prepare': 'general.prepare'
-        };
-   
-        ['argument','param','archive','file','prepare'].forEach(k => {
+        tagBody.script ? model.props.general.script = { script : tagBody.script['#text']} :  model.props.general.query = { query : tagBody.query['#text']};   
+        ['argument','param','archive','file','prepare','configuration'].forEach(k => {
             this._addProp(model.props, k, this._convert(k,tagBody[k]));
         });
-        console.log( JSON.stringify(model.props));
     }
     _addProp(props, propKey, propValue, targetMap) {
         // target으로 property를 추가하는 함수
+        // targetMap 인자를 이용해서 위치 지정 가능
         
         let default_target = {
             'prepare': 'advanced.prepare',
             'archive' : 'advanced.archive',
             'file' : 'advanced.file',
             'argument' : 'advanced.argument',
-            'param' : 'advanced.param'
+            'param' : 'advanced.param',
+            'configuration' : 'advanced.configuration'
         };
         Object.assign(default_target, targetMap);
         let target = default_target[propKey];
@@ -206,26 +267,34 @@ class In {
         if(!propValue) return;
         // 2depth 이상일 경우 
         let p = target.split('.');
-        !props[p[0]] ? props[p[0]] = {} : '';
-            
-        props[p[0]][p[1]] = propValue;
+        let pr = props;
+        for( let i = 0 ; i < p.length -1 ;i++){
+            pr = pr[p[i]];
+            !pr ? pr = {} : '';
+        }
+        pr[p[p.length -1 ]] = propValue;
+        
     }
     
+    // convert wrapper 역할. 값 체크와 세부 convert로 분기를 함
     _convert(key, value) {
         // key에 따라서 convert 함수를 호출하는 wrapper
 
         // value가 없으면 undefined return
         if(!value) return;
         let keyMap = {
+            configuration : 'configuration',
             prepare : 'prepare',
             argument : 'dynamic',
             archive : 'dynamic',
             file : 'dynamic',
             param : 'dynamic',
+            'env-var' : 'dynamic'            
         };
         console.log(key, keyMap[key]);
         return this[`_convert_${keyMap[key]}`](value);
     }
+    // 세부 convert 함수들
     _convert_dynamic(text) {
         let arr = [];
         [].concat(text).forEach(i => arr.push(i['#text']));
@@ -233,11 +302,12 @@ class In {
     }
     _convert_prepare(pre) {
         let arr = [];
-        Object.keys(pre).forEach(k => {
-            const cmd = k.split('!')[0] ;
+        [].concat(pre).forEach(k => {
+            const ocmd = Object.keys(k)[0];
+            const cmd = ocmd.split('!')[0] ;
             let values = {};
-            Object.keys(pre[k]).forEach( a => {
-                values[a.split('@')[1]] = pre[k][a];
+            Object.keys(k[ocmd]).forEach( a => {
+                values[a.split('@')[1]] = k[ocmd][a];
             });
             arr.push({'key' : cmd, 'values': values });
         });
@@ -377,13 +447,13 @@ class Out {
                         ['owner', 'group', 'others'].forEach((u, j) => ['read', 'write', 'execute'].forEach(p => permissions[j] += val[`permissions.${u}.${p}`]|0));
                         tag.prop('permissions', permissions.join(''));
                         val['dir-files'] && tag.prop('dir-files', val['dir-files']);
-                        val.recursive && val.recursive=='true' && tag.tag('recursive');
+                        val.recursive && tag.tag('recursive');
                         break;
                     case 'chgrp':
                         tag.prop('path', val.path);
                         tag.prop('group', val.group);
                         val['dir-files'] && tag.prop('dir-files', val['dir-files']);
-                        val.recursive && val.recursive=='true' && tag.tag('recursive');
+                        val.recursive && tag.tag('recursive');
                         break;
                 }
             });
