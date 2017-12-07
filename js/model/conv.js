@@ -155,7 +155,29 @@ class In {
     ['_sub-workflow'](model, tagBody) {}
     _java(model, tagBody) {}
     _email(model, tagBody) {}
-    _shell(model, tagBody) {}
+    _shell(model, tagBody) {
+        model.props = {
+            'general': {
+                'config': {
+                    'capture-output': tagBody['capture-output']? true : false,
+                    'execOption': tagBody['exec']['script']? 'script' : 'command'
+                },
+                'exec': {
+                }
+            },
+            'advanced': {
+            }
+        };
+        let g = model.props.general;
+        g.exec[g.config.execOption] = tagBody.exec['#text'];
+        let targetMap = {
+            'env-var': 'advanced.env-var'
+        };
+   
+        ['env-var','prepare','configuration','argument','archive','file'].forEach(k => {
+            this._addProp(model.props, k, this._convert(k,tagBody[k]), targetMap);
+        });
+    }
     _hive(model, tagBody) {}
     _sqoop(model, tagBody) {}
     _distcp(model, tagBody) {}
@@ -172,23 +194,10 @@ class In {
             'advanced': {
             }
         };
-        tagBody.script ? model.props.general.script = { script : tagBody.script['#text']} :  model.props.general.query = { query : tagBody.query['#text']}
-        // const pre = tagBody.prepare, adv = model.props.advanced;
-        // pre ? adv.prepare = _convertPrepare(pre) : ''
-        
-        // const conf = tagBody.configuration;
-        // [].concat(conf).forEach(k => {  
-        //     !adv.configuration? adv.configuration = []  : ''
-        //     adv.configuration.push({ name : k.property.name['#text'], value : k.property.value['#text'] })
-        // });
-        let targetMap = {
-            'prepare': 'general.prepare'
-        };
-   
-        ['argument','param','archive','file','prepare'].forEach(k => {
+        tagBody.script ? model.props.general.script = { script : tagBody.script['#text']} :  model.props.general.query = { query : tagBody.query['#text']};   
+        ['argument','param','archive','file','prepare','configuration'].forEach(k => {
             this._addProp(model.props, k, this._convert(k,tagBody[k]));
         });
-        console.log( JSON.stringify(model.props));
     }
     _addProp(props, propKey, propValue, targetMap) {
         // target으로 property를 추가하는 함수
@@ -198,7 +207,8 @@ class In {
             'archive' : 'advanced.archive',
             'file' : 'advanced.file',
             'argument' : 'advanced.argument',
-            'param' : 'advanced.param'
+            'param' : 'advanced.param',
+            'configuration' : 'advanced.configuration'
         };
         Object.assign(default_target, targetMap);
         let target = default_target[propKey];
@@ -217,13 +227,15 @@ class In {
         // value가 없으면 undefined return
         if(!value) return;
         let keyMap = {
+            configuration : 'configuration',
             prepare : 'prepare',
             argument : 'dynamic',
             archive : 'dynamic',
             file : 'dynamic',
             param : 'dynamic',
+            'env-var' : 'dynamic',
+            
         };
-        console.log(key, keyMap[key]);
         return this[`_convert_${keyMap[key]}`](value);
     }
     _convert_dynamic(text) {
