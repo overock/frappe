@@ -137,7 +137,9 @@ class In {
 
   ['_map-reduce'](model, tagBody) {
     model.props = {
-      'general': {},
+      'general': {
+        'config': {}
+      },
       'advanced': {}
     };
 
@@ -152,13 +154,15 @@ class In {
     };
 
     [ 'script' ].forEach(k => {
-      this._addProp(model.props, k, this._getText(k, tagBody[k]));
+      this._addProp(model.props, k, this._getText(k, tagBody[k]), { 'script': 'genaral.config.script' });
     });  
 
 
     [ 'prepare', 'configuration', 'param', 'argument', 'file', 'archive' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });  
+
+    console.log(JSON.stringify(model.props));
   }
   _fs(model, tagBody) {
     // 기본 properties 구조 선언
@@ -183,35 +187,23 @@ class In {
         case 'touchz':
         case 'delete':
         case 'move':
-          Object.keys(oldValue).forEach(k => {
-            newValue.values[k.replace('@', '')] = oldValue[k];
-          });
+          Object.keys(oldValue).forEach(k => newValue.values[k.replace('@', '')] = oldValue[k]);
           break;
         case 'chmod':
           Object.keys(oldValue).forEach(k => {
             let valueKey = k.replace('@', '');
             // permissions 처리
             if(valueKey == 'permissions') {
-              let targets = [ 'owner', 'group', 'others' ];
-              let actions = [ 'read', 'write', 'execute' ];
-              let actionValues = [ 4, 2, 1 ];
-              let permissions = oldValue[k];
-              for(let i = 0; i < permissions.length; i++) {
-                let permission = parseInt(oldValue[k][i]).toString(2); // ex. 7 -> 111
-                let tmpStr = '';
-                for(let i = 0; i < 3 - permission.length; i++) {
-                  tmpStr += '0';
-                }
-                permission = tmpStr + permission; // 3자리 이진수로 변환
-
-                for(let j = 0; j < permission.length; j ++) {
-                  if(permission[j] == '1') {
-                    newValue.values[valueKey+'.'+targets[i]+'.'+actions[j]] = actionValues[j];
-                  }
-                }
-              }
-            }
-            else {
+              const targets = [ 'owner', 'group', 'others' ],
+                    actions = [ 'read', 'write', 'execute' ];
+              
+              oldValue[k].split('').forEach((u, i) => {
+                const bin = (u|0).toString(2).split('');
+                new Array(3 - bin.length).fill('0').concat(bin).forEach((p, j) => {
+                  newValue.values[`${valueKey}.${targets[i]}.${actions[j]}`] = (p|0)*Math.pow(2, j);
+                });
+              });
+            } else {
               newValue.values[valueKey] = oldValue[k];
             }
             // recursive 처리
@@ -219,11 +211,9 @@ class In {
           });
           break;
         case 'chgrp':
-          Object.keys(oldValue).forEach(k => {
-            newValue.values[k.replace('@', '')] = oldValue[k];
-          });
+          Object.keys(oldValue).forEach(k => newValue.values[k.replace('@', '')] = oldValue[k]);
           // recursive 처리
-          oldValue.recursive ? (newValue.values['recursive'] = true) : (newValue.values['recursive'] = false);
+          newValue.values['recursive'] = oldValue.recursive ? true : false;
           break;
       }
 
@@ -456,6 +446,7 @@ class In {
   }
 
   _addProp(props, propKey, propValue, targetMap) {
+    console.log(propKey, targetMap);
     let default_target = {
       'prepare': 'advanced.prepare',
       'archive': 'advanced.archive',
@@ -467,6 +458,7 @@ class In {
     };
     Object.assign(default_target, targetMap);
     let target = default_target[propKey];
+    console.log('target', target);
     if(!propValue) return;
     let p = target.split('.');
     let pr = props;

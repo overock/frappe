@@ -16,147 +16,192 @@ const startDemo = () => {
     const start = frappe.add('start', 100, 100),
     end = frappe.add('end', 100, 800),
     kill = frappe.add('kill', 500, 300);
-    const hive = frappe.add('hive', 200, 200);
-    hive.props = {
-        "name": "hive",
+    const pig = frappe.add('pig', 200, 200);
+    pig.props = {
+        "@name": "pig",
         "general": {
-          "config": {
-            "hiveOption": "script"
-          },
-          "script": {
-            "script": "myscript.q"    //script or query
-          }
+            "config": {
+                "script": "/test/pig_test/test.pig"
+            }
         },
         "advanced": {
-          "prepare": [
-            {
-              "key": "mkdir",
-              "values": {
-                "path": "hdfs://foo:8020/usr/tucu/temp-data_folder2"
+            "prepare": [
+                {
+                    "key": "mkdir",
+                    "values": {
+                        "path": "/test/pig_test"
+                    }
+                },
+                {
+                    "key": "delete",
+                    "values": {
+                        "path": "/test/pig_test/test.log",
+                        "skip-trash": "true"
+                    }
+                }
+            ],
+            "file": [
+                "/test/pig_test/test.file"
+            ],
+            "archive": [
+                "/test/pig_test/test.archive"
+            ],
+            "argument": [
+                "-param",
+                "data=mydata"
+            ],
+            "param": [
+                "data=mydata"
+            ],
+            "configuration":[
+              {
+                "name":"key",
+                "value":"value"
               }
-            }
-          ],
-          "argument": [
-            "argument1"
-          ],
-          "param": [
-            "InputDir=/home/tucu/input-data",
-            "OutputDir=${jobOutput}"
-          ],
-          "configuration": [
-            {
-              "name": "mapred.compress.map.output",
-              "value": "true"
-            }
-          ],
-          "file": [
-            "name.file"
-          ],
-          "archive": [
-            "name.archive"
-          ]
+            ]
         }
-      };
-      const email = frappe.add('email', 200, 300);
-      email.props = {
-        'name' : 'email',
-        "general": {
-          "config": {
-            "to": "guest@exem.com",
-            "cc": "admin@exem.com",
-            "subject": "title",
-            "body": "<html>...</html>",
-            "content_type": "text/html"
-          }
-        }
-      };
-      const mr = frappe.add('map-reduce', 200, 500);
-      mr.props = {
-        "name"  : "mr",
-        "general": {
-          "configuration": [
-            {
-              "name": "mapred.mapper.class",
-              "value": "ExampleMapperClass"
-            },
-            {
-              "name": "mapred.reduce.class",
-              "value": "ExampleReduceClass"
-            },
-            {
-              "name": "mapred.input.dir",
-              "value": "input/dir"
-            },
-            {
-              "name": "mapred.output.dir",
-              "value": "output/dir"
-            },
-            {
-              "name": "mapred.map.tasks",
-              "value": "2"
-            }
-          ]
-        },
-        "advanced": {
-          "prepare": [
-            {
-              "key": "mkdir",
-              "values": {
-                "path": "/newdir"
-              }
-            },
-            {
-              "key": "delete",
-              "values": {
-                "path": "delete/path",
-                "skip-trash": "true"
-              }
-            }
-          ],
-          "file": [
-            "new.file"
-          ],
-          "archive": [
-            "new.archive"
-          ]
-        }
-      };
-      const java = frappe.add('java', 200, 600);
-      java.props = {
-        "name"  : "java",
-        "general": {
-          "config": {
-            "main-class": "ExampleClass",
-            "java-opts": "-Dblah",
-            "capture-output": true
-          }
-        },
-        "advanced": {
-          "prepare": [
-            {
-              "key": "mkdir",
-              "values": {
-                "path": "new/dir"
-              }
-            }
-          ],
-          "arg": [
-            "argument1"
-          ],
-          "configuration": [
-            {
-              "name": "key",
-              "value": "value"
-            }
-          ],
-          "file": [
-            "name.file"
-          ],
-          "archive": [
-            "name.archive"
-          ]
-        }
-      };
+      }
+    // const hive = frappe.add('hive', 200, 200);
+    // hive.props = {
+    //     "name": "hive",
+    //     "general": {
+    //       "config": {
+    //         "hiveOption": "script"
+    //       },
+    //       "script": {
+    //         "script": "myscript.q"    //script or query
+    //       }
+    //     },
+    //     "advanced": {
+    //       "prepare": [
+    //         {
+    //           "key": "mkdir",
+    //           "values": {
+    //             "path": "hdfs://foo:8020/usr/tucu/temp-data_folder2"
+    //           }
+    //         }
+    //       ],
+    //       "argument": [
+    //         "argument1"
+    //       ],
+    //       "param": [
+    //         "InputDir=/home/tucu/input-data",
+    //         "OutputDir=${jobOutput}"
+    //       ],
+    //       "configuration": [
+    //         {
+    //           "name": "mapred.compress.map.output",
+    //           "value": "true"
+    //         }
+    //       ],
+    //       "file": [
+    //         "name.file"
+    //       ],
+    //       "archive": [
+    //         "name.archive"
+    //       ]
+    //     }
+    //   };
+    //   const email = frappe.add('email', 200, 300);
+    //   email.props = {
+    //     'name' : 'email',
+    //     "general": {
+    //       "config": {
+    //         "to": "guest@exem.com",
+    //         "cc": "admin@exem.com",
+    //         "subject": "title",
+    //         "body": "<html>...</html>",
+    //         "content_type": "text/html"
+    //       }
+    //     }
+    //   };
+    //   const mr = frappe.add('map-reduce', 200, 500);
+    //   mr.props = {
+    //     "name"  : "mr",
+    //     "general": {
+    //       "configuration": [
+    //         {
+    //           "name": "mapred.mapper.class",
+    //           "value": "ExampleMapperClass"
+    //         },
+    //         {
+    //           "name": "mapred.reduce.class",
+    //           "value": "ExampleReduceClass"
+    //         },
+    //         {
+    //           "name": "mapred.input.dir",
+    //           "value": "input/dir"
+    //         },
+    //         {
+    //           "name": "mapred.output.dir",
+    //           "value": "output/dir"
+    //         },
+    //         {
+    //           "name": "mapred.map.tasks",
+    //           "value": "2"
+    //         }
+    //       ]
+    //     },
+    //     "advanced": {
+    //       "prepare": [
+    //         {
+    //           "key": "mkdir",
+    //           "values": {
+    //             "path": "/newdir"
+    //           }
+    //         },
+    //         {
+    //           "key": "delete",
+    //           "values": {
+    //             "path": "delete/path",
+    //             "skip-trash": "true"
+    //           }
+    //         }
+    //       ],
+    //       "file": [
+    //         "new.file"
+    //       ],
+    //       "archive": [
+    //         "new.archive"
+    //       ]
+    //     }
+    //   };
+    //   const java = frappe.add('java', 200, 600);
+    //   java.props = {
+    //     "name"  : "java",
+    //     "general": {
+    //       "config": {
+    //         "main-class": "ExampleClass",
+    //         "java-opts": "-Dblah",
+    //         "capture-output": true
+    //       }
+    //     },
+    //     "advanced": {
+    //       "prepare": [
+    //         {
+    //           "key": "mkdir",
+    //           "values": {
+    //             "path": "new/dir"
+    //           }
+    //         }
+    //       ],
+    //       "arg": [
+    //         "argument1"
+    //       ],
+    //       "configuration": [
+    //         {
+    //           "name": "key",
+    //           "value": "value"
+    //         }
+    //       ],
+    //       "file": [
+    //         "name.file"
+    //       ],
+    //       "archive": [
+    //         "name.archive"
+    //       ]
+    //     }
+    //   };
       // const fs = frappe.add('fs', 200, 300);
       // fs.props = {
       //   "name": "hdfscommands",
