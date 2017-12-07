@@ -224,7 +224,26 @@ class In {
   }
   ['_sub-workflow'](model, tagBody) {}
   _java(model, tagBody) {}
-  _email(model, tagBody) {}
+  _email(model, tagBody) {
+    model.props = {
+      'general': { 
+        'config': {
+          'to': this._getText(tagBody.to),
+          'subject': this._getText(tagBody.subject),
+          'body': this._getText(tagBody.body)
+        }
+      }
+    };
+
+    let targetMap = {
+      'cc': 'general.config.cc',
+      'content_type': 'general.config.content_type'
+    };
+
+    [ 'cc', 'content_type' ].forEach(k => {
+      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
+    });
+  }
   _shell(model, tagBody) {
     model.props = {
       'general': {
@@ -245,7 +264,25 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
   }
-  _hive(model, tagBody) {}
+  _hive(model, tagBody) {
+    model.props = {
+      'general': {
+        'config': {
+          'hiveOption': tagBody.script ? 'script' : 'query'
+        }
+      },
+      'advanced': {}
+    };
+    tagBody.script ? model.props.general.script = {
+      script: this._getText(tagBody.script) 
+    } : model.props.general.query = {
+      query: this._getText(tagBody.query) 
+    };
+    
+    [ 'argument', 'param', 'archive', 'file', 'prepare', 'configuration' ].forEach(k => {
+      this._addProp(model.props, k, this._convert(k, tagBody[k]));
+    });
+  }
   _sqoop(model, tagBody) {
     model.props = {
       'general': { 
