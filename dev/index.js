@@ -70,6 +70,93 @@ const startDemo = () => {
           }
         }
       };
+      const mr = frappe.add('map-reduce', 200, 500);
+      mr.props = {
+        "name"  : "mr",
+        "general": {
+          "configuration": [
+            {
+              "name": "mapred.mapper.class",
+              "value": "ExampleMapperClass"
+            },
+            {
+              "name": "mapred.reduce.class",
+              "value": "ExampleReduceClass"
+            },
+            {
+              "name": "mapred.input.dir",
+              "value": "input/dir"
+            },
+            {
+              "name": "mapred.output.dir",
+              "value": "output/dir"
+            },
+            {
+              "name": "mapred.map.tasks",
+              "value": "2"
+            }
+          ]
+        },
+        "advanced": {
+          "prepare": [
+            {
+              "key": "mkdir",
+              "values": {
+                "path": "/newdir"
+              }
+            },
+            {
+              "key": "delete",
+              "values": {
+                "path": "delete/path",
+                "skip-trash": "true"
+              }
+            }
+          ],
+          "file": [
+            "new.file"
+          ],
+          "archive": [
+            "new.archive"
+          ]
+        }
+      };
+      const java = frappe.add('java', 200, 600);
+      java.props = {
+        "name"  : "java",
+        "general": {
+          "config": {
+            "main-class": "ExampleClass",
+            "java-opts": "-Dblah",
+            "capture-output": true
+          }
+        },
+        "advanced": {
+          "prepare": [
+            {
+              "key": "mkdir",
+              "values": {
+                "path": "new/dir"
+              }
+            }
+          ],
+          "arg": [
+            "argument1"
+          ],
+          "configuration": [
+            {
+              "name": "key",
+              "value": "value"
+            }
+          ],
+          "file": [
+            "name.file"
+          ],
+          "archive": [
+            "name.archive"
+          ]
+        }
+      };
       // const fs = frappe.add('fs', 200, 300);
       // fs.props = {
       //   "name": "hdfscommands",

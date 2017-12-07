@@ -140,12 +140,9 @@ class In {
       'general': {},
       'advanced': {}
     };
-    let targetMap = {
-      'configuration': 'general.configuration'
-    };
 
     [ 'configuration', 'prepare', 'file', 'archive' ].forEach(k => {
-      this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
+      this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });
   }
   _pig(model, tagBody) {}
@@ -186,7 +183,28 @@ class In {
     });
   }
   ['_sub-workflow'](model, tagBody) {}
-  _java(model, tagBody) {}
+  _java(model, tagBody) {
+    model.props = {
+      'general': { 
+        'config': {
+          'main-class': this._getText(tagBody['main-class']),
+          'capture-output': tagBody['capture-output'] ? true : false,
+        }
+      },
+      'advanced': {}
+    };
+    
+    let targetMap = {
+      'java-opts': 'general.config.java-opts'
+    };
+
+    [ 'java-opts' ].forEach(k => {
+      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
+    });
+    [ 'prepare', 'configuration', 'arg', 'file', 'archive' ].forEach(k => {
+      this._addProp(model.props, k, this._convert(k, tagBody[k]));
+    });   
+  }
   _email(model, tagBody) {
     model.props = {
       'general': { 
