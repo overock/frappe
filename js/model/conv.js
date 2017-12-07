@@ -763,7 +763,7 @@ class Out {
       });
       body.tag(w).text(gen[w][w]);
 
-      [ 'param', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
+      [ 'param', 'argument', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }, {
       jobTracker: true,
       nameNode: true
