@@ -4,66 +4,72 @@ import SVG from './svg';
 let instance = null;
 
 export default class RadialMenu {
-    constructor(defs) {
-        if(instance) return instance;
+  constructor(defs) {
+    if(instance) return instance;
 
-        this.icons = {};
-        this.element = SVG.create('g');
+    this.icons = {};
+    this.element = SVG.create('g');
 
-        Object.keys(actionDef).forEach(k => {
-            const icon = SVG.build(actionDef[k].markup);
-            icon.setAttribute('width', 40);
-            icon.setAttribute('height', 40);
+    Object.keys(actionDef).forEach(k => {
+      const icon = SVG.build(actionDef[k].markup);
+      icon.setAttribute('width', 40);
+      icon.setAttribute('height', 40);
 
-            defs.appendChild(SVG.create('pattern', icon, { id: `radialIcon_${k}`, width: 40, height: 40 }));
+      defs.appendChild(SVG.create('pattern', icon, {
+        id: `radialIcon_${k}`,
+        width: 40,
+        height: 40
+      }));
 
-            this.icons[k] = SVG.create('circle', null, {
-                'class': 'frappe-branch-confirm',
-                'r': 20,
-                'data-actiontype': k,
-                'fill': `url(#radialIcon_${k})`
-            });
-        });
+      this.icons[k] = SVG.create('circle', null, {
+        'class': 'frappe-branch-confirm',
+        'r': 20,
+        'data-actiontype': k,
+        'fill': `url(#radialIcon_${k})`
+      });
+    });
 
-        instance = this;
-    }
+    instance = this;
+  }
 
-    open(target, cx, cy, items) {
-        const n = items.length, th = Math.PI*2/n, r = 24 / Math.tan(th/2), ts = new Date();
-        const activeItems = items.map((k, i) => {
+  open(target, cx, cy, items) {
+    const n = items.length,
+          th = Math.PI * 2 / n,
+          r = 24 / Math.tan(th / 2),
+          ts = new Date(),
+          activeItems = items.map((k, i) => {
             const ret = {
-                ox: cx,
-                oy: cy,
-                dx: cx + r*Math.cos(i*th),
-                dy: cy + r*Math.sin(i*th),
-                el: this.icons[k]
+              ox: cx,
+              oy: cy,
+              dx: cx + r * Math.cos(i * th),
+              dy: cy + r * Math.sin(i * th),
+              el: this.icons[k]
             };
-    
+
             ret.el.setAttribute('cx', cx);
             ret.el.setAttribute('cy', cy);
 
             this.element.appendChild(ret.el);
 
             return ret;
-        });
-        const doAnim = () => {
-            const diff = Math.min(Math.pow((new Date() - ts)/250, 3), 1);
+          }),
+          doAnim = () => {
+            const diff = Math.min(Math.pow((new Date() - ts) / 250, 3), 1);
 
             activeItems.forEach(v => {
-                v.el.setAttribute('cx', v.ox*(1-diff) + v.dx*diff);
-                v.el.setAttribute('cy', v.oy*(1-diff) + v.dy*diff);
+              v.el.setAttribute('cx', v.ox * (1 - diff) + v.dx * diff);
+              v.el.setAttribute('cy', v.oy * (1 - diff) + v.dy * diff);
             });
 
-            diff==1 || requestAnimationFrame(doAnim);
-        };
+            diff == 1 || requestAnimationFrame(doAnim);
+          };
 
-        target.appendChild(this.element);
+    target.appendChild(this.element);
+    requestAnimationFrame(doAnim);
+  }
 
-        requestAnimationFrame(doAnim);
-    }
-
-    close() {
-        this.element.parentNode.removeChild(this.element);
-        this.element.innerHTML = '';
-    }
+  close() {
+    this.element.parentNode.removeChild(this.element);
+    this.element.innerHTML = '';
+  }
 }
