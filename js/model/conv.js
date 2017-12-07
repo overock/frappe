@@ -140,18 +140,13 @@ class In {
       'general': {},
       'advanced': {}
     };
-    let targetMap = {
-      'configuration': 'general.configuration'
-    };
 
     [ 'configuration', 'prepare', 'file', 'archive' ].forEach(k => {
-      this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
+      this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });
   }
   _pig(model, tagBody) {}
   _fs(model, tagBody) {
-    console.log('fs: ', JSON.stringify(tagBody));
-
     // 기본 properties 구조 선언
     model.props = { 'general': {} };
 
@@ -164,13 +159,77 @@ class In {
     });
 
     // fs 전용 컨버트
+    let commandArr = [];
+    // convert 함수
+    let convertCmdValue = function(cmd, oldValue) {
+      let newValue = { key: cmd, values: {} };
 
+      switch(cmd) {
+        case 'mkdir':
+        case 'touchz':
+        case 'delete':
+        case 'move':
+          Object.keys(oldValue).forEach(k => {
+            newValue.values[k.replace('@', '')] = oldValue[k];
+          });
+          break;
+        case 'chmod':
+          Object.keys(oldValue).forEach(k => {
+            let valueKey = k.replace('@', '');
+            // permissions 처리
+            if(valueKey == 'permissions') {
+              let targets = [ 'owner', 'group', 'others' ];
+              let actions = [ 'read', 'write', 'execute' ];
+              let actionValues = [ 4, 2, 1 ];
+              let permissions = oldValue[k];
+              for(let i = 0 ; i < permissions.length ; i++) {
+                let permission = parseInt(oldValue[k][i]).toString(2); // ex. 7 -> 111
+                let tmpStr = '';
+                for(let i = 0 ; i < 3 - permission.length ; i++) {
+                  tmpStr += '0';
+                }
+                permission = tmpStr + permission; // 3자리 이진수로 변환
 
-    console.log(JSON.stringify(model.props));
+                for(let j = 0 ; j < permission.length ; j ++) {
+                  if(permission[j] == '1') {
+                    newValue.values[valueKey+'.'+targets[i]+'.'+actions[j]] = actionValues[j];
+                  }
+                }
+              }
+            }
+            else {
+              newValue.values[valueKey] = oldValue[k];
+            }
+            // recursive 처리
+            oldValue.recursive ? (newValue.values['recursive'] = true) : (newValue.values['recursive'] = false);
+          });
+          break;
+        case 'chgrp':
+          Object.keys(oldValue).forEach(k => {
+            newValue.values[k.replace('@', '')] = oldValue[k];
+          });
+          // recursive 처리
+          oldValue.recursive ? (newValue.values['recursive'] = true) : (newValue.values['recursive'] = false);
+          break;
+      }
+
+      return newValue;
+    };
+    // convert 실행
+    Object.keys(tagBody).forEach(k => {
+      let cmdReg = /^[a-z]+![0-9]+/; // ex. mkdir!0
+      if(cmdReg.test(k)){
+        let cmd = k.split('!')[0];
+        let index = k.split('!')[1];
+        commandArr[index] = convertCmdValue(cmd, tagBody[k]);
+      }       
+    });
+
+    model.props.general.command = commandArr;
   }
   _ssh(model, tagBody) {
     model.props = {
-      'general': {
+      'general': {    
         'config': {
           'host': this._getText(tagBody.host),
           'command': this._getText(tagBody.command),
@@ -185,9 +244,67 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
   }
-  ['_sub-workflow'](model, tagBody) {}
-  _java(model, tagBody) {}
-  _email(model, tagBody) {}
+  ['_sub-workflow'](model, tagBody) {
+    model.props = {
+      'general': { 
+        'config': {
+          'app-path': this._getText(tagBody['app-path']),
+          'propagate-configuration': tagBody['propagate-configuration'] ? true : false,
+        },
+        'configuration': []
+      }
+    };
+    
+    let targetMap = {
+      'configuration': 'general.configuration'
+    };
+
+    [ 'configuration' ].forEach(k => {
+      this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
+    });  
+  }
+  _java(model, tagBody) {
+    model.props = {
+      'general': { 
+        'config': {
+          'main-class': this._getText(tagBody['main-class']),
+          'capture-output': tagBody['capture-output'] ? true : false,
+        }
+      },
+      'advanced': {}
+    };
+    
+    let targetMap = {
+      'java-opts': 'general.config.java-opts'
+    };
+
+    [ 'java-opts' ].forEach(k => {
+      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
+    });
+    [ 'prepare', 'configuration', 'arg', 'file', 'archive' ].forEach(k => {
+      this._addProp(model.props, k, this._convert(k, tagBody[k]));
+    });   
+  }
+  _email(model, tagBody) {
+    model.props = {
+      'general': { 
+        'config': {
+          'to': this._getText(tagBody.to),
+          'subject': this._getText(tagBody.subject),
+          'body': this._getText(tagBody.body)
+        }
+      }
+    };
+
+    let targetMap = {
+      'cc': 'general.config.cc',
+      'content_type': 'general.config.content_type'
+    };
+
+    [ 'cc', 'content_type' ].forEach(k => {
+      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
+    });
+  }
   _shell(model, tagBody) {
     model.props = {
       'general': {
@@ -208,7 +325,25 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
   }
-  _hive(model, tagBody) {}
+  _hive(model, tagBody) {
+    model.props = {
+      'general': {
+        'config': {
+          'hiveOption': tagBody.script ? 'script' : 'query'
+        }
+      },
+      'advanced': {}
+    };
+    tagBody.script ? model.props.general.script = {
+      script: this._getText(tagBody.script) 
+    } : model.props.general.query = {
+      query: this._getText(tagBody.query) 
+    };
+    
+    [ 'argument', 'param', 'archive', 'file', 'prepare', 'configuration' ].forEach(k => {
+      this._addProp(model.props, k, this._convert(k, tagBody[k]));
+    });
+  }
   _sqoop(model, tagBody) {
     model.props = {
       'general': { 
