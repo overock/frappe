@@ -46,7 +46,7 @@ export default class JSONConverter {
           out = new Out(),
           proc = v => out[v.type](ret, v);
     pool.container.filter(v => v.type == 'start').forEach(proc);
-    pool.container.filter(v => !v.isFlow && ['start', 'end', 'kill'].indexOf(v.type) == -1).forEach(proc);
+    pool.container.filter(v => !v.isFlow && [ 'start', 'end', 'kill' ].indexOf(v.type) == -1).forEach(proc);
     pool.container.filter(v => v.type == 'kill').forEach(proc);
     pool.container.filter(v => v.type == 'end').forEach(proc);
     return ret;
@@ -116,7 +116,7 @@ class In {
           ret = ModelFactory.create('decision', top, left);
 
     ret.name = name;
-    node.concat(defNode).forEach(o => rel.push([name, o['@to']]));
+    node.concat(defNode).forEach(o => rel.push([ name, o['@to'] ]));
     return ret;
   }
   fork(body, rel) {
@@ -160,7 +160,7 @@ class In {
           } = okNode, {
             '@to': errTo
           } = errNode,
-          tagName = Object.keys(body).filter(k => [ '@', '#', '!' ].indexOf(k[0]) == -1 && ['ok', 'error'].indexOf(k) == -1)[0],
+          tagName = Object.keys(body).filter(k => [ '@', '#', '!' ].indexOf(k[0]) == -1 && [ 'ok', 'error' ].indexOf(k) == -1)[0],
           ret = ModelFactory.create(tagName, top, left);
 
     this[`_${tagName}`](ret, body[tagName]);
@@ -398,8 +398,8 @@ class Out {
     const tag = r.tag('decision').prop('name', v.name),
           pred = tag.tag('switch');
     this._geometry(tag, v);
-    v.next.forEach(f => pred.tag('case').text(f.name).prop('to', f.next[0].name));
-    // TODO: default는 언제? 어떻게? 넣지?
+    v.next.slice(0, -1).forEach(f => pred.tag('case').text(f.name).prop('to', f.next[0].name));
+    pred.tag('default').prop('to', v.next[v.next.length-1].next[0].name);
   }
   fork(r, v) {
     const tag = r.tag('fork').prop('name', v.name);

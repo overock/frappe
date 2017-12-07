@@ -4,7 +4,6 @@ let instance,
     metric, m,
     dx, dy, ox, oy,
     currentModel = null,
-    oldLabel = '',
     editMode = false;
 
 const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
@@ -84,14 +83,17 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
 
         const rect = e.target.getBoundingClientRect(),
               cX = rect.x + rect.width / 2,
-              cY = rect.y + rect.height / 2;
+              cY = rect.y + rect.height / 2,
+              text = currentModel.isFlow? currentModel.cond : currentModel.name;
 
-        textInput.show(cX, cY, (oldLabel = currentModel.name), currentModel.angle / Math.PI * 180, viewBox.z, editTextDone);
-        currentModel.name = ' ';
+        textInput.show(cX, cY, text, currentModel.angle / Math.PI * 180, viewBox.z, editTextDone);
+        currentModel.editing = true;
+
         currentModel.render();
       },
       editTextDone = bCancel => {
-        currentModel.name = bCancel ? oldLabel : textInput.text || oldLabel;
+        bCancel || (currentModel.name = textInput.text);
+        currentModel.editing = false;
         currentModel.render();
         currentModel = null;
         editMode = false;

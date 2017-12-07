@@ -10,6 +10,8 @@ export default class Model {
     this.width = typeof width !== 'undefined' ? parseFloat(width) : 64;
     this.height = typeof height !== 'undefined' ? parseFloat(height) : 64;
 
+    this.editing = false;
+
     this.props = {};
     this._prev_ = [];
     this._next_ = [];

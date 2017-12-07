@@ -31,13 +31,17 @@ export default class FlowRenderer extends Renderer {
     this.handle.setAttribute('x', model.left + model.width / 2 - 4);
     this.handle.setAttribute('y', model.top + model.height / 2 - 4);
 
-    const labelX = model.left + model.width / 2 - 20 * Math.sin(model.angle),
-          labelY = model.top + model.height / 2 + 20 * Math.cos(model.angle);
+    if(model.editing) {
+      this.label.style.display = 'none';
+    } else {
+      const labelX = model.left + model.width / 2 - 20 * Math.sin(model.angle),
+            labelY = model.top + model.height / 2 + 20 * Math.cos(model.angle);
 
-    this.label.setAttribute('x', labelX);
-    this.label.setAttribute('y', labelY);
-    this.label.setAttribute('transform', `rotate(${model.angle/Math.PI*180} ${labelX} ${labelY})`);
-    this.label.textContent = model.name;
-
+      this.label.setAttribute('x', labelX);
+      this.label.setAttribute('y', labelY);
+      this.label.setAttribute('transform', `rotate(${model.angle/Math.PI*180} ${labelX} ${labelY})`);
+      this.label.style.display = '';
+      this.label.textContent = model.name;
+    }
   }
 }
