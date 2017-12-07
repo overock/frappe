@@ -164,7 +164,27 @@ class In {
         });
     }
     _pig(model, tagBody) {}
-    _fs(model, tagBody) {}
+    _fs(model, tagBody) {
+        console.log('fs: ', JSON.stringify(tagBody));
+
+        // 기본 properties 구조 선언
+        model.props = {
+            "general": {}
+        };
+
+        // 공통 컨버트 메소드 사용
+        let targetMap = {
+            'configuration': 'general.configuration'
+        };
+        ['configuration'].forEach(k => {
+            this._addProp(model.props, k, this._convert(k,tagBody[k]), targetMap);
+        });
+
+        // fs 전용 컨버트
+
+
+        console.log( JSON.stringify(model.props));
+    }
     _ssh(model, tagBody) {}
     ['_sub-workflow'](model, tagBody) {}
     _java(model, tagBody) {}
@@ -215,6 +235,7 @@ class In {
     }
     _addProp(props, propKey, propValue, targetMap) {
         // target으로 property를 추가하는 함수
+        // targetMap 인자를 이용해서 위치 지정 가능
         
         let default_target = {
             'prepare': 'advanced.prepare',
@@ -235,6 +256,7 @@ class In {
         props[p[0]][p[1]] = propValue;
     }
     
+    // convert wrapper 역할. 값 체크와 세부 convert로 분기를 함
     _convert(key, value) {
         // key에 따라서 convert 함수를 호출하는 wrapper
 
@@ -247,11 +269,12 @@ class In {
             archive : 'dynamic',
             file : 'dynamic',
             param : 'dynamic',
-            'env-var' : 'dynamic',
-            
+            'env-var' : 'dynamic'            
         };
+        console.log(key, keyMap[key]);
         return this[`_convert_${keyMap[key]}`](value);
     }
+    // 세부 convert 함수들
     _convert_dynamic(text) {
         let arr = [];
         [].concat(text).forEach(i => arr.push(i['#text']));
@@ -404,13 +427,13 @@ class Out {
                         ['owner', 'group', 'others'].forEach((u, j) => ['read', 'write', 'execute'].forEach(p => permissions[j] += val[`permissions.${u}.${p}`]|0));
                         tag.prop('permissions', permissions.join(''));
                         val['dir-files'] && tag.prop('dir-files', val['dir-files']);
-                        val.recursive && val.recursive=='true' && tag.tag('recursive');
+                        val.recursive && tag.tag('recursive');
                         break;
                     case 'chgrp':
                         tag.prop('path', val.path);
                         tag.prop('group', val.group);
                         val['dir-files'] && tag.prop('dir-files', val['dir-files']);
-                        val.recursive && val.recursive=='true' && tag.tag('recursive');
+                        val.recursive && tag.tag('recursive');
                         break;
                 }
             });
