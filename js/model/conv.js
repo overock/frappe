@@ -145,7 +145,21 @@ class In {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
     });
   }
-  _pig(model, tagBody) {}
+  _pig(model, tagBody) {
+    model.props = {
+      'general': {},
+      'advanced': {}
+    };
+
+    [ 'script' ].forEach(k => {
+      this._addProp(model.props, k, this._getText(k, tagBody[k]));
+    });  
+
+
+    [ 'prepare', 'configuration', 'param', 'argument', 'file', 'archive' ].forEach(k => {
+      this._addProp(model.props, k, this._convert(k, tagBody[k]));
+    });  
+  }
   _fs(model, tagBody) {
     // 기본 properties 구조 선언
     model.props = { 'general': {} };
@@ -182,15 +196,15 @@ class In {
               let actions = [ 'read', 'write', 'execute' ];
               let actionValues = [ 4, 2, 1 ];
               let permissions = oldValue[k];
-              for(let i = 0 ; i < permissions.length ; i++) {
+              for(let i = 0; i < permissions.length; i++) {
                 let permission = parseInt(oldValue[k][i]).toString(2); // ex. 7 -> 111
                 let tmpStr = '';
-                for(let i = 0 ; i < 3 - permission.length ; i++) {
+                for(let i = 0; i < 3 - permission.length; i++) {
                   tmpStr += '0';
                 }
                 permission = tmpStr + permission; // 3자리 이진수로 변환
 
-                for(let j = 0 ; j < permission.length ; j ++) {
+                for(let j = 0; j < permission.length; j ++) {
                   if(permission[j] == '1') {
                     newValue.values[valueKey+'.'+targets[i]+'.'+actions[j]] = actionValues[j];
                   }
@@ -201,7 +215,7 @@ class In {
               newValue.values[valueKey] = oldValue[k];
             }
             // recursive 처리
-            oldValue.recursive ? (newValue.values['recursive'] = true) : (newValue.values['recursive'] = false);
+            newValue.values['recursive'] = oldValue.recursive ? true : false;
           });
           break;
         case 'chgrp':
@@ -357,7 +371,7 @@ class In {
       'arg': 'general.config.arg'
     };
     let isArg, isCmd;
-    tagBody.arg? isArg = 'arg': isCmd = 'command' ;
+    tagBody.arg? isArg = 'arg': isCmd = 'command';
     [ isCmd ].forEach(k => {
       this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
     });
