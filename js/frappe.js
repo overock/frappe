@@ -11,7 +11,6 @@ const listeners = {};
 export default class Frappe {
   constructor(parent, width, height) {
     if(instance) {
-      instance.pool.resetNameIndex();
       parent.appendChild(instance.canvas);
       instance.canvas.style.width = width || '100%';
       instance.canvas.style.height = height || '100%';

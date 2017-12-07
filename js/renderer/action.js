@@ -28,8 +28,13 @@ export default class ActionRenderer extends Renderer {
     this.removeBtn.setAttribute('x', model.left + offX + 56);
     this.removeBtn.setAttribute('y', model.top + offY - 2);
 
-    this.label.setAttribute('x', model.left + model.width / 2);
-    this.label.setAttribute('y', model.bottom + 20);
-    this.label.textContent = model.name;
+    if(model.editing) {
+      this.label.style.display = 'none';
+    } else {
+      this.label.setAttribute('x', model.left + model.width / 2);
+      this.label.setAttribute('y', model.bottom + 20);
+      this.label.style.display = '';
+      this.label.textContent = model.name;
+    }
   }
 }

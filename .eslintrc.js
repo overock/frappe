@@ -67,6 +67,16 @@ module.exports = {
     ],
     "key-spacing": [
       "error"
+    ],
+    "no-extra-semi": [
+      "error"
+    ],
+    "semi-spacing": [
+      "error",
+      {
+        "before": false,
+        "after": true
+      }
     ]
   },
   "globals": {
