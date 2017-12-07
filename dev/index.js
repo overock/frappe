@@ -11,22 +11,47 @@ window.Node = Node;
 
 window.$x = frappe.pool.export;
 
-let equals = window.equals = (src, tar, bType) => {
+let equals = window.equals = (src, tar, excKey = [], bType) => {
   if(src===tar) return true;
   switch(true) {
     case src instanceof Array:
-      if(src.length != tar.length) return false;
-      return src.every((e, i) => equals(e, tar[i], bType));
+      if(src.length != tar.length) {
+        console.log('배열 길이가 달라요', src, tar);
+        return false;
+      } 
+      const retArr = src.every((e, i) => equals(e, tar[i], excKey, bType));
+      if(!retArr) {
+        console.log('객체가 달라요', src, tar);
+      }
+      return retArr;
     
     case src instanceof Object:
-      const srcKey = Object.keys(src),
-            tarKey = Object.keys(tar);
-      
-      if(srcKey.length != tarKey.length) return false;      
-      return srcKey.every(k => equals(src[k], tar[k], bType));
+      const srcKey = Object.keys(src).filter(k => excKey.indexOf(k)==-1),
+            tarKey = Object.keys(tar).filter(k => excKey.indexOf(k)==-1);
+
+      if(srcKey.length != tarKey.length) {
+        console.log('객체 키가 안 맞아요', src, tar);
+        return false;      
+      }
+      const retObj = srcKey.every(k => equals(src[k], tar[k], excKey, bType));
+      retObj || console.log('객체가 달라요', src, tar);
+      return retObj;
+
     default:
-      return bType? src === tar : src == tar;
+      const retVal = bType? src === tar : src == tar;
+      retVal || console.log('값이 달라요', src, tar);
+      return retVal;
   }
+};
+
+let eq=(src, tar) => {
+  return src.every(action => {
+    const type = action.type,
+          targetAction = tar.find(t => t.type==type);
+    
+    return equals(action.props, targetAction.props);
+    
+  });
 };
 
 const startDemo = () => {
@@ -362,14 +387,15 @@ const startDemo = () => {
 
       /***************** */
       window.test = () => {
-        const oldModel = Object.assign({}, $f.pool.container);
+        const oldModel = $f.pool.container.slice();
 
         console.log('original: ', oldModel);
         let exp = $f.export(), imp = $f.import(exp);
         //      console.log(JSON.stringify(exp));
           console.log('export: ', exp);
           console.log('import: ', $f.pool.container);
-          console.log('diff: ', equals(oldModel, $f.pool.container));
+          console.log('diff: ', eq(oldModel, $f.pool.container
+            , ['uuid', 'renderer'], false));
       };
 };
 
