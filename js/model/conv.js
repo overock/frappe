@@ -165,7 +165,24 @@ class In {
     }
     _pig(model, tagBody) {}
     _fs(model, tagBody) {}
-    _ssh(model, tagBody) {}
+    _ssh(model, tagBody) {
+        model.props = {
+            'general': {
+                'config': {
+                    'host': tagBody.host['#text'],
+                    'command': tagBody.command['#text'],
+                    'argument' : [],
+                    'capture-output': tagBody['capture-output']? true : false,
+                }
+            }
+        };
+        let targetMap = {
+            'argument': 'advanced.config.argument'
+        };
+        ['argument'].forEach(k => {
+            this._addProp(model.props, k, this._convert(k,tagBody[k]), targetMap);
+        });
+    }
     ['_sub-workflow'](model, tagBody) {}
     _java(model, tagBody) {}
     _email(model, tagBody) {}
@@ -187,7 +204,6 @@ class In {
         let targetMap = {
             'env-var': 'advanced.env-var'
         };
-   
         ['env-var','prepare','configuration','argument','archive','file'].forEach(k => {
             this._addProp(model.props, k, this._convert(k,tagBody[k]), targetMap);
         });
@@ -230,9 +246,13 @@ class In {
         if(!propValue) return;
         // 2depth 이상일 경우 
         let p = target.split('.');
-        !props[p[0]] ? props[p[0]] = {} : '';
-            
-        props[p[0]][p[1]] = propValue;
+        let pr = props;
+        for( let i = 0 ; i < p.length -1 ;i++){
+            pr = pr[p[i]];
+            !pr ? pr = {} : '';
+        }
+        pr[p[p.length -1 ]] = propValue;
+        
     }
     
     _convert(key, value) {
