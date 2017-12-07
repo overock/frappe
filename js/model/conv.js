@@ -148,7 +148,21 @@ class In {
         return ret;
     }
 
-    ['_map-reduce'](model, tagBody) {}
+    ['_map-reduce'](model, tagBody) {
+        model.props = {
+            'general': {
+            },
+            'advanced': {
+            }
+        };
+        let targetMap = {
+            'configuration': 'general.configuration'
+        };
+   
+        ['configuration','prepare','file','archive'].forEach(k => {
+            this._addProp(model.props, k, this._convert(k,tagBody[k]), targetMap);
+        });
+    }
     _pig(model, tagBody) {}
     _fs(model, tagBody) {}
     _ssh(model, tagBody) {}
@@ -245,11 +259,12 @@ class In {
     }
     _convert_prepare(pre) {
         let arr = [];
-        Object.keys(pre).forEach(k => {
-            const cmd = k.split('!')[0] ;
+        [].concat(pre).forEach(k => {
+            const ocmd = Object.keys(k)[0];
+            const cmd = ocmd.split('!')[0] ;
             let values = {};
-            Object.keys(pre[k]).forEach( a => {
-                values[a.split('@')[1]] = pre[k][a];
+            Object.keys(k[ocmd]).forEach( a => {
+                values[a.split('@')[1]] = k[ocmd][a];
             });
             arr.push({'key' : cmd, 'values': values });
         });
