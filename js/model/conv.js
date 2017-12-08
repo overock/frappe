@@ -321,15 +321,15 @@ class In {
     model.props = {
       'general': {
         'config': {
-          'capture-output': tagBody['capture-output'] ? true : false,
-          'execOption': tagBody['exec'] ? 'script' : 'command'
+          'capture-output': tagBody['capture-output'] ? true : false
         },
-        'exec': {}
+        'exec': {
+          'command': this._getText(tagBody.exec)
+        }
       },
       'advanced': {}
     };
-    let g = model.props.general;
-    g.exec[g.config.execOption] = this._getText(tagBody.exec);
+
     let targetMap = {
       'env-var': 'advanced.env-var'
     };
@@ -742,7 +742,7 @@ class Out {
         const cmd = body.tag('configuration').tag('property');
         Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
       });
-      body.tag('exec').text(gen.exec[gen.config.execOption]);
+      body.tag('exec').text(gen.exec.command);
       [ 'argument', 'env-var', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
       gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
     }, {
