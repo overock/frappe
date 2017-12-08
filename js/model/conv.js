@@ -138,13 +138,15 @@ class In {
   ['_map-reduce'](model, tagBody) {
     model.props = {
       'general': {
-        'config': {}
+    
       },
       'advanced': {}
     };
-
+    let targetMap = {
+      'configuration': 'general.configuration'
+    };
     [ 'configuration', 'prepare', 'file', 'archive' ].forEach(k => {
-      this._addProp(model.props, k, this._convert(k, tagBody[k]));
+      this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
   }
   _pig(model, tagBody) {    
@@ -244,7 +246,7 @@ class In {
       }
     };
     let targetMap = {
-      'args': 'general.config.argument'
+      'args': 'general.config.args'
     };
     [ 'args' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
@@ -320,7 +322,7 @@ class In {
       'general': {
         'config': {
           'capture-output': tagBody['capture-output'] ? true : false,
-          'execOption': tagBody['exec']['script'] ? 'script' : 'command'
+          'execOption': tagBody['exec'] ? 'script' : 'command'
         },
         'exec': {}
       },
@@ -386,14 +388,15 @@ class In {
     };
     
     let targetMap = {
-      'java-opts': 'general.config.java-opts'
+      'java-opts': 'general.config.java-opts',
+      'arg': 'general.arg',
     };
 
     [ 'java-opts' ].forEach(k => {
       this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
     });
     [ 'prepare', 'configuration', 'arg' ].forEach(k => {
-      this._addProp(model.props, k, this._convert(k, tagBody[k]));
+      this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
   }
 
@@ -413,10 +416,11 @@ class In {
     let targetMap = {
       'spark-opts': 'option.option.spark-opts',
       'master': 'general.config.master',
-      'arg': 'option.option.arg'
+      'arg': 'option.arg',
+      'mode': 'option.option.mode'
     };
 
-    [ 'master', 'spark-opts' ].forEach(k => {
+    [ 'master', 'mode', 'spark-opts' ].forEach(k => {
       this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
     });
     [ 'prepare', 'configuration', 'arg', 'archive', 'file' ].forEach(k => {
@@ -835,7 +839,7 @@ class Out {
       body.tag('jar').text(gen.config.jar);
 
       opt.option && opt.option['spark-opts'] && body.tag('spark-opts').text(opt.option['spark-opts']);
-      opt.args.forEach(t => body.tag('arg').text(t));
+      opt.arg.forEach(t => body.tag('arg').text(t));
 
       [ 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }, {
