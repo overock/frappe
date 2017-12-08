@@ -39,7 +39,7 @@ export default class JSONConverter {
 
   static
   export (pool) {
-    const ret = new Node({}).prop({ name: pool.title, xmlns: 'uri:oozie:workflow:0.5' }),
+    const ret = new Node({}).prop({ name: pool.title, xmlns: 'uri:oozie:workflow:0.4' }),
           out = new Out(),
           proc = v => out[v.type](ret, v);
     pool.container.filter(v => v.type == 'start').forEach(proc);
