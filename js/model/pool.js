@@ -77,4 +77,5 @@ export default class ModelPool {
   filter(fn) { return this.container.filter(fn); }
   find(fn) { return this.container.find(fn); }
   map(fn) { return this.container.map(fn); }
+  some(fn) { return this.container.some(fn); }
 }

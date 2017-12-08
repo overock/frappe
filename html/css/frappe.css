@@ -35,13 +35,16 @@
     font-family: "Roboto Condensed", sans-serif;
     font-size: 15px;
     color: #fff;
+    background-color: transparent;
+    border: 1px dashed #20aaf7;
+    border-radius: 8px;
     text-align: center;
     display: none;
     transform-origin: 50% 50%;
 }
 
 .frappe-textinput:focus {
-    outline: #20aaf7 auto 3px;
+    outline: none; /* #20aaf7 auto 3px; */
 }
 
 .frappe-flow-holder {

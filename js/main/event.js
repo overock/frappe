@@ -86,17 +86,29 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
               cY = rect.y + rect.height / 2,
               text = currentModel.isFlow? currentModel.cond : currentModel.name;
 
-        textInput.show(cX, cY, text, currentModel.angle / Math.PI * 180, viewBox.z, editTextDone);
-        currentModel.editing = true;
+        textInput.show(cX, cY, {
+          text: text,
+          deg: currentModel.angle / Math.PI * 180,
+          scale: viewBox.z
+        }, editTextDone);
 
+        currentModel.editing = true;
         currentModel.render();
       },
       editTextDone = bCancel => {
-        bCancel || (currentModel.name = textInput.text);
+        const name = textInput.text,
+              regex = currentModel.isFlow ? /.*/ : /^[a-zA-Z_][\-_a-zA-Z0-9]{0,38}$/g,
+              matches = regex.test(name),
+              exists = pool.filter(m => m!=currentModel).some(m => m.name == name);
+              
+        if(!bCancel && (!matches || exists)) return false;
+        bCancel || (currentModel.name = name);
         currentModel.editing = false;
         currentModel.render();
         currentModel = null;
         editMode = false;
+
+        return true;
       },
 
       /**
