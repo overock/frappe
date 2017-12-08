@@ -68,21 +68,18 @@ class In {
     return ret;
   }
   end(body) {
-    const { '!left': left = 0, '!top': top = 0 } = body;
-    return ModelFactory.create('end', top, left);
+    const { '!left': left = 0, '!top': top = 0, '@name': name = 'end' } = body,
+          ret = ModelFactory.create('end', top, left);
+
+    ret.props = { name: name };
+
+    return ret;
   }
   kill(body) {
     const { '!left': left = 0, '!top': top = 0, '@name': name, message: { '#text': message } } = body,
           ret = ModelFactory.create('kill', top, left);
 
-    ret.props = {
-      name: name,
-      general: {
-        config: {
-          message: message
-        }
-      }
-    };
+    ret.props = { name: name, general: { config: { message: message } } };
 
     return ret;
   }
