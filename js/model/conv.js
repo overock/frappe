@@ -549,7 +549,9 @@ class Out {
     j && b.tag('job-tracker').text('${jobTracker}');
     n && b.tag('name-node').text('${nameNode}');
     $h(b);
-    v.nextActions.forEach(n => a.tag(n.type == 'kill' ? 'error' : 'ok').prop('to', n.name));
+    //v.nextActions.forEach(n => a.tag(n.type == 'kill' ? 'error' : 'ok').prop('to', n.name));
+    v.nextActions.filter(n => n.type != 'kill').forEach(n => a.tag('ok').prop('to', n.name));
+    v.nextActions.filter(n => n.type == 'kill').forEach(n => a.tag('error').prop('to', n.name));
 
     return a;
   }
