@@ -1,5 +1,5 @@
 import Frappe from '../js/frappe.js';
-import Node from '../js/model/node.js';
+import Node from '../js/util/node.js';
 
 //let frappe = new Frappe(document.getElementById('test-canvas'));
 const frappe = new Frappe(document.body);

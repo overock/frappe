@@ -102,6 +102,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
               exists = pool.filter(m => m!=currentModel).some(m => m.name == name);
 
         if(!bCancel && (!matches || exists)) return false;
+        
         bCancel || (currentModel.name = name);
         currentModel.editing = false;
         currentModel.render();

@@ -1,5 +1,5 @@
 import ModelFactory from '../main/modelfactory';
-import Converter from './conv';
+import Converter from '../conv/conv';
 
 let instance = null;
 
