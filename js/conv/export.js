@@ -276,9 +276,7 @@ export default class Out {
       body.tag('jar').text(gen.config.jar);
 
       opt.option && opt.option['spark-opts'] && body.tag('spark-opts').text(opt.option['spark-opts']);
-      opt.arg.forEach(t => body.tag('arg').text(t));
-
-      [ 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
+      [ 'arg', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }, {
       jobTracker: true,
       nameNode: true
