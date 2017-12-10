@@ -306,17 +306,17 @@ export default class Out {
 
   // for reuse
   _addPrepare(args, body) {
-    if(!args.length) return;
+    if(!args || !args.length) return;
     const prepare = body.tag('prepare');
     let cmd = null;
     args.forEach((o, i) => {
       cmd = prepare.tag(`${o.key}!${i}`);
-      Object.keys.apply(o.values).forEach(k => cmd.prop(k, o.values[k]));
+      Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
     });
   }
 
   _addConfiguration(args, body) {
-    if(!args.length) return;
+    if(!args || !args.length) return;
     const configuration = body.tag('configuration');
     let property = null;
     args.forEach(o => {
