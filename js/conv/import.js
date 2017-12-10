@@ -406,20 +406,18 @@ export default class Import {
   }
 
   _convert_prepare(pre) {
-    let preArr = [];
+    let newPre = []
     Object.keys(pre).forEach(k => {
-      let tmpObj = {};
-      tmpObj[k] = pre[k];
-      preArr.push(tmpObj)
-    })
-    return [].concat(preArr).map(k => {
-      const ocmd = Object.keys(k)[0];
-      const cmd = ocmd.split('!')[0];
-      let values = {};
-      Object.keys(k[ocmd]).forEach(a => { values[a.split('@')[1]] = k[ocmd][a]; });
-      return { key: cmd, values: values };
+      const cmd = k.split('!')[0];
+      const index = k.split('!')[1];
+      let newVal = { key: cmd, values: {} };
+      Object.keys(pre[k]).forEach(l => newVal.values[l.replace('@', '')] = pre[k][l]);
+      newPre[index] = newVal;
     });
+    
+    return newPre;
   }
+  
   _convert_configuration(conf) {
     return [].concat(conf.property).map(k => {
       return {
