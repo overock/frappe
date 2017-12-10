@@ -311,7 +311,7 @@ export default class Out {
     let cmd = null;
     args.forEach((o, i) => {
       cmd = prepare.tag(`${o.key}!${i}`);
-      Object.keys.apply(o.values).forEach(k => cmd.prop(k, o.values[k]));
+      Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
     });
   }
 
