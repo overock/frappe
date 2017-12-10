@@ -82,6 +82,7 @@ export default class Import {
   }
 
   ['_map-reduce'](model, tagBody) {
+    console.log(JSON.stringify(tagBody));
     model.props = {
       'general': {
     
@@ -368,7 +369,7 @@ export default class Import {
       'argument': 'advanced.argument',
       'arg': 'advanced.arg',
       'param': 'advanced.param',
-      'configuration': 'advanced.configuration.property'
+      'configuration': 'advanced.configuration'
     };
     Object.assign(default_target, targetMap);
     let target = default_target[propKey];
@@ -405,7 +406,13 @@ export default class Import {
   }
 
   _convert_prepare(pre) {
-    return [].concat(pre).map(k => {
+    let preArr = [];
+    Object.keys(pre).forEach(k => {
+      let tmpObj = {};
+      tmpObj[k] = pre[k];
+      preArr.push(tmpObj)
+    })
+    return [].concat(preArr).map(k => {
       const ocmd = Object.keys(k)[0];
       const cmd = ocmd.split('!')[0];
       let values = {};
@@ -413,12 +420,11 @@ export default class Import {
       return { key: cmd, values: values };
     });
   }
-
   _convert_configuration(conf) {
-    return [].concat(conf).map(k => {
+    return [].concat(conf.property).map(k => {
       return {
-        name: this._getText(k.property.name),
-        value: this._getText(k.property.value)
+        name: this._getText(k.name),
+        value: this._getText(k.value)
       };
     });
   }
