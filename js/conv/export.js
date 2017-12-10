@@ -65,15 +65,9 @@ export default class Out {
   ['map-reduce'](r, v) {
     return this._action(r, v, body => {
       const { general: gen, advanced: adv } = v.props;
-      adv.prepare.forEach((o, i) => {
-        const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
-        Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
-      });
-      gen.configuration.forEach(o => {
-        const cmd = body.tag('configuration').tag('property');
-        Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
-      });
 
+      this._addPrepare(adv.prepare, body);
+      this._addConfiguration(gen.configuration, body);
       [ 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }, {
       jobTracker: true,
@@ -84,15 +78,9 @@ export default class Out {
   pig(r, v) {
     return this._action(r, v, body => {
       const { general: gen, advanced: adv } = v.props;
-      adv.prepare.forEach((o, i) => {
-        const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
-        Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
-      });
 
-      adv.configuration.forEach(o => {
-        const cmd = body.tag('configuration').tag('property');
-        Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
-      });
+      this._addPrepare(adv.prepare, body);
+      this._addConfiguration(adv.configuration, body);
       body.tag('script').text(gen.config.script);
 
       [ 'param', 'argument', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
@@ -105,10 +93,8 @@ export default class Out {
   fs(r, v) {
     return this._action(r, v, body => {
       const { command: cmd, configuration: conf } = v.props.general;
-      conf.forEach(o => {
-        const cmd = body.tag('configuration').tag('property');
-        Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
-      });
+
+      this._addConfiguration(conf, body);
       
       cmd.forEach((c, i) => {
         const tag = body.tag(`${c.key}!${i}`),
@@ -161,10 +147,8 @@ export default class Out {
 
       body.tag('app-path').text(rconf['app-path']);
       rconf['propagate-configuration'] && rconf['propagate-configuration'] == true && body.tag('propagate-configuration');
-      oconf.forEach(o => {
-        const cmd = body.tag('configuration').tag('property');
-        Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
-      });
+
+      this._addConfiguration(oconf, body);
     });
   }
 
@@ -172,14 +156,9 @@ export default class Out {
     return this._action(r, v, body => {
       const { general: gen, advanced: adv } = v.props;
 
-      adv.prepare.forEach((o, i) => {
-        const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
-        Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
-      });
-      adv.configuration.forEach(o => {
-        const cmd = body.tag('configuration').tag('property');
-        Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
-      });
+      this._addPrepare(adv.prepare, body);
+      this._addConfiguration(adv.configuration, body);
+
       body.tag('main-class').text(gen.config['main-class']);
       gen.config['java-opts'] && body.tag('java-opts').text(gen.config['java-opts']);
       [ 'arg', 'archive', 'file' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
@@ -209,17 +188,11 @@ export default class Out {
     return this._action(r, v, body => {
       const { general: gen, advanced: adv } = v.props;
 
-      body.prop('xmlns', 'uri:oozie:shell-action:0.3');      
+      body.prop('xmlns', 'uri:oozie:shell-action:0.3');
 
-      adv.prepare.forEach((o, i) => {
-        const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
-        Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
-      });
+      this._addPrepare(adv.prepare, body);
+      this._addConfiguration(adv.configuration, body);
 
-      adv.configuration.forEach(o => {
-        const cmd = body.tag('configuration').tag('property');
-        Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
-      });
       body.tag('exec').text(gen.exec.command);
       [ 'argument', 'env-var', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
       gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
@@ -237,16 +210,11 @@ export default class Out {
             } = v.props,
             w = gen.config.hiveOption;
 
-      body.prop('xmlns', 'uri:oozie:hive-action:0.5');            
-      adv.prepare.forEach((o, i) => {
-        const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
-        Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
-      });
+      body.prop('xmlns', 'uri:oozie:hive-action:0.5');
 
-      adv.configuration.forEach(o => {
-        const cmd = body.tag('configuration').tag('property');
-        Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
-      });
+      this._addPrepare(adv.prepare, body);
+      this._addConfiguration(adv.configuration, body);
+
       body.tag(w).text(gen[w][w]);
 
       [ 'param', 'argument', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
@@ -261,16 +229,11 @@ export default class Out {
       const { general: gen, advanced: adv } = v.props,
             conf = gen.config;
 
-      body.prop('xmlns', 'uri:oozie:sqoop-action:0.4');            
-      adv.prepare.forEach((o, i) => {
-        const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
-        Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
-      });
+      body.prop('xmlns', 'uri:oozie:sqoop-action:0.4');
 
-      adv.configuration.forEach(o => {
-        const cmd = body.tag('configuration').tag('property');
-        Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
-      });
+      this._addPrepare(adv.prepare, body);
+      this._addConfiguration(adv.configuration, body);
+
       conf.command && body.tag('command').text(conf.command);
       conf.arg && [ 'arg' ].forEach(k => conf[k] && conf[k].forEach(t => body.tag(k).text(t)));
       [ 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
@@ -285,14 +248,10 @@ export default class Out {
       const { general: gen, advanced: adv } = v.props;
 
       body.prop('xmlns', 'uri:oozie:distcp-action:0.2');
-      adv.prepare.forEach((o, i) => {
-        const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
-        Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
-      });
-      adv.configuration.forEach(o => {
-        const cmd = body.tag('configuration').tag('property');
-        Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
-      });
+
+      this._addPrepare(adv.prepare, body);
+      this._addConfiguration(adv.configuration, body);
+
       gen.config['java-opts'] && body.tag('java-opts').text(gen.config['java-opts']);
       [ 'arg' ].forEach(k => gen[k] && gen[k].forEach(t => body.tag(k).text(t)));
     }, {
@@ -306,15 +265,10 @@ export default class Out {
       const { general: gen, option: opt, advanced: adv } = v.props;
 
       body.prop('xmlns', 'uri:oozie:spark-action:0.2');
-      adv.prepare.forEach((o, i) => {
-        const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
-        Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
-      });
 
-      adv.configuration.forEach(o => {
-        const cmd = body.tag('configuration').tag('property');
-        Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
-      });
+      this._addPrepare(adv.prepare, body);
+      this._addConfiguration(adv.configuration, body);
+
       body.tag('master').text(gen.config.master);
       opt.option && opt.option.mode && body.tag('mode').text(opt.option.mode);
       body.tag('name').text(gen.config.name);
@@ -337,14 +291,10 @@ export default class Out {
             w = gen.config.hiveOption;
 
       body.prop('xmlns', 'uri:oozie:hive2-action:0.2');
-      adv.prepare.forEach((o, i) => {
-        const cmd = body.tag('prepare').tag(`${o.key}!${i}`);
-        Object.keys(o.values).forEach(k => cmd.prop(k, o.values[k]));
-      });
-      adv.configuration.forEach(o => {
-        const cmd = body.tag('configuration').tag('property');
-        Object.keys(o).forEach(k => cmd.tag(k).text(o[k]));
-      });
+
+      this._addPrepare(adv.prepare, body);
+      this._addConfiguration(adv.configuration, body);
+      
       body.tag('jdbc-url').text(gen.config['jdbc-url']);
       gen.config.password && body.tag('password').text(gen.config.password);
       body.tag(w).text(gen[w][w]);
@@ -353,6 +303,27 @@ export default class Out {
     }, {
       jobTracker: true,
       nameNode: true
+    });
+  }
+
+  // for reuse
+  _addPrepare(args, body) {
+    if(!args.length) return;
+    const prepare = body.tag('prepare');
+    let cmd = null;
+    args.forEach((o, i) => {
+      cmd = prepare.tag(`${o.key}!${i}`);
+      Object.keys.apply(o.values).forEach(k => cmd.prop(k, o.values[k]));
+    });
+  }
+
+  _addConfiguration(args, body) {
+    if(!args.length) return;
+    const configuration = body.tag('configuration');
+    let property = null;
+    args.forEach(o => {
+      property = configuration.tag('property');
+      Object.keys(o).forEach(k => property.tag(k).text(o[k]));
     });
   }
 }

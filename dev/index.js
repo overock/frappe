@@ -315,45 +315,45 @@ const startDemo = () => {
         }
       }
 
-      // const shell = frappe.add('shell', 200, 500);
-      // shell.props = {
-      //   "name": 'shell',
-      //   "general": {
-      //     "config": {
-      //       "capture-output": true,
-      //       "execOption": "script"
-      //     },
-      //     "exec": {
-      //       "exec": "./script.sh"
-      //     }
-      //   },
-      //   "advanced": {
-      //     "env-var":["var1","var2"],
-      //     "prepare": [
-      //       {
-      //         "key": "mkdir",
-      //         "values": {
-      //           "path": "hdfs://foo:8020/usr/tucu/temp-data_folder2"
-      //         }
-      //       }
-      //     ],
-      //     "argument": [
-      //       "argument1"
-      //     ],
-      //     "configuration": [
-      //       {
-      //         "name": "key",
-      //         "value": "value"
-      //       }
-      //     ],
-      //     "file": [
-      //       "name.file"
-      //     ],
-      //     "archive": [
-      //       "name.archive"
-      //     ]
-      //   }
-      // }
+      const shell = frappe.add('shell', 200, 500);
+      shell.props = {
+        "name": 'shell',
+        "general": {
+          "config": {
+            "capture-output": true,
+            "execOption": "script"
+          },
+          "exec": {
+            "exec": "./script.sh"
+          }
+        },
+        "advanced": {
+          "env-var":["var1","var2"],
+          "prepare": [
+            {
+              "key": "mkdir",
+              "values": {
+                "path": "hdfs://foo:8020/usr/tucu/temp-data_folder2"
+              }
+            }
+          ],
+          "argument": [
+            "argument1"
+          ],
+          "configuration": [
+            {
+              "name": "key",
+              "value": "value"
+            }
+          ],
+          "file": [
+            "name.file"
+          ],
+          "archive": [
+            "name.archive"
+          ]
+        }
+      }
 
       // const spark = frappe.add('spark', 200, 600);
       // spark.props = {

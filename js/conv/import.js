@@ -191,12 +191,9 @@ export default class Import {
         }
       }
     };
-    let targetMap = {
-      'args': 'general.config.args'
-    };
-    [ 'args' ].forEach(k => {
-      this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
-    });
+
+    const targetMap = { 'args': 'general.config.args' };
+    [ 'args' ].forEach(k => { this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap); });
   }
 
   ['_sub-workflow'](model, tagBody) {
@@ -210,13 +207,9 @@ export default class Import {
       }
     };
     
-    let targetMap = {
-      'configuration': 'general.configuration'
-    };
+    const targetMap = { 'configuration': 'general.configuration' };
 
-    [ 'configuration' ].forEach(k => {
-      this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
-    });  
+    [ 'configuration' ].forEach(k => { this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap); });  
   }
 
   _java(model, tagBody) {
@@ -230,16 +223,12 @@ export default class Import {
       'advanced': {}
     };
     
-    let targetMap = {
-      'java-opts': 'general.config.java-opts'
-    };
+    const targetMap = { 'java-opts': 'general.config.java-opts' };
 
-    [ 'java-opts' ].forEach(k => {
-      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
-    });
+    [ 'java-opts' ].forEach(k => { this._addProp(model.props, k, this._getText(tagBody[k]), targetMap ); });
     [ 'prepare', 'configuration', 'arg', 'file', 'archive' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
-    });   
+    });
   }
 
   _email(model, tagBody) {
@@ -253,32 +242,21 @@ export default class Import {
       }
     };
 
-    let targetMap = {
-      'cc': 'general.config.cc',
-      'content_type': 'general.config.content_type'
-    };
+    const targetMap = { 'cc': 'general.config.cc', 'content_type': 'general.config.content_type' };
 
-    [ 'cc', 'content_type' ].forEach(k => {
-      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
-    });
+    [ 'cc', 'content_type' ].forEach(k => { this._addProp(model.props, k, this._getText(tagBody[k]), targetMap ); });
   }
 
   _shell(model, tagBody) {
     model.props = {
       'general': {
-        'config': {
-          'capture-output': tagBody['capture-output'] ? true : false
-        },
-        'exec': {
-          'command': this._getText(tagBody.exec)
-        }
+        'config': { 'capture-output': tagBody['capture-output'] ? true : false },
+        'exec': { 'command': this._getText(tagBody.exec) }
       },
       'advanced': {}
     };
 
-    let targetMap = {
-      'env-var': 'advanced.env-var'
-    };
+    const targetMap = { 'env-var': 'advanced.env-var' };
     [ 'env-var', 'prepare', 'configuration', 'argument', 'archive', 'file' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
@@ -287,9 +265,7 @@ export default class Import {
   _hive(model, tagBody) {
     model.props = {
       'general': {
-        'config': {
-          'hiveOption': tagBody.script ? 'script' : 'query'
-        }
+        'config': { 'hiveOption': tagBody.script ? 'script' : 'query' }
       },
       'advanced': {}
     };
@@ -306,21 +282,16 @@ export default class Import {
 
   _sqoop(model, tagBody) {
     model.props = {
-      'general': { 
-        'config': {}
-      },
+      'general': { 'config': {} },
       'advanced': {}
     };
     
-    let targetMap = {
-      'command': 'general.config.command',
-      'arg': 'general.config.arg'
-    };
+    const targetMap = { 'command': 'general.config.command', 'arg': 'general.config.arg' };
     let isArg, isCmd;
+
     tagBody.arg? isArg = 'arg': isCmd = 'command';
-    [ isCmd ].forEach(k => {
-      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
-    });
+
+    [ isCmd ].forEach(k => { this._addProp(model.props, k, this._getText(tagBody[k]), targetMap ); });
     [ isArg, 'prepare', 'configuration', 'file', 'archive' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
@@ -328,19 +299,13 @@ export default class Import {
 
   _distcp(model, tagBody) {
     model.props = {
-      'general': { 
-      },
+      'general': {},
       'advanced': {}
     };
     
-    let targetMap = {
-      'java-opts': 'general.config.java-opts',
-      'arg': 'general.arg',
-    };
+    const targetMap = { 'java-opts': 'general.config.java-opts', 'arg': 'general.arg' };
 
-    [ 'java-opts' ].forEach(k => {
-      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
-    });
+    [ 'java-opts' ].forEach(k => { this._addProp(model.props, k, this._getText(tagBody[k]), targetMap ); });
     [ 'prepare', 'configuration', 'arg' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
@@ -359,16 +324,14 @@ export default class Import {
       'advanced': {}
     };
     
-    let targetMap = {
+    const targetMap = {
       'spark-opts': 'option.option.spark-opts',
       'master': 'general.config.master',
       'arg': 'option.arg',
       'mode': 'option.option.mode'
     };
 
-    [ 'master', 'mode', 'spark-opts' ].forEach(k => {
-      this._addProp(model.props, k, this._getText(tagBody[k]), targetMap );
-    });
+    [ 'master', 'mode', 'spark-opts' ].forEach(k => { this._addProp(model.props, k, this._getText(tagBody[k]), targetMap ); });
     [ 'prepare', 'configuration', 'arg', 'archive', 'file' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
@@ -398,14 +361,14 @@ export default class Import {
 
   _addProp(props, propKey, propValue, targetMap) {
     //console.log(propKey, targetMap);
-    let default_target = {
+    const default_target = {
       'prepare': 'advanced.prepare',
       'archive': 'advanced.archive',
       'file': 'advanced.file',
       'argument': 'advanced.argument',
       'arg': 'advanced.arg',
       'param': 'advanced.param',
-      'configuration': 'advanced.configuration'
+      'configuration': 'advanced.configuration.property'
     };
     Object.assign(default_target, targetMap);
     let target = default_target[propKey];
@@ -423,7 +386,7 @@ export default class Import {
 
   _convert(key, value) {
     if(!value) return;
-    let keyMap = {
+    const keyMap = {
       configuration: 'configuration',
       prepare: 'prepare',
       argument: 'dynamic',
@@ -438,34 +401,26 @@ export default class Import {
   }
 
   _convert_dynamic(text) {
-    let arr = [];
-    [].concat(text).forEach(i => arr.push( this._getText(i)));
-    return arr;
+    return [].concat(text).map(i => this._getText(i));
   }
 
   _convert_prepare(pre) {
-    let arr = [];
-    [].concat(pre).forEach(k => {
+    return [].concat(pre).map(k => {
       const ocmd = Object.keys(k)[0];
       const cmd = ocmd.split('!')[0];
       let values = {};
-      Object.keys(k[ocmd]).forEach(a => {
-        values[a.split('@')[1]] = k[ocmd][a];
-      });
-      arr.push({ key: cmd, values: values });
+      Object.keys(k[ocmd]).forEach(a => { values[a.split('@')[1]] = k[ocmd][a]; });
+      return { key: cmd, values: values };
     });
-    return arr;
   }
 
   _convert_configuration(conf) {
-    let arr = [];
-    [].concat(conf).forEach(k => {
-      arr.push({
+    return [].concat(conf).map(k => {
+      return {
         name: this._getText(k.property.name),
         value: this._getText(k.property.value)
-      });
+      };
     });
-    return arr;
   }
 
   _getText(obj){
