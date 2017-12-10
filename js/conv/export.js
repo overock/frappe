@@ -306,7 +306,7 @@ export default class Out {
 
   // for reuse
   _addPrepare(args, body) {
-    if(!args.length) return;
+    if(!args || !args.length) return;
     const prepare = body.tag('prepare');
     let cmd = null;
     args.forEach((o, i) => {
@@ -316,7 +316,7 @@ export default class Out {
   }
 
   _addConfiguration(args, body) {
-    if(!args.length) return;
+    if(!args || !args.length) return;
     const configuration = body.tag('configuration');
     let property = null;
     args.forEach(o => {
