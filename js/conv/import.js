@@ -40,7 +40,7 @@ export default class Import {
           ret = ModelFactory.create('decision', top, left);
 
     ret.name = name;
-    node.concat(defNode).forEach(o => rel.push([ name, o['@to'] ]));
+    [].concat(node, defNode).forEach(o => rel.push([ name, o['@to'] ]));
     return ret;
   }
   fork(body, rel) {
