@@ -19,7 +19,7 @@ export default class ModelPool {
 
   add(model) {
     if(typeof model == 'string') model = ModelFactory.create(model);
-    model.name = model.name || this.name(model);
+    !model.name && (model.name = this.name(model));
     this.container.push(model);
     return model;
   }
@@ -44,6 +44,7 @@ export default class ModelPool {
 
   name(model) {
     const tag = model.type;
+    if(tag == 'flow') return;
     if([ 'start', 'end', 'kill' ].indexOf(tag) >= 0) return tag;
 
     let i = 1;

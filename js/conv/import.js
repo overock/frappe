@@ -35,12 +35,12 @@ export default class Import {
   decision(body, rel) {
     const {
             '!left': left = 0, '!top': top = 0, '@name': name,
-            'switch': { 'case': node = [], 'default': defNode = '' }
+            'switch': { 'case': node = [], 'default': defNode = {} }
           } = body,
           ret = ModelFactory.create('decision', top, left);
 
     ret.name = name;
-    [].concat(node, defNode).forEach(o => rel.push([ name, o['@to'] ]));
+    [].concat(node, defNode).forEach(o => rel.push([ name, o['@to'], o['#text'] ]));
     return ret;
   }
   fork(body, rel) {

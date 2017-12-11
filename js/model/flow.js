@@ -14,11 +14,12 @@ export default class Flow extends Model {
   get name() {
     if(this.isGhost || !this.isCase) return '';
     if(this.isLast) return 'default';
-    return `[#${this.order}: ${this.props.case || ''}]`;
+    return `[#${this.order}: ${this.props.predicate || ''}]`;
   }
-  set name(s) { this.isCase && (this.props.case = s); }
+  set name(s) { this.isCase && (this.props.predicate = s); }
 
-  get cond() { return this.props.case || ''; }
+  get cond() { return this.props.predicate || ''; }
+  set cond(s) { this.props.predicate = s; }
 
   get order() { return this.siblings.indexOf(this) + 1; }
   set order(n) {

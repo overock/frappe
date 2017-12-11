@@ -6,8 +6,7 @@ import ModelFactory from '../main/modelfactory';
 
 
 export default class JSONConverter {
-  static
-  import (pool, json) {
+  static import (pool, json) {
     pool.clear();
 
     // stage #1: create actions
@@ -28,10 +27,10 @@ export default class JSONConverter {
       if(!r.f || !r.t) return; // 모델이 없는 경우가 있음
 
       const flow = ModelFactory.create('flow');
-      flow.name = r.pred || '';
       r.f.linkBefore(flow);
       r.t.linkAfter(flow);
-      pool.add(flow);
+      flow.cond = r.pred || '';
+      pool.add(flow);      
     });
 
     // stage #4: positioning
@@ -41,8 +40,7 @@ export default class JSONConverter {
     pool.render();
   }
 
-  static
-  export (pool) {
+  static export (pool) {
     const ret = new Node({}).prop({ name: pool.title, xmlns: 'uri:oozie:workflow:0.4' }),
           out = new Out(),
           proc = v => out[v.type](ret, v);
