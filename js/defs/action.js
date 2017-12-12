@@ -148,7 +148,16 @@ export default {
 
   'map-reduce': {
     markup: '<image xlink:href="images/wd-mapreduce.svg" width="64" height="64"/>',
-    props: {},
+    props: {      
+      'general': {
+        'configuration': []
+      },
+      'advanced': {
+        'prepare': [],
+        'file': [],
+        'archive': []
+      }    
+    },
     rules: {
       min: 0,
       max: Infinity,
@@ -172,7 +181,21 @@ export default {
   },
   pig: {
     markup: '<image xlink:href="images/wd-pig.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'config': {
+          'script': ''
+        }
+      },
+      'advanced': {
+        'prepare': [],
+        'argument': [],
+        'param': [],
+        'configuration': [],
+        'file': [],
+        'archive': []
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -194,7 +217,12 @@ export default {
   },
   fs: {
     markup: '<image xlink:href="images/wd-fs.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'command': [],
+        'configuration': []
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -216,7 +244,16 @@ export default {
   },
   ssh: {
     markup: '<image xlink:href="images/wd-ssh.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'config': {
+          'host': '',
+          'command': '',
+          'capture-output': false
+        },
+        'args': []
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -238,7 +275,15 @@ export default {
   },
   'sub-workflow': {
     markup: '<image xlink:href="images/wd-sub-workflow.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'config': {
+          'app-path': '',
+          'propagate-configuration': false
+        },
+        'configuration': []
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -260,7 +305,22 @@ export default {
   },
   java: {
     markup: '<image xlink:href="images/wd-java.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'config': {
+          'main-class': '',
+          'java-opts': '',
+          'capture-output': false
+        }
+      },
+      'advanced': {
+        'prepare': [],
+        'arg': [],
+        'configuration': [],
+        'file': [],
+        'archive': []
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -282,7 +342,17 @@ export default {
   },
   email: {
     markup: '<image xlink:href="images/wd-email.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'config': {
+          'to': '',
+          'cc': '',
+          'subject': '',
+          'body': '',
+          'content_type': ''
+        }
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -304,7 +374,25 @@ export default {
   },
   shell: {
     markup: '<image xlink:href="images/wd-shell.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'config': {
+          'capture-output': false,
+          'execOption': 'command'
+        },
+        'exec': {
+          'command': ''
+        }
+      },
+      'advanced': {
+        'env-var': [],
+        'prepare': [],
+        'argument': [],
+        'configuration': [],
+        'file': [],
+        'archive': []
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -326,7 +414,24 @@ export default {
   },
   hive: {
     markup: '<image xlink:href="images/wd-hive.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'config': {
+          'hiveOption': 'script'
+        },
+        'script': {
+          'script': ''
+        }
+      },
+      'advanced': {
+        'prepare': [],
+        'argument': [],
+        'param': [],
+        'configuration': [],
+        'file': [],
+        'archive': []
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -348,7 +453,26 @@ export default {
   },
   hive2: {
     markup: '<image xlink:href="images/wd-hive.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'config': {
+          'jdbc-url': '',
+          'password': '',
+          'hiveOption': 'script'
+        },
+        'script': {
+          'script': ''
+        }
+      },
+      'advanced': {
+        'prepare': [],
+        'argument': [],
+        'param': [],
+        'configuration': [],
+        'file': [],
+        'archive': []
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -370,7 +494,19 @@ export default {
   },
   sqoop: {
     markup: '<image xlink:href="images/wd-sqoop.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'config': {
+          'command': ''
+        }
+      },
+      'advanced': {
+        'prepare': [],
+        'configuration': [],
+        'file': [],
+        'archive': []
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -392,7 +528,18 @@ export default {
   },
   distcp: {
     markup: '<image xlink:href="images/wd-dist-cp.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'config': {
+          'java-opts': ''
+        },
+        'arg': []
+      },
+      'advanced': {
+        'prepare': [],
+        'configuration': []
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -414,7 +561,29 @@ export default {
   },
   spark: {
     markup: '<image xlink:href="images/wd-spark.svg" width="64" height="64"/>',
-    props: {},
+    props: {
+      'general': {
+        'config': {
+          'name': '',
+          'jar': '',
+          'class': '',
+          'master': 'yarn-cluster'
+        }
+      },
+      'option': {
+        'args': [],
+        'option': {
+          'spark-opts': '',
+          'mode': ''
+        }
+      },
+      'advanced': {
+        'prepare': [],
+        'configuration': [],
+        'file': [],
+        'archive': []
+      }
+    },
     rules: {
       maxFrom: 1,
       maxTo: 2,
@@ -434,6 +603,4 @@ export default {
       ]
     }
   }
-
-
 };
