@@ -156,6 +156,12 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
       },
       branchStart = e => {
         e.preventDefault();
+
+        if(currentModel.nextActions.length>=currentModel.rules.maxTo) {
+          e.stopPropagation();
+          return;
+        }
+        
         editMode = true;
         hideHandle();
 

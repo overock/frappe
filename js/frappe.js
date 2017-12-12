@@ -262,13 +262,17 @@ export default class Frappe {
           from: lnFrom,
           to: lnTo,
           ghostAction: ga,
-          ghostFlow: gd,
+          ghostFlow: gf,
           left: x,
           top: y
         } = d.props;
+    
     x += 32, y += 32;
-    const hover = this.pool.filter(m => m != lnFrom && !m.isFlow && !lnFrom.isConnectedTo(m))
+    let hover = this.pool.filter(m => m != lnFrom && !m.isFlow && !lnFrom.isConnectedTo(m))
                       .find(m => m.top <= y && m.left <= x && m.bottom >= y && m.right >= x);
+    
+    hover && hover.rules.maxFrom<=hover.prevActions.length && (hover = null);
+    
     if(lnTo != hover) { // switch link mode
       ga.element.style.visibility = hover ? 'hidden' : '';
       d.props.to = hover || null;
@@ -277,7 +281,7 @@ export default class Frappe {
     lnTo ? { top: ga.top, left: ga.left, width: ga.width, height: ga.height } = lnTo : [ ga.width, ga.height ] = [ 64, 64 ];
 
     ga.render();
-    gd.render();
+    gf.render();
   }
 
   confirmGhost(d) {

@@ -32,6 +32,7 @@
 
 .frappe-textinput {
     position: absolute;
+    vertical-align: middle;
     font-family: "Roboto Condensed", sans-serif;
     font-size: 15px;
     color: #fff;
@@ -39,7 +40,7 @@
     border: 1px dashed #20aaf7;
     border-radius: 8px;
     text-align: center;
-    display: none;
+    display: table-cell;
     transform-origin: 50% 50%;
 }
 
