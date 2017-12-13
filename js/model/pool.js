@@ -70,13 +70,21 @@ export default class ModelPool {
   }
 
   // rulecheckers
-  warn() {}
+  // TODO: 인덱스랑 오류 원인도 리턴을 해 줘야 하는 거 아닌강;;
+  check(phase) {
+    return this.reduce((p, m) => {
+      const ret = m.rules[phase](m, this);
+      ret &&(p = p.concat(ret));
+    }, []);
+  }
+  onSave() { this.check('onSave'); }
 
-  error() {}
+  onExecute() { this.check('onExecute'); }
 
   // some iterator proxies
   filter(fn) { return this.container.filter(fn); }
   find(fn) { return this.container.find(fn); }
   map(fn) { return this.container.map(fn); }
   some(fn) { return this.container.some(fn); }
+  reduce(fn, init) { return this.container.reduce(fn, init); }
 }

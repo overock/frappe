@@ -7,6 +7,21 @@
     'hive2'                                                             // 4.2.0
 ],
 */
+
+const MSG = {
+  oneStart: 'A workflow definition must have one start node!',
+  oneEnd: 'A workflow definition must have one end node!',
+  noNext: m => `${m.name} node must have next action/control node!`,
+  noPrev: m => `There's no way that reaches ${m.name} node!`,
+  multiPrev: m => `${m.name} node must follow two or more action/controls!`,
+  multiNext: m => `${m.name} node must have two or more next action/control node!`,
+  noCond: m => `There's on or more missing condition(s) in decision node ${m.name}!`,
+  directJoin: (f, j) => `Cannot connect ${f.name} and ${j.name} directly!`,
+  missFork: m => `${m.name} must follow one and only one fork node!`,
+  missJoin: m => `${m.name} must reach one and only one join node!`,
+  noParam: (m, k) => `${m.name} must contain value for key ${k}!`
+};
+
 export default {
   ghost: {
     markup: '<rect width="64" height="64" rx="12" ry="12"/>',
@@ -29,7 +44,18 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: (m, p) => {
+        if(p.filter(v => v.type=='start').length) return MSG.oneStart;
+      },
+      onEdit: () => false,
+      onSave: (m, p) => {
+        const ret = [];
+        p.filter(v => v.type=='start').length!=1 && ret.push(MSG.oneStart);
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: (m, p) => this.onSave(m, p)
     }
   },
   end: {
@@ -47,7 +73,18 @@ export default {
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
       ],
-      after: []
+      after: [],
+      onAdd: (m, p) => {
+        if(p.filter(v => v.type=='end').length) return MSG.oneEnd;
+      },
+      onEdit: () => false,
+      onSave: (m, p) => {
+        const ret = [];
+        p.filter(v => v.type=='start').length!=1 && ret.push(MSG.oneEnd);
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        return ret;
+      },
+      onExecute: (m, p) => this.onSave(m, p)
     }
   },
   kill: {
@@ -70,7 +107,10 @@ export default {
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
       ],
-      after: []
+      after: [],
+      onEdit: () => false,
+      onSave: m => !m.prevActions.length && MSG.noPrev(m),
+      onExecute: m => this.onSave(m)
     }
   },
   decision: {
@@ -94,7 +134,19 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        m.prevAction.length<2 && ret.push(MSG.multiNext(m));
+      },
+      onExecute: m => {
+        const ret = [];
+        ret.push(this.onSave(m));
+        m.next.some(f => !(f.isLast || f.pred)) && ret.push(this.noCond(m));
+      }
     }
   },
   fork: {
@@ -118,8 +170,33 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
-    }
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        m.nextActions.length<2 && ret.push(MSG.multiNext(m));
+
+        let join;
+        (join = m.nextActions.filter(v => v.type='join')).length && ret.push(MSG.directJoin(m, join));
+        
+        const drill = (m, d=1) => m.nextActions.reduce((r, n) => {
+                switch(n.type) {
+                  case 'fork':  r = merge(r, drill(n, d+1));                break;
+                  case 'join':  r = merge(r, d==1? n.name : drill(n, d-1)); break;
+                  default:      r = merge(r, drill(n, d));
+                }
+              }, undefined),
+              merge = (s, t) => t===undefined || s==t? s : s===undefined? t : null;
+        !drill(m) && ret.push(MSG.missJoin(m));
+
+        return ret;
+      },
+      onExecute: m => this.onSave(m)
+    },
+    onExecute: m => this.onSave(m)
   },
   join: {
     markup: '<image xlink:href="images/wd-join.svg" width="64" height="64"/>',
@@ -142,7 +219,31 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+
+        m.prevActions.length<2 && ret.push(MSG.multiPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+
+        let fork;
+        (fork = m.prevActions.filter(v => v.type='fork')).length && ret.push(MSG.directJoin(fork, m));
+
+        const drill = (m, d=1) => m.prevActions.reduce((r, p) => {
+                switch(p.type) {
+                  case 'fork':  r = merge(r, d==1? p.name : drill(p, d-1)); break;
+                  case 'join':  r = merge(r, drill(p, d+1));                break;
+                  default:      r = merge(r, drill(p, d));
+                }
+              }, undefined),
+              merge = (s, t) => t===undefined || s==t? s : s===undefined? t : null;
+        !drill(m) && ret.push(MSG.missFork(m));
+
+        return ret;
+      },
+      onExecute: m => this.onSave(m)      
     }
   },
 
@@ -177,6 +278,19 @@ export default {
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
       ]
+    },
+    onAdd: () => false,
+    onEdit: () => false,
+    onSave: m => {
+      const ret = [];
+      !m.prevActions.length && ret.push(MSG.noPrev(m));
+      !m.nextActions.length && ret.push(MSG.noNext(m));
+      return ret;
+    },
+    onExecute: m => {
+      const ret = this.onSave(m);
+      // mandatory field
+      return ret;
     }
   },
   pig: {
@@ -213,6 +327,19 @@ export default {
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
       ]
+    },
+    onAdd: () => false,
+    onEdit: () => false,
+    onSave: m => {
+      const ret = [];
+      !m.prevActions.length && ret.push(MSG.noPrev(m));
+      !m.nextActions.length && ret.push(MSG.noNext(m));
+      return ret;
+    },
+    onExecute: m => {
+      const ret = this.onSave(m);
+      // mandatory field
+      return ret;
     }
   },
   fs: {
@@ -240,6 +367,19 @@ export default {
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
       ]
+    },
+    onAdd: () => false,
+    onEdit: () => false,
+    onSave: m => {
+      const ret = [];
+      !m.prevActions.length && ret.push(MSG.noPrev(m));
+      !m.nextActions.length && ret.push(MSG.noNext(m));
+      return ret;
+    },
+    onExecute: m => {
+      const ret = this.onSave(m);
+      // mandatory field
+      return ret;
     }
   },
   ssh: {
@@ -270,7 +410,20 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: m => {
+        const ret = this.onSave(m);
+        // mandatory field
+        return ret;
+      }
     }
   },
   'sub-workflow': {
@@ -300,7 +453,20 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: m => {
+        const ret = this.onSave(m);
+        // mandatory field
+        return ret;
+      }
     }
   },
   java: {
@@ -337,7 +503,20 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: m => {
+        const ret = this.onSave(m);
+        // mandatory field
+        return ret;
+      }
     }
   },
   email: {
@@ -369,7 +548,20 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: m => {
+        const ret = this.onSave(m);
+        // mandatory field
+        return ret;
+      }
     }
   },
   shell: {
@@ -409,7 +601,20 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: m => {
+        const ret = this.onSave(m);
+        // mandatory field
+        return ret;
+      }
     }
   },
   hive: {
@@ -448,7 +653,20 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: m => {
+        const ret = this.onSave(m);
+        // mandatory field
+        return ret;
+      }
     }
   },
   hive2: {
@@ -471,6 +689,19 @@ export default {
         'configuration': [],
         'file': [],
         'archive': []
+      },
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: m => {
+        const ret = this.onSave(m);
+        // mandatory field
+        return ret;
       }
     },
     rules: {
@@ -489,7 +720,20 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: m => {
+        const ret = this.onSave(m);
+        // mandatory field
+        return ret;
+      }
     }
   },
   sqoop: {
@@ -523,7 +767,20 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: m => {
+        const ret = this.onSave(m);
+        // mandatory field
+        return ret;
+      }
     }
   },
   distcp: {
@@ -556,7 +813,20 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: m => {
+        const ret = this.onSave(m);
+        // mandatory field
+        return ret;
+      }
     }
   },
   spark: {
@@ -600,7 +870,20 @@ export default {
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0
         'hive2' // 4.2.0
-      ]
+      ],
+      onAdd: () => false,
+      onEdit: () => false,
+      onSave: m => {
+        const ret = [];
+        !m.prevActions.length && ret.push(MSG.noPrev(m));
+        !m.nextActions.length && ret.push(MSG.noNext(m));
+        return ret;
+      },
+      onExecute: m => {
+        const ret = this.onSave(m);
+        // mandatory field
+        return ret;
+      }
     }
   }
 };
