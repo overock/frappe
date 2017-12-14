@@ -168,6 +168,7 @@ export default class Frappe {
 
   render(bUpdateOnly) {
     this.pool.render(bUpdateOnly ? undefined : this.canvas, model => this.event.listen(model));
+    this.emit('frappe.change');
   }
 
   import (json) {

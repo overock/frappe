@@ -69,7 +69,10 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
       /**
        * 액션, 디시전 속성 편집
        */
-      propEditor = () => emit('frappe.edit', currentModel),
+      propEditor = () => {
+        emit('frappe.change');
+        emit('frappe.edit', currentModel);
+      },
 
       textInput = new LineEditor(),
       editText = e => {

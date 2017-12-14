@@ -195,8 +195,7 @@ export default {
         return ret;
       },
       onExecute: m => this.onSave(m)
-    },
-    onExecute: m => this.onSave(m)
+    }
   },
   join: {
     markup: '<image xlink:href="images/wd-join.svg" width="64" height="64"/>',
@@ -227,9 +226,8 @@ export default {
 
         m.prevActions.length<2 && ret.push(MSG.multiPrev(m));
         !m.nextActions.length && ret.push(MSG.noNext(m));
-
-        let fork;
-        (fork = m.prevActions.filter(v => v.type='fork')).length && ret.push(MSG.directJoin(fork, m));
+        //let fork;
+        //(fork = m.prevActions.filter(v => v.type='fork')).length && ret.push(MSG.directJoin(fork, m));
 
         const drill = (m, d=1) => m.prevActions.reduce((r, p) => {
                 switch(p.type) {
