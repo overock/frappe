@@ -63,6 +63,8 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         window.removeEventListener('mousemove', actionDragging);
         window.removeEventListener('mouseup', actionDragEnd);
         actionDragging(e);
+
+        emit('frappe.change');
         editMode = false;
       },
 
