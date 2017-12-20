@@ -3,6 +3,7 @@ import Event from './main/event';
 import MdPool from './model/pool';
 import SVG from './util/svg';
 import RadialMenu from './util/radial';
+import actionDef from './defs/action';
 //import uuid from './util/uuid';
 
 let instance = null;
@@ -30,12 +31,23 @@ export default class Frappe {
     this.defs.appendChild(SVG.actionHandle);
     this.defs.appendChild(SVG.actionRemove);
     this.defs.appendChild(SVG.flowHandle);
+    Object.keys(actionDef).forEach(k => {
+      const icon = SVG.build(actionDef[k].markup);
+      icon.setAttribute('width', 40);
+      icon.setAttribute('height', 40);
+
+      this.defs.appendChild(SVG.create('pattern', icon, {
+        id: `radialIcon_${k}`,
+        width: 40,
+        height: 40
+      }));
+    });
 
     parent.appendChild(this.canvas);
 
     this.pool = new MdPool();
     this.event = new Event();
-    this.radial = new RadialMenu(this.defs);
+    this.radial = new RadialMenu();
 
     this.event.bind(this);
 
@@ -175,16 +187,26 @@ export default class Frappe {
   render(bUpdateOnly) {
     this.pool.render(bUpdateOnly ? undefined : this.canvas, model => this.event.listen(model));
     this.emit('frappe.change');
+
+    // this.__timeout && clearTimeout(this.__timeout);
+    // this.__updateOnly = this.__updateOnly && bUpdateOnly;
+    // this.__timeout = setTimeout(() => this._render(this.__updateOnly), 16);
   }
+
+  // _render(bUpdateOnly) {
+  //   this.pool.render(bUpdateOnly ? undefined : this.canvas, model => this.event.listen(model));
+  //   this.emit('frappe.change');
+
+  //   this.__timeout = null;
+  //   this.__updateOnly = true;
+  // }
 
   import (json) {
     typeof json == 'string' && (json = JSON.parse(json));
     this.pool.import(json);
     this.render();
   }
-  export () {
-    return this.pool.export();
-  }
+  export () { return this.pool.export(); }
 
   /**
    * event emitters to interact event.js or any other modules

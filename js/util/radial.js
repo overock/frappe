@@ -4,23 +4,13 @@ import SVG from './svg';
 let instance = null;
 
 export default class RadialMenu {
-  constructor(defs) {
+  constructor() {
     if(instance) return instance;
 
     this.icons = {};
     this.element = SVG.create('g');
 
     Object.keys(actionDef).forEach(k => {
-      const icon = SVG.build(actionDef[k].markup);
-      icon.setAttribute('width', 40);
-      icon.setAttribute('height', 40);
-
-      defs.appendChild(SVG.create('pattern', icon, {
-        id: `radialIcon_${k}`,
-        width: 40,
-        height: 40
-      }));
-
       this.icons[k] = SVG.create('circle', null, {
         'class': 'frappe-branch-confirm',
         'r': 20,
