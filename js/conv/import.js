@@ -40,7 +40,7 @@ export default class Import {
           ret = ModelFactory.create('decision', top, left);
 
     ret.name = name;
-    [].concat(node, defNode).forEach(o => rel.push([ name, o['@to'], o['#text'] ]));
+    [].concat(node, defNode).forEach(o => rel.push([ name, o['@to'], o['#text'].replace(/^\$\{.*\}$/, '$1') ]));
     return ret;
   }
   fork(body, rel) {
@@ -82,7 +82,7 @@ export default class Import {
   }
 
   ['_map-reduce'](model, tagBody) {
-    console.log(JSON.stringify(tagBody));
+    // console.log(JSON.stringify(tagBody));
     model.props = {
       'general': {
     
@@ -406,7 +406,7 @@ export default class Import {
   }
 
   _convert_prepare(pre) {
-    let newPre = []
+    let newPre = [];
     Object.keys(pre).forEach(k => {
       const cmd = k.split('!')[0];
       const index = k.split('!')[1];
