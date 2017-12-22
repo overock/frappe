@@ -292,7 +292,8 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         snapping(e);
         emit('frappe.snapend', {
           props: evtProps,
-          listener: snapSelect
+          listener: snapSelect,
+          confirmed: e.target.classList.contains('frappe-branch-confirm')
         });
 
         editMode = false;

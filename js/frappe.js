@@ -397,12 +397,13 @@ export default class Frappe {
             type: type,
             listener: fn,
             confirmed: c
-          } = d, newMd = this.replace(ga, type);
+          } = d;
 
     gf1.unlinkAll();
     gf2.unlinkAll();
 
     if(c) {
+      const newMd = this.replace(ga, type);
       this.link(newMd, target.next[0]);
       this.link(target, newMd);
     }
@@ -415,6 +416,3 @@ export default class Frappe {
     target.element.style.display = '';
   }
 }
-
-window.Frappe = Frappe;
-//window.Node = Node;

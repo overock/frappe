@@ -8,7 +8,6 @@ document.body.style.backgroundColor = '#777';
 // for demo
 let $f = window.$f = frappe;
 window.Node = Node;
-
 window.$x = frappe.pool.export;
 
 let equals = window.equals = (src, tar, excKey = [], bType) => {
