@@ -44,8 +44,11 @@ export default class LineEditor {
 
   hide() {
     if(!callbackFn(isCancelled)) {
-      this.input.focus();
-      this.input.select();
+      this.anim = {
+        ts: new Date(),
+        iX: this.input.offsetLeft
+      };
+      requestAnimationFrame(() => this.shake());
       return;
     }
 
@@ -53,6 +56,19 @@ export default class LineEditor {
     this.input.parentElement && this.input.parentElement.removeChild(this.input);
     
     isCancelled = false;
+  }
+
+  shake() {
+    const delta = new Date() - this.anim.ts;
+    if(delta > 500) {
+      this.input.focus();
+      this.input.select();
+      return;
+    }
+
+    const offset = Math.sin(delta/20) * Math.sin(delta/500*Math.PI) * 4;
+    this.input.style.left = (this.anim.iX + offset) + 'px';
+    requestAnimationFrame(() => this.shake());
   }
 
   fit() {
