@@ -58,6 +58,7 @@ export default class Frappe {
 
       'frappe.add': e => this.add(e.detail.type, e.detail.top, e.detail.left, e.detail.bottom, e.detail.right),
       'frappe.remove': e => this.remove(e.detail.model),
+      'frappe.clear': e => this.clear(),
       'frappe.link': e => this.link(e.detail.src, e.detail.dest),
       'frappe.replace': e => this.replace(e.detail.src, e.detail.dest),
       'frappe.render': () => this.render(),
@@ -149,6 +150,11 @@ export default class Frappe {
   remove(model) {
     this.pool.remove(model.id);
     model.element.parentNode && this.canvas.removeChild(model.element);
+  }
+
+  clear(model) {
+    this.pool.clear();
+    this.render();
   }
 
   link(src, dest) {
