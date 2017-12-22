@@ -668,7 +668,7 @@ export default {
     }
   },
   hive2: {
-    markup: '<image xlink:href="images/wd-hive.svg" width="64" height="64"/>',
+    markup: '<image xlink:href="images/wd-hive2.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
