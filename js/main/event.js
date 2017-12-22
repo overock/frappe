@@ -104,7 +104,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         const name = currentModel.type == 'start' ? 'start' : textInput.text,
               regex = currentModel.isFlow ? /.*/ : /^[a-zA-Z_][\-_a-zA-Z0-9]{0,38}$/g,
               matches = regex.test(name),
-              exists = pool.filter(m => m!=currentModel).some(m => m.name == name);
+              exists = !currentModel.isFlow && pool.filter(m => m!=currentModel).some(m => m.name == name);
 
         if(!bCancel && (!matches || exists)) return false;
         
