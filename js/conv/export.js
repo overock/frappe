@@ -32,7 +32,7 @@ export default class Out {
   start(r, v) {
     const tag = r.tag('start');
     this._geometry(tag, v);
-    tag.prop('to', v.nextAction.name);
+    v.nextAction && tag.prop('to', v.nextAction.name);
   }
   end(r, v) {
     const tag = r.tag('end');
@@ -52,7 +52,7 @@ export default class Out {
       const cond = f.cond.replace(/^\$\{.*\}$/, '$1');
       pred.tag('case').text(`\${${cond}}`).prop('to', f.next[0].name);
     });
-    pred.tag('default').prop('to', v.next[v.next.length-1].next[0].name);
+    v.next.length && pred.tag('default').prop('to', v.next[v.next.length-1].next[0].name);
   }
   fork(r, v) {
     const tag = r.tag('fork').prop('name', v.name);
@@ -60,7 +60,8 @@ export default class Out {
     v.nextActions.forEach(a => tag.tag('path').prop('start', a.name));
   }
   join(r, v) {
-    const tag = r.tag('join').prop('name', v.props.name).prop('to', v.nextAction.name);
+    const tag = r.tag('join').prop('name', v.props.name);
+    v.nextAction && tag.prop('to', v.nextAction.name);
     this._geometry(tag, v);
   }
 

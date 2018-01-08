@@ -12,6 +12,8 @@ export default class Node {
     }
   }
 
+  _stringify(v) { return v? v+'' : v===0? 0 : ''; }
+
   tags(t) {
     if([ '@', '#', '!' ].indexOf(t[0]) >= 0) return;
     const ret = this[t];
@@ -35,26 +37,26 @@ export default class Node {
   }
 
   prop(k, v) {
-    if(typeof k == 'object') {
+    if(typeof k == 'object') {  // batch
       Object.keys(k).forEach(kk => this.prop(kk, k[kk]));
-    } else if(typeof v == 'undefined') {
+    } else if(arguments.length == 1) {  // getter
       return this['@' + k] || '';
-    } else {
-      this['@' + k] = v.toString();
+    } else if(arguments.length == 2) {  // setter
+      this['@' + k] = this._stringify(v);
     }
 
     return this;
   }
 
-  text(v) { return typeof v == 'undefined' ? this['#text'] || '' : (this['#text'] = v.toString()), this; }
+  text(v) { return typeof v == 'undefined' ? this['#text'] || '' : (this['#text'] = this._stringify(v)), this; }
 
   option(k, v) {
-    if(typeof k == 'object') {
+    if(typeof k == 'object') {  // batch
       Object.keys(k).forEach(kk => this.option(kk, k[kk]));
-    } else if(typeof v == 'undefined') {
+    } else if(arguments.length == 1) {  // getter
       return this['!' + k] || '';
-    } else {
-      this['!' + k] = v.toString();
+    } else if(arguments.length == 2) {  // setter
+      this['!' + k] = this._stringify(v);
     }
 
     return this;
