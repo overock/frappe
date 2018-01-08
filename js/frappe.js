@@ -422,3 +422,5 @@ export default class Frappe {
     target.element.style.display = '';
   }
 }
+
+window.Frappe = Frappe;
