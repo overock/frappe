@@ -9,14 +9,17 @@ export default class ActionRenderer extends Renderer {
             <use xlink:href="#actionRemove" class="frappe-handle" width="20" height="20" />`);
     this.el.classList.add('frappe-action');
     this.el.setAttribute('data-actiontype', model.type);
+    this.icon.setAttribute('filter', 'url(#actionNormal)');
   }
 
+  get icon() { return this.el.firstElementChild; }
   get label() { return this.el.getElementsByClassName('frappe-label')[0]; }
   get handle() { return this.el.getElementsByClassName('frappe-handle')[0]; }
   get removeBtn() { return this.el.getElementsByClassName('frappe-handle')[1]; }
 
   update(model) {
     super.update(model);
+
     this.element.setAttribute('x', model.left);
     this.element.setAttribute('y', model.top);
 
@@ -35,6 +38,9 @@ export default class ActionRenderer extends Renderer {
       this.label.setAttribute('y', model.bottom + 20);
       this.label.style.display = '';
       this.label.textContent = model.name;
+
+      let status = model.onSave()? 'Error' : model.onExecute()? 'Warning' : 'Normal';
+      this.icon.setAttribute('filter', `url(#action${status})`);
     }
   }
 }

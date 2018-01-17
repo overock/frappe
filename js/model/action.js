@@ -13,7 +13,10 @@ export default class Action extends Model {
     this.rules.min = this.rules.min || 0;
     this.rules.max = this.rules.max || -1;
     this.rules.maxFrom = this.rules.maxFrom || 1;
-    this.rules.maxNaxt = this.rules.maxNext || 1;
+    this.rules.maxNext = this.rules.maxNext || 1;
+
+    this.onSave = p => this.rules.onSave(this, p);
+    this.onExecute = p => this.rules.onExecute(this, p);
   }
 
   get def() { return actionDef[this.type]; }

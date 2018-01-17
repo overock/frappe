@@ -15,7 +15,8 @@ export default class RadialMenu {
         'class': 'frappe-branch-confirm',
         'r': 20,
         'data-actiontype': k,
-        'fill': `url(#radialIcon_${k})`
+        'fill': `url(#radialIcon_${k})`,
+        'filter': 'url(#actionRadial)'
       });
     });
 

@@ -22,11 +22,48 @@ const MSG = {
   noParam: (m, k) => `${m.name} must contain value for key ${k}!`
 };
 
+const ACTION_RULES = {
+  maxFrom: 1,
+  maxTo: 2,
+  before: [
+    'start', 'decision', 'fork', 'join', // control
+    'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
+    'shell', 'hive', 'sqoop', // 3.2.0
+    'distcp', 'spark', // 4.0.0
+    'hive2' // 4.2.0
+  ],
+  after: [
+    'end', 'kill', 'decision', 'fork', 'join', // control
+    'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
+    'shell', 'hive', 'sqoop', // 3.2.0
+    'distcp', 'spark', // 4.0.0
+    'hive2' // 4.2.0
+  ],
+  onAdd: () => false,
+  onEdit: () => false,
+  onSave: m => {
+    const ret = [];
+    !m.prevActions.length && ret.push(MSG.noPrev(m));
+    !m.nextActions.length && ret.push(MSG.noNext(m));
+    return ret.join('\n');
+  },
+  onExecute: m => {
+    const ret = [ m.rules.onSave(m) ];
+    // mandatory field
+    return ret.join('\n');
+  }
+};
+
 export default {
   ghost: {
     markup: '<rect width="64" height="64" rx="12" ry="12"/>',
     props: {},
-    rules: {}
+    rules: {
+      onAdd: () => null,
+      onEdit: () => null,
+      onSave: () => null,
+      onExecute: () => null
+    }
   },
 
   start: {
@@ -46,16 +83,16 @@ export default {
         'hive2' // 4.2.0
       ],
       onAdd: (m, p) => {
-        if(p.filter(v => v.type=='start').length) return MSG.oneStart;
+        if(p && p.filter(v => v.type=='start').length) return MSG.oneStart;
       },
       onEdit: () => false,
       onSave: (m, p) => {
         const ret = [];
-        p.filter(v => v.type=='start').length!=1 && ret.push(MSG.oneStart);
+        p && p.filter(v => v.type=='start').length!=1 && ret.push(MSG.oneStart);
         !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
+        return ret.join('\n');
       },
-      onExecute: (m, p) => this.onSave(m, p)
+      onExecute: (m, p) => m.rules.onSave(m, p)
     }
   },
   end: {
@@ -75,16 +112,16 @@ export default {
       ],
       after: [],
       onAdd: (m, p) => {
-        if(p.filter(v => v.type=='end').length) return MSG.oneEnd;
+        if(p && p.filter(v => v.type=='end').length) return MSG.oneEnd;
       },
       onEdit: () => false,
       onSave: (m, p) => {
         const ret = [];
-        p.filter(v => v.type=='start').length!=1 && ret.push(MSG.oneEnd);
+        p && p.filter(v => v.type=='start').length!=1 && ret.push(MSG.oneEnd);
         !m.prevActions.length && ret.push(MSG.noPrev(m));
-        return ret;
+        return ret.join('\n');
       },
-      onExecute: (m, p) => this.onSave(m, p)
+      onExecute: (m, p) => m.rules.onSave(m, p)
     }
   },
   kill: {
@@ -110,7 +147,7 @@ export default {
       after: [],
       onEdit: () => false,
       onSave: m => !m.prevActions.length && MSG.noPrev(m),
-      onExecute: m => this.onSave(m)
+      onExecute: m => m.rules.onSave(m)
     }
   },
   decision: {
@@ -141,11 +178,12 @@ export default {
         const ret = [];
         !m.prevActions.length && ret.push(MSG.noPrev(m));
         m.prevAction.length<2 && ret.push(MSG.multiNext(m));
+        return ret.join('\n');
       },
       onExecute: m => {
-        const ret = [];
-        ret.push(this.onSave(m));
+        const ret = [ m.rules.onSave(m) ];
         m.next.some(f => !(f.isLast || f.pred)) && ret.push(this.noCond(m));
+        return ret.join('\n');
       }
     }
   },
@@ -192,9 +230,9 @@ export default {
               merge = (s, t) => t===undefined || s==t? s : s===undefined? t : null;
         !drill(m) && ret.push(MSG.missJoin(m));
 
-        return ret;
+        return ret.join('\n');
       },
-      onExecute: m => this.onSave(m)
+      onExecute: m => m.rules.onSave(m)
     }
   },
   join: {
@@ -239,9 +277,9 @@ export default {
               merge = (s, t) => t===undefined || s==t? s : s===undefined? t : null;
         !drill(m) && ret.push(MSG.missFork(m));
 
-        return ret;
+        return ret.join('\n');
       },
-      onExecute: m => this.onSave(m)      
+      onExecute: m => m.rules.onSave(m)      
     }
   },
 
@@ -257,39 +295,7 @@ export default {
         'archive': []
       }    
     },
-    rules: {
-      min: 0,
-      max: Infinity,
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ]
-    },
-    onAdd: () => false,
-    onEdit: () => false,
-    onSave: m => {
-      const ret = [];
-      !m.prevActions.length && ret.push(MSG.noPrev(m));
-      !m.nextActions.length && ret.push(MSG.noNext(m));
-      return ret;
-    },
-    onExecute: m => {
-      const ret = this.onSave(m);
-      // mandatory field
-      return ret;
-    }
+    rules: ACTION_RULES
   },
   pig: {
     markup: '<image xlink:href="images/wd-pig.svg" width="64" height="64"/>',
@@ -308,37 +314,7 @@ export default {
         'archive': []
       }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ]
-    },
-    onAdd: () => false,
-    onEdit: () => false,
-    onSave: m => {
-      const ret = [];
-      !m.prevActions.length && ret.push(MSG.noPrev(m));
-      !m.nextActions.length && ret.push(MSG.noNext(m));
-      return ret;
-    },
-    onExecute: m => {
-      const ret = this.onSave(m);
-      // mandatory field
-      return ret;
-    }
+    rules: ACTION_RULES
   },
   fs: {
     markup: '<image xlink:href="images/wd-fs.svg" width="64" height="64"/>',
@@ -348,37 +324,7 @@ export default {
         'configuration': []
       }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ]
-    },
-    onAdd: () => false,
-    onEdit: () => false,
-    onSave: m => {
-      const ret = [];
-      !m.prevActions.length && ret.push(MSG.noPrev(m));
-      !m.nextActions.length && ret.push(MSG.noNext(m));
-      return ret;
-    },
-    onExecute: m => {
-      const ret = this.onSave(m);
-      // mandatory field
-      return ret;
-    }
+    rules: ACTION_RULES
   },
   ssh: {
     markup: '<image xlink:href="images/wd-ssh.svg" width="64" height="64"/>',
@@ -392,37 +338,7 @@ export default {
         'args': []
       }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      onAdd: () => false,
-      onEdit: () => false,
-      onSave: m => {
-        const ret = [];
-        !m.prevActions.length && ret.push(MSG.noPrev(m));
-        !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
-      },
-      onExecute: m => {
-        const ret = this.onSave(m);
-        // mandatory field
-        return ret;
-      }
-    }
+    rules: ACTION_RULES
   },
   'sub-workflow': {
     markup: '<image xlink:href="images/wd-sub-workflow.svg" width="64" height="64"/>',
@@ -435,37 +351,7 @@ export default {
         'configuration': []
       }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      onAdd: () => false,
-      onEdit: () => false,
-      onSave: m => {
-        const ret = [];
-        !m.prevActions.length && ret.push(MSG.noPrev(m));
-        !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
-      },
-      onExecute: m => {
-        const ret = this.onSave(m);
-        // mandatory field
-        return ret;
-      }
-    }
+    rules: ACTION_RULES
   },
   java: {
     markup: '<image xlink:href="images/wd-java.svg" width="64" height="64"/>',
@@ -485,37 +371,7 @@ export default {
         'archive': []
       }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      onAdd: () => false,
-      onEdit: () => false,
-      onSave: m => {
-        const ret = [];
-        !m.prevActions.length && ret.push(MSG.noPrev(m));
-        !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
-      },
-      onExecute: m => {
-        const ret = this.onSave(m);
-        // mandatory field
-        return ret;
-      }
-    }
+    rules: ACTION_RULES
   },
   email: {
     markup: '<image xlink:href="images/wd-email.svg" width="64" height="64"/>',
@@ -530,37 +386,7 @@ export default {
         }
       }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      onAdd: () => false,
-      onEdit: () => false,
-      onSave: m => {
-        const ret = [];
-        !m.prevActions.length && ret.push(MSG.noPrev(m));
-        !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
-      },
-      onExecute: m => {
-        const ret = this.onSave(m);
-        // mandatory field
-        return ret;
-      }
-    }
+    rules: ACTION_RULES
   },
   shell: {
     markup: '<image xlink:href="images/wd-shell.svg" width="64" height="64"/>',
@@ -583,37 +409,7 @@ export default {
         'archive': []
       }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      onAdd: () => false,
-      onEdit: () => false,
-      onSave: m => {
-        const ret = [];
-        !m.prevActions.length && ret.push(MSG.noPrev(m));
-        !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
-      },
-      onExecute: m => {
-        const ret = this.onSave(m);
-        // mandatory field
-        return ret;
-      }
-    }
+    rules: ACTION_RULES
   },
   hive: {
     markup: '<image xlink:href="images/wd-hive.svg" width="64" height="64"/>',
@@ -635,37 +431,7 @@ export default {
         'archive': []
       }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      onAdd: () => false,
-      onEdit: () => false,
-      onSave: m => {
-        const ret = [];
-        !m.prevActions.length && ret.push(MSG.noPrev(m));
-        !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
-      },
-      onExecute: m => {
-        const ret = this.onSave(m);
-        // mandatory field
-        return ret;
-      }
-    }
+    rules: ACTION_RULES
   },
   hive2: {
     markup: '<image xlink:href="images/wd-hive2.svg" width="64" height="64"/>',
@@ -688,51 +454,8 @@ export default {
         'file': [],
         'archive': []
       },
-      onAdd: () => false,
-      onEdit: () => false,
-      onSave: m => {
-        const ret = [];
-        !m.prevActions.length && ret.push(MSG.noPrev(m));
-        !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
-      },
-      onExecute: m => {
-        const ret = this.onSave(m);
-        // mandatory field
-        return ret;
-      }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      onAdd: () => false,
-      onEdit: () => false,
-      onSave: m => {
-        const ret = [];
-        !m.prevActions.length && ret.push(MSG.noPrev(m));
-        !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
-      },
-      onExecute: m => {
-        const ret = this.onSave(m);
-        // mandatory field
-        return ret;
-      }
-    }
+    rules: ACTION_RULES
   },
   sqoop: {
     markup: '<image xlink:href="images/wd-sqoop.svg" width="64" height="64"/>',
@@ -749,37 +472,7 @@ export default {
         'archive': []
       }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      onAdd: () => false,
-      onEdit: () => false,
-      onSave: m => {
-        const ret = [];
-        !m.prevActions.length && ret.push(MSG.noPrev(m));
-        !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
-      },
-      onExecute: m => {
-        const ret = this.onSave(m);
-        // mandatory field
-        return ret;
-      }
-    }
+    rules: ACTION_RULES
   },
   distcp: {
     markup: '<image xlink:href="images/wd-dist-cp.svg" width="64" height="64"/>',
@@ -795,37 +488,7 @@ export default {
         'configuration': []
       }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      onAdd: () => false,
-      onEdit: () => false,
-      onSave: m => {
-        const ret = [];
-        !m.prevActions.length && ret.push(MSG.noPrev(m));
-        !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
-      },
-      onExecute: m => {
-        const ret = this.onSave(m);
-        // mandatory field
-        return ret;
-      }
-    }
+    rules: ACTION_RULES
   },
   spark: {
     markup: '<image xlink:href="images/wd-spark.svg" width="64" height="64"/>',
@@ -852,36 +515,6 @@ export default {
         'archive': []
       }
     },
-    rules: {
-      maxFrom: 1,
-      maxTo: 2,
-      before: [
-        'start', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      after: [
-        'end', 'kill', 'decision', 'fork', 'join', // control
-        'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
-        'shell', 'hive', 'sqoop', // 3.2.0
-        'distcp', 'spark', // 4.0.0
-        'hive2' // 4.2.0
-      ],
-      onAdd: () => false,
-      onEdit: () => false,
-      onSave: m => {
-        const ret = [];
-        !m.prevActions.length && ret.push(MSG.noPrev(m));
-        !m.nextActions.length && ret.push(MSG.noNext(m));
-        return ret;
-      },
-      onExecute: m => {
-        const ret = this.onSave(m);
-        // mandatory field
-        return ret;
-      }
-    }
+    rules: ACTION_RULES
   }
 };

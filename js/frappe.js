@@ -27,10 +27,10 @@ export default class Frappe {
     this.canvas.style.width = width || '100%';
     this.canvas.style.height = height || '100%';
 
-    this.defs.appendChild(SVG.marker);
-    this.defs.appendChild(SVG.actionHandle);
-    this.defs.appendChild(SVG.actionRemove);
-    this.defs.appendChild(SVG.flowHandle);
+    [ 'marker', 'actionHandle', 'actionRemove', 'flowHandle', 'normMatrix', 'radialMatrix', 'warnMatrix', 'errMatrix' ]
+      .forEach(v => this.defs.appendChild(SVG[v]));
+
+    
     Object.keys(actionDef).forEach(k => {
       const icon = SVG.build(actionDef[k].markup);
       icon.setAttribute('width', 40);
@@ -150,9 +150,10 @@ export default class Frappe {
   remove(model) {
     this.pool.remove(model.id);
     model.element.parentNode && this.canvas.removeChild(model.element);
+    this.render();
   }
 
-  clear(model) {
+  clear() {
     this.pool.clear();
     this.render();
   }
