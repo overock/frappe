@@ -15,7 +15,7 @@ const MSG = {
   noPrev: m => `There's no way that reaches ${m.name} node!`,
   multiPrev: m => `${m.name} node must follow two or more action/controls!`,
   multiNext: m => `${m.name} node must have two or more next action/control node!`,
-  noCond: m => `There's on or more missing condition(s) in decision node ${m.name}!`,
+  noCond: m => `There's one or more missing condition(s) in decision node ${m.name}!`,
   directJoin: (f, j) => `Cannot connect ${f.name} and ${j.name} directly!`,
   missFork: m => `${m.name} must follow one and only one fork node!`,
   missJoin: m => `${m.name} must reach one and only one join node!`,
@@ -44,7 +44,7 @@ const ACTION_RULES = {
   onSave: m => {
     const ret = [];
     !m.prevActions.length && ret.push(MSG.noPrev(m));
-    !m.nextActions.length && ret.push(MSG.noNext(m));
+    !m.nextActions.filter(v => v && v.type!='kill' && v.type!='ghost').length && ret.push(MSG.noNext(m));
     return ret.join('\n');
   },
   onExecute: m => {
@@ -177,12 +177,12 @@ export default {
       onSave: m => {
         const ret = [];
         !m.prevActions.length && ret.push(MSG.noPrev(m));
-        m.prevAction.length<2 && ret.push(MSG.multiNext(m));
+        m.nextActions.length<2 && ret.push(MSG.multiNext(m));
         return ret.join('\n');
       },
       onExecute: m => {
         const ret = [ m.rules.onSave(m) ];
-        m.next.some(f => !(f.isLast || f.pred)) && ret.push(this.noCond(m));
+        m.next.some(f => !(f.isLast || f.cond)) && ret.push(MSG.noCond(m));
         return ret.join('\n');
       }
     }
@@ -218,16 +218,22 @@ export default {
         m.nextActions.length<2 && ret.push(MSG.multiNext(m));
 
         let join;
-        (join = m.nextActions.filter(v => v.type='join')).length && ret.push(MSG.directJoin(m, join));
-        
-        const drill = (m, d=1) => m.nextActions.reduce((r, n) => {
-                switch(n.type) {
-                  case 'fork':  r = merge(r, drill(n, d+1));                break;
-                  case 'join':  r = merge(r, d==1? n.name : drill(n, d-1)); break;
-                  default:      r = merge(r, drill(n, d));
-                }
-              }, undefined),
-              merge = (s, t) => t===undefined || s==t? s : s===undefined? t : null;
+        (join = m.nextActions.filter(v => v && v.type=='join')).length && ret.push(MSG.directJoin(m, join));
+
+        const drill = (m, d = 0) => {
+          const candidate = [ ...new Set(m.nextActions.filter(n => n).map(n => {
+            switch(n.type) {
+              case 'fork':
+                return drill(n, d+1);
+              case 'join':
+                return d? drill(n, d-1) : n.name;
+              default:
+                return drill(n, d);
+            }
+          })) ];
+
+          return candidate.length==1? candidate[0] : '';
+        };
         !drill(m) && ret.push(MSG.missJoin(m));
 
         return ret.join('\n');
@@ -264,17 +270,23 @@ export default {
 
         m.prevActions.length<2 && ret.push(MSG.multiPrev(m));
         !m.nextActions.length && ret.push(MSG.noNext(m));
-        //let fork;
-        //(fork = m.prevActions.filter(v => v.type='fork')).length && ret.push(MSG.directJoin(fork, m));
+        let fork;
+        (fork = m.prevActions.filter(v => v && v.type=='fork')).length && ret.push(MSG.directJoin(fork, m));
 
-        const drill = (m, d=1) => m.prevActions.reduce((r, p) => {
-                switch(p.type) {
-                  case 'fork':  r = merge(r, d==1? p.name : drill(p, d-1)); break;
-                  case 'join':  r = merge(r, drill(p, d+1));                break;
-                  default:      r = merge(r, drill(p, d));
-                }
-              }, undefined),
-              merge = (s, t) => t===undefined || s==t? s : s===undefined? t : null;
+        const drill = (m, d = 0) => {
+          const candidate = [ ...new Set(m.prevActions.filter(p => p).map(p => {
+            switch(p.type) {
+              case 'fork':
+                return d? drill(p, d-1) : p.name;
+              case 'join':
+                return drill(p, d+1);
+              default:
+                return drill(p, d);
+            }
+          })) ];
+
+          return candidate.length==1? candidate[0] : '';
+        };
         !drill(m) && ret.push(MSG.missFork(m));
 
         return ret.join('\n');

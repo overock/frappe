@@ -111,6 +111,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         bCancel || (currentModel.name = name);
         currentModel.editing = false;
         currentModel.render();
+        currentModel.prev[0] && currentModel.prev[0].render();
         currentModel = null;
         editMode = false;
 

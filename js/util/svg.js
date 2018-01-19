@@ -96,9 +96,9 @@ export default class SVG {
     return this.build(`
       <filter id="actionWarning" color-interpolation-filters="sRGB">
         <feColorMatrix in="SourceGraphic" type="matrix"
-          values="1 1    0 0 0
-                  1 0.95 0 0 0
-                  1 0    0 0 0
+          values="1 0.92 0 0 0
+                  1 0.86 0 0 0
+                  1 0.28 0 0 0
                   0 0    0 1 0" />
       </filter>
     `);
