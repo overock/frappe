@@ -251,13 +251,12 @@ export default class Import {
   _shell(model, tagBody) {
     model.props = {
       'general': {
-        'config': { 'capture-output': tagBody['capture-output'] ? true : false },
-        'exec': { 'command': this._getText(tagBody.exec) }
+        'config': { 'capture-output': tagBody['capture-output'] ? true : false, 'exec': this._getText(tagBody.exec) },
       },
       'advanced': {}
     };
 
-    const targetMap = { 'env-var': 'advanced.env-var' };
+    const targetMap = { 'env-var': 'general.env-var', 'file': 'general.file', 'argument': 'general.argument'  };
     [ 'env-var', 'prepare', 'configuration', 'argument', 'archive', 'file' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
     });
