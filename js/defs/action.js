@@ -568,19 +568,16 @@ export default {
       'general': {
         'config': {
           'capture-output': false,
-          'execOption': 'command'
+          'exec': ''
         },
-        'exec': {
-          'command': ''
-        }
+        'file': [],
+        'env-var': [],
+        'argument': []
       },
       'advanced': {
-        'env-var': [],
         'prepare': [],
-        'argument': [],
-        'configuration': [],
-        'file': [],
-        'archive': []
+	      'configuration': [],
+	      'archive': []
       }
     },
     rules: {
