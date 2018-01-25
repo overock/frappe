@@ -197,8 +197,9 @@ export default class Out {
       this._addPrepare(adv.prepare, body);
       this._addConfiguration(adv.configuration, body);
 
-      body.tag('exec').text(gen.exec.command);
-      [ 'argument', 'env-var', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
+      body.tag('exec').text(gen.config.exec);
+      [ 'argument', 'env-var', 'file' ].forEach(k => gen[k] && gen[k].forEach(t => body.tag(k).text(t)));
+      [ 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
       gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
     }, {
       jobTracker: true,
