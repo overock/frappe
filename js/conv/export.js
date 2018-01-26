@@ -68,11 +68,30 @@ export default class Out {
   //action
   ['map-reduce'](r, v) {
     return this._action(r, v, body => {
-      const { general: gen, advanced: adv } = v.props;
-
+      const { general: gen, advanced: adv } = v.props, mt = gen.mrType.mrTypeOption;
       this._addPrepare(adv.prepare, body);
+      switch(mt) {
+        case 'streaming':
+          const s = body.tag(mt);
+          gen.mrType['mapper'] && s.tag('mapper').text(gen.mrType['mapper']);
+          gen.mrType['reducer'] && s.tag('reducer').text(gen.mrType['reducer']);
+          gen.mrType['record-reader'] && s.tag('record-reader').text(gen.mrType['record-reader']);
+          [ 'record-reader-mapping', 'env' ].forEach(k => gen.mrType[k] && gen.mrType[k].forEach(t => s.tag(k).text(t)));
+          break;
+        case 'pipe':
+          const p = body.tag(mt);
+          gen.mrType['map'] && p.tag('map').text(gen.mrType['map']);
+          gen.mrType['reduce'] && p.tag('reduce').text(gen.mrType['reduce']);
+          gen.mrType['inputformat'] && p.tag('inputformat').text(gen.mrType['inputformat']);
+          gen.mrType['partitioner'] && p.tag('partitioner').text(gen.mrType['partitioner']);
+          gen.mrType['writer'] && p.tag('writer').text(gen.mrType['writer']);
+          gen.mrType['program'] && p.tag('program').text(gen.mrType['program']);
+          break;
+      }
+   
       this._addConfiguration(gen.configuration, body);
-      [ 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
+      [ 'file' ].forEach(k => gen[k] && gen[k].forEach(t => body.tag(k).text(t)));
+      [ 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }, {
       jobTracker: true,
       nameNode: true

@@ -299,11 +299,12 @@ export default {
     markup: '<image xlink:href="images/wd-mapreduce.svg" width="64" height="64"/>',
     props: {      
       'general': {
-        'configuration': []
+        'mrType': {},
+        'configuration': [],
+        'file': []
       },
       'advanced': {
         'prepare': [],
-        'file': [],
         'archive': []
       }    
     },
