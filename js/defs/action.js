@@ -203,7 +203,7 @@ export default {
         'hive2' // 4.2.0
       ],
       after: [
-        'end', 'decision', 'fork', // control
+        'decision', 'fork', // control
         'map-reduce', 'pig', 'fs', 'ssh', 'sub-workflow', 'java', 'email', // 3.1.3
         'shell', 'hive', 'sqoop', // 3.2.0
         'distcp', 'spark', // 4.0.0

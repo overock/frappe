@@ -12,9 +12,23 @@ export default class Flow extends Model {
 
   // decision flow는 name을 cond로 쓴다.
   get name() {
-    if(this.isGhost || !this.isCase) return '';
-    if(this.isLast) return 'default';
-    return `[#${this.order}: ${this.props.predicate || ''}]`;
+    if(!this.prev[0]) return '';
+
+    switch(this.prev[0].type) {
+      case 'ghost':
+      case 'start':
+      case 'end':
+      case 'kill':
+      case 'fork':
+      case 'join':
+        return '';
+      
+      case 'decision':
+        return this.isLast? 'default' : `[#${this.order}: ${this.props.predicate || ''}]`;
+      
+      default:
+        return this.order==1? '' : 'error';
+    }
   }
   set name(s) { this.isCase && (this.props.predicate = s); }
 
