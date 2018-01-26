@@ -426,9 +426,6 @@ export default {
     props: {
       'general': {
         'config': {
-          'hiveOption': 'script'
-        },
-        'script': {
           'script': ''
         }
       },
@@ -450,9 +447,6 @@ export default {
         'config': {
           'jdbc-url': '',
           'password': '',
-          'hiveOption': 'script'
-        },
-        'script': {
           'script': ''
         }
       },

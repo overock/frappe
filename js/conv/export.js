@@ -232,14 +232,14 @@ export default class Out {
               general: gen,
               advanced: adv
             } = v.props,
-            w = gen.config.hiveOption;
+            s = gen.config.script;
 
       body.prop('xmlns', 'uri:oozie:hive-action:0.5');
 
       this._addPrepare(adv.prepare, body);
       this._addConfiguration(adv.configuration, body);
 
-      body.tag(w).text(gen[w][w]);
+      body.tag('script').text(s);
 
       [ 'param', 'argument', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }, {
@@ -256,8 +256,8 @@ export default class Out {
       body.prop('xmlns', 'uri:oozie:sqoop-action:0.4');
 
       this._addPrepare(adv.prepare, body);
+      conf['job-xml'] && body.tag('job-xml').text(conf['job-xml']);
       this._addConfiguration(adv.configuration, body);
-
       conf.command && body.tag('command').text(conf.command);
       conf.arg && [ 'arg' ].forEach(k => conf[k] && conf[k].forEach(t => body.tag(k).text(t)));
       [ 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
@@ -310,7 +310,7 @@ export default class Out {
   hive2(r, v) {
     return this._action(r, v, body => {
       const { general: gen, advanced: adv } = v.props,
-            w = gen.config.hiveOption;
+            s = gen.config.script;
 
       body.prop('xmlns', 'uri:oozie:hive2-action:0.2');
 
@@ -319,7 +319,7 @@ export default class Out {
       
       body.tag('jdbc-url').text(gen.config['jdbc-url']);
       gen.config.password && body.tag('password').text(gen.config.password);
-      body.tag(w).text(gen[w][w]);
+      body.tag('script').text(s);
 
       [ 'param', 'argument', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }, {
