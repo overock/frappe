@@ -156,7 +156,7 @@ export default class Out {
     return this._action(r, v, body => {
       const { general: gen } = v.props;
 
-      body.prop('xmlns', 'uri:oozie:ssh-action:0.2');
+      body.prop('xmlns', 'uri:oozie:ssh-action:0.1');
       body.tag('host').text(gen.config.host);
       body.tag('command').text(gen.config.command);
       [ 'args' ].forEach(k => gen.config[k] && gen.config[k].forEach(t => body.tag(k).text(t)));
@@ -211,7 +211,7 @@ export default class Out {
     return this._action(r, v, body => {
       const { general: gen, advanced: adv } = v.props;
 
-      body.prop('xmlns', 'uri:oozie:shell-action:0.2');
+      body.prop('xmlns', 'uri:oozie:shell-action:0.3');
 
       this._addPrepare(adv.prepare, body);
       this._addConfiguration(adv.configuration, body);
@@ -253,7 +253,7 @@ export default class Out {
       const { general: gen, advanced: adv } = v.props,
             conf = gen.config;
 
-      body.prop('xmlns', 'uri:oozie:sqoop-action:0.3');
+      body.prop('xmlns', 'uri:oozie:sqoop-action:0.4');
 
       this._addPrepare(adv.prepare, body);
       conf['job-xml'] && body.tag('job-xml').text(conf['job-xml']);
@@ -288,7 +288,7 @@ export default class Out {
     return this._action(r, v, body => {
       const { general: gen, option: opt, advanced: adv } = v.props;
 
-      body.prop('xmlns', 'uri:oozie:spark-action:0.1');
+      body.prop('xmlns', 'uri:oozie:spark-action:0.2');
 
       this._addPrepare(adv.prepare, body);
       this._addConfiguration(adv.configuration, body);
@@ -312,7 +312,7 @@ export default class Out {
       const { general: gen, advanced: adv } = v.props,
             s = gen.config.script;
 
-      body.prop('xmlns', 'uri:oozie:hive2-action:0.1');
+      body.prop('xmlns', 'uri:oozie:hive2-action:0.2');
 
       this._addPrepare(adv.prepare, body);
       this._addConfiguration(adv.configuration, body);
