@@ -284,7 +284,8 @@ export default class Import {
   _hive(model, tagBody) {
     model.props = {
       'general': {
-        'config': { 'hiveOption': tagBody.script ? 'script' : 'query' }
+        'config': {
+          'script': this._getText(tagBody.script)  }
       },
       'advanced': {}
     };
@@ -301,7 +302,11 @@ export default class Import {
 
   _sqoop(model, tagBody) {
     model.props = {
-      'general': { 'config': {} },
+      'general': { 
+        'config': {
+          'job-xml': this._getText(tagBody['job-xml']) 
+        } 
+      },
       'advanced': {}
     };
     
@@ -362,7 +367,7 @@ export default class Import {
         'config': {
           'jdbc-url': this._getText(tagBody['jdbc-url']),
           'password': this._getText(tagBody['password']),
-          'hiveOption': tagBody.script ? 'script' : 'query'
+          'script': this._getText(tagBody['script']) 
         }
       },
       'advanced': {}
