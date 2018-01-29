@@ -275,8 +275,8 @@ export default class Out {
 
       this._addPrepare(adv.prepare, body);
       this._addConfiguration(adv.configuration, body);
-
-      gen.config['java-opts'] && body.tag('java-opts').text(gen.config['java-opts']);
+      
+      gen.config && gen.config['java-opts'] && body.tag('java-opts').text(gen.config['java-opts']);
       [ 'arg' ].forEach(k => gen[k] && gen[k].forEach(t => body.tag(k).text(t)));
     }, {
       jobTracker: true,
