@@ -85,12 +85,31 @@ export default class Import {
     // console.log(JSON.stringify(tagBody));
     model.props = {
       'general': {
-    
+        'mrType': {
+          'mrTypeOption': 'java'
+        }
       },
       'advanced': {}
     };
+    tagBody.streaming ? model.props.general.mrType = {
+      'mrTypeOption': 'streaming',
+      'mapper': this._getText(tagBody.streaming.mapper),
+      'reducer': this._getText(tagBody.streaming.reducer),
+      'record-reader': this._getText(tagBody.streaming['record-reader'])
+
+    } : tagBody.pipe ? model.props.general.mrType = {
+      'mrTypeOption': 'pipe',
+      'map': this._getText(tagBody.pipe.map),
+      'reduce': this._getText(tagBody.pipe.reduce),
+      'inputformat': this._getText(tagBody.pipe.inputformat),
+      'partitioner': this._getText(tagBody.pipe.partitioner),
+      'writer': this._getText(tagBody.pipe.writer),
+      'program': this._getText(tagBody.pipe.program),
+    } : '';
+
     let targetMap = {
-      'configuration': 'general.configuration'
+      'configuration': 'general.configuration',
+      'file': 'general.file'
     };
     [ 'configuration', 'prepare', 'file', 'archive' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]), targetMap);
