@@ -31,6 +31,7 @@ export default class Flow extends Model {
     }
   }
   set name(s) { this.isCase && (this.props.predicate = s); }
+  
 
   get cond() { return this.props.predicate || ''; }
   set cond(s) { this.props.predicate = s; }
@@ -68,6 +69,7 @@ export default class Flow extends Model {
   get isFlow() { return true; }
   get isCase() { return this.prev[0] && this.prev[0].type == 'decision'; }
   get isLast() { return this.siblings.length == this.order; }
+  get isRenamable() { return this.isCase && !this.isLast; }
 
   
 
