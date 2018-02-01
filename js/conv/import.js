@@ -289,11 +289,6 @@ export default class Import {
       },
       'advanced': {}
     };
-    tagBody.script ? model.props.general.script = {
-      script: this._getText(tagBody.script) 
-    } : model.props.general.query = {
-      query: this._getText(tagBody.query) 
-    };
     
     [ 'argument', 'param', 'archive', 'file', 'prepare', 'configuration' ].forEach(k => {
       this._addProp(model.props, k, this._convert(k, tagBody[k]));
@@ -371,11 +366,6 @@ export default class Import {
         }
       },
       'advanced': {}
-    };
-    tagBody.script ? model.props.general.script = {
-      script: tagBody.script['#text'] 
-    } : model.props.general.query = {
-      query: tagBody.query['#text']
     };
     
     [ 'argument', 'param', 'archive', 'file', 'prepare', 'configuration' ].forEach(k => {

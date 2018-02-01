@@ -22,6 +22,7 @@ export default class Model {
   get name() { return this.props.name || ''; }
   set name(s) { this.props.name = s; }
 
+
   get id() { return this.uuid; }
   set id(s) { this.uuid || (this.uuid = uuid()); } // shield code
 
@@ -32,6 +33,7 @@ export default class Model {
   get prev() { return this._prev_; }
   get next() { return this._next_; }
   get isFlow() { return false; }
+  get isRenamable() { return true; }
 
   moveTo(x, y) { this.left = x; this.top = y; }
   resizeTo(w, h) { this.width = w; this.height = h; }

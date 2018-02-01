@@ -78,7 +78,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
 
       textInput = new LineEditor(),
       editText = e => {
-        if(editMode || !currentModel) return;
+        if(editMode || !currentModel || !currentModel.isRenamable) return;
         editMode = true;
 
         e.preventDefault();
@@ -114,6 +114,8 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         currentModel.prev[0] && currentModel.prev[0].render();
         currentModel = null;
         editMode = false;
+
+        emit('frappe.change');
 
         return true;
       },

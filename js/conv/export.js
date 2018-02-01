@@ -22,8 +22,8 @@ export default class Out {
     n && b.tag('name-node').text('${nameNode}');
     $h(b);
     //v.nextActions.forEach(n => a.tag(n.type == 'kill' ? 'error' : 'ok').prop('to', n.name));
-    v.nextActions.filter(n => n.type != 'kill').forEach(n => a.tag('ok').prop('to', n.name));
-    v.nextActions.filter(n => n.type == 'kill').forEach(n => a.tag('error').prop('to', n.name));
+    v.nextActions[0] && a.tag('ok').prop('to', v.nextActions[0].name);
+    v.nextActions[1] && a.tag('error').prop('to', v.nextActions[1].name);
 
     return a;
   }

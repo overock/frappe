@@ -9,6 +9,7 @@ export default class FlowRenderer extends Renderer {
             <text class="frappe-decision-order frappe-label" />
             <use href="#ascension" class="frappe-decision-order frappe-decision-asc" width="8" height="8" />
             <use href="#descension" class="frappe-decision-order frappe-decision-desc" width="8" height="8" />
+            <use href="#change" class="frappe-order width="8" height="8" />
             <use href="#flowSnapTo" class="frappe-handle" width="16" height="16" />
         `);
   }
