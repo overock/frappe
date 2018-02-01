@@ -184,7 +184,7 @@ export default class Out {
 
       body.tag('main-class').text(gen.config['main-class']);
       gen.config['java-opts'] && body.tag('java-opts').text(gen.config['java-opts']);
-      [ 'arg', 'archive', 'file' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
+      [ 'arg', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
       gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
     }, {
       jobTracker: true,
