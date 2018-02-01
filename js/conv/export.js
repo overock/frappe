@@ -78,7 +78,7 @@ export default class Out {
           gen.mrType['record-reader'] && s.tag('record-reader').text(gen.mrType['record-reader']);
           [ 'record-reader-mapping', 'env' ].forEach(k => gen.mrType[k] && gen.mrType[k].forEach(t => s.tag(k).text(t)));
           break;
-        case 'pipe':
+        case 'pipes':
           const p = body.tag(mt);
           gen.mrType['map'] && p.tag('map').text(gen.mrType['map']);
           gen.mrType['reduce'] && p.tag('reduce').text(gen.mrType['reduce']);
