@@ -268,6 +268,9 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
               release = () => {
                 window.removeEventListener('mousemove', hold);
                 window.removeEventListener('mouseup', release);
+
+                editMode = false;
+                showHandle();
               };
 
         window.addEventListener('mousemove', hold);

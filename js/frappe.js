@@ -412,7 +412,8 @@ export default class Frappe {
     if(c) {
       const newMd = this.replace(ga, type);
       this.link(newMd, target.next[0]);
-      this.link(target, newMd);
+      this.link(target.prev[0], newMd);
+      this.remove(target);
     }
 
     this.remove(ga);
