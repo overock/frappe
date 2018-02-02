@@ -410,10 +410,15 @@ export default class Frappe {
     gf2.unlinkAll();
 
     if(c) {
-      const newMd = this.replace(ga, type);
+      const newMd = this.replace(ga, type),
+            flow = this.add('flow'),
+            order = target.order;
+
       this.link(newMd, target.next[0]);
-      this.link(target.prev[0], newMd);
+      this.link(target.prev[0], flow);
+      this.link(flow, newMd);
       this.remove(target);
+      flow.order = order;
     }
 
     this.remove(ga);

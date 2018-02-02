@@ -13,6 +13,7 @@ export default class Flow extends Model {
   // decision flow는 name을 cond로 쓴다.
   get name() {
     if(!this.prev[0]) return '';
+    if(this.isGhost) return '';
 
     switch(this.prev[0].type) {
       case 'ghost':
