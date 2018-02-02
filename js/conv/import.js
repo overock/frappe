@@ -40,7 +40,7 @@ export default class Import {
           ret = ModelFactory.create('decision', top, left);
 
     ret.name = name;
-    [].concat(node, defNode).forEach(o => rel.push([ name, o['@to'], o['#text'].replace(/^\$\{.*\}$/, '$1') ]));
+    [].concat(node, defNode).forEach(o => rel.push([ name, o['@to'], o['#text'] && o['#text'].replace(/^\$\{.*\}$/, '$1') ]));
     return ret;
   }
   fork(body, rel) {

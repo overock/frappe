@@ -227,10 +227,12 @@ export default {
                 return drill(n, d+1);
               case 'join':
                 return d? drill(n, d-1) : n.name;
+              case 'kill':
+                return 'kill';
               default:
                 return drill(n, d);
             }
-          })) ];
+          }).filter(n => n!='kill')) ];
 
           return candidate.length==1? candidate[0] : '';
         };
