@@ -97,14 +97,14 @@ export default class Import {
       'reducer': this._getText(tagBody.streaming.reducer),
       'record-reader': this._getText(tagBody.streaming['record-reader'])
 
-    } : tagBody.pipe ? model.props.general.mrType = {
-      'mrTypeOption': 'pipe',
-      'map': this._getText(tagBody.pipe.map),
-      'reduce': this._getText(tagBody.pipe.reduce),
-      'inputformat': this._getText(tagBody.pipe.inputformat),
-      'partitioner': this._getText(tagBody.pipe.partitioner),
-      'writer': this._getText(tagBody.pipe.writer),
-      'program': this._getText(tagBody.pipe.program),
+    } : tagBody.pipes ? model.props.general.mrType = {
+      'mrTypeOption': 'pipes',
+      'map': this._getText(tagBody.pipes.map),
+      'reduce': this._getText(tagBody.pipes.reduce),
+      'inputformat': this._getText(tagBody.pipes.inputformat),
+      'partitioner': this._getText(tagBody.pipes.partitioner),
+      'writer': this._getText(tagBody.pipes.writer),
+      'program': this._getText(tagBody.pipes.program),
     } : '';
 
     let targetMap = {

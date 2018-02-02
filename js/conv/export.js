@@ -78,7 +78,7 @@ export default class Out {
           gen.mrType['record-reader'] && s.tag('record-reader').text(gen.mrType['record-reader']);
           [ 'record-reader-mapping', 'env' ].forEach(k => gen.mrType[k] && gen.mrType[k].forEach(t => s.tag(k).text(t)));
           break;
-        case 'pipe':
+        case 'pipes':
           const p = body.tag(mt);
           gen.mrType['map'] && p.tag('map').text(gen.mrType['map']);
           gen.mrType['reduce'] && p.tag('reduce').text(gen.mrType['reduce']);
@@ -184,7 +184,7 @@ export default class Out {
 
       body.tag('main-class').text(gen.config['main-class']);
       gen.config['java-opts'] && body.tag('java-opts').text(gen.config['java-opts']);
-      [ 'arg', 'archive', 'file' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
+      [ 'arg', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
       gen.config['capture-output'] && gen.config['capture-output'] == true && body.tag('capture-output');
     }, {
       jobTracker: true,
