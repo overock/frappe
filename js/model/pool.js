@@ -45,7 +45,7 @@ export default class ModelPool {
   name(model) {
     const tag = model.type;
     if(tag == 'flow') return;
-    if([ 'start', 'end', 'kill' ].indexOf(tag) >= 0) return tag;
+    if([ 'start', 'end' ].indexOf(tag) >= 0) return tag;
 
     let i = 1;
     while(this.find(m => m.name == `${tag}_${i}`)) ++i;
