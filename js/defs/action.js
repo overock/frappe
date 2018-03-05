@@ -397,7 +397,7 @@ export default {
           'cc': '',
           'subject': '',
           'body': '',
-          'content_type': ''
+          'content_type': 'text/html; charset=UTF-8'
         }
       }
     },
