@@ -23,7 +23,7 @@ const MSG = {
 };
 
 const ACTION_RULES = {
-  maxFrom: 1,
+  maxFrom: Infinity,
   maxTo: 2,
   before: [
     'start', 'decision', 'fork', 'join', // control

@@ -32,18 +32,21 @@ export default class FlowRenderer extends Renderer {
     this.holder.setAttribute('x2', model.right);
     this.holder.setAttribute('y2', model.bottom);
 
-    this.handle.setAttribute('x', model.left + model.width / 2 - 4);
-    this.handle.setAttribute('y', model.top + model.height / 2 - 4);
+    this.handle.setAttribute('x', model.left + model.width/2 - 4);
+    this.handle.setAttribute('y', model.top + model.height/2 - 4);
 
     if(model.editing) {
       this.label.style.display = 'none';
     } else {
-      const labelX = model.left + model.width / 2 - 20 * Math.sin(model.angle),
-            labelY = model.top + model.height / 2 + 20 * Math.cos(model.angle);
+      const flip = Math.abs(model.angle)>Math.PI/2,
+            factor = flip? -1 : 1,
+            angle = model.angle/Math.PI*180 + (flip? 180 : 0),
+            labelX = model.left + model.width/2 - 20*Math.sin(model.angle)*factor,
+            labelY = model.top + model.height/2 + 20*Math.cos(model.angle)*factor;
 
       this.label.setAttribute('x', labelX);
       this.label.setAttribute('y', labelY);
-      this.label.setAttribute('transform', `rotate(${model.angle/Math.PI*180} ${labelX} ${labelY})`);
+      this.label.setAttribute('transform', `rotate(${angle} ${labelX} ${labelY})`);
       this.label.style.display = '';
       this.label.textContent = model.name;
     }
