@@ -13,9 +13,9 @@ export default class ActionRenderer extends Renderer {
   }
 
   get icon() { return this.el.firstElementChild; }
-  get label() { return this.el.getElementsByClassName('frappe-label')[0]; }
-  get handle() { return this.el.getElementsByClassName('frappe-handle')[0]; }
-  get removeBtn() { return this.el.getElementsByClassName('frappe-handle')[1]; }
+  get label() { return this.el.querySelector('.frappe-label'); }
+  get handle() { return this.el.querySelector('.frappe-handle'); }
+  get removeBtn() { return this.el.querySelectorAll('.frappe-handle')[1]; }
 
   update(model) {
     super.update(model);

@@ -14,9 +14,9 @@ export default class FlowRenderer extends Renderer {
         `);
   }
 
-  get label() { return this.el.getElementsByClassName('frappe-label')[0]; }
-  get holder() { return this.el.getElementsByClassName('frappe-flow-holder')[0]; }
-  get handle() { return this.el.getElementsByClassName('frappe-handle')[0]; }
+  get label() { return this.el.querySelector('.frappe-label'); }
+  get holder() { return this.el.querySelector('.frappe-flow-holder'); }
+  get handle() { return this.el.querySelector('.frappe-handle'); }
 
   update(model) {
     model.fitToNodes();

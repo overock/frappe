@@ -384,8 +384,9 @@ export default class Import {
       'param': 'advanced.param',
       'configuration': 'advanced.configuration'
     };
-    Object.assign(default_target, targetMap);
-    let target = default_target[propKey];
+    //Object.assign(default_target, targetMap);
+    //let target = default_target[propKey];
+    let target = (targetMap && targetMap[propKey]) || (default_target && default_target[propKey]);
 
     if(!propValue) return;
 

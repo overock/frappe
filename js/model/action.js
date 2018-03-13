@@ -5,7 +5,8 @@ export default class Action extends Model {
   constructor(type, top, left) {
     super(type, top, left);
 
-    Object.assign(this.props, this.def.props || {});
+    this.props = JSON.parse(JSON.stringify(this.def.props || {}));
+    //Object.assign(this.props, this.def.props || {});
 
     this.def.width && (this.width = this.def.width);
     this.def.height && (this.height = this.def.height);

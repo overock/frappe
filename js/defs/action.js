@@ -67,7 +67,7 @@ export default {
   },
 
   start: {
-    markup: '<image xlink:href="images/wd-start.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-start.svg" width="64" height="64"/>',
     props: {},
     rules: {
       min: 1,
@@ -96,7 +96,7 @@ export default {
     }
   },
   end: {
-    markup: '<image xlink:href="images/wd-end.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-end.svg" width="64" height="64"/>',
     props: {},
     rules: {
       min: 1,
@@ -125,7 +125,7 @@ export default {
     }
   },
   kill: {
-    markup: '<image xlink:href="images/wd-kill.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-kill.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
@@ -151,7 +151,7 @@ export default {
     }
   },
   decision: {
-    markup: '<image xlink:href="images/wd-decision.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-decision.svg" width="64" height="64"/>',
     props: {},
     rules: {
       min: 0,
@@ -188,7 +188,7 @@ export default {
     }
   },
   fork: {
-    markup: '<image xlink:href="images/wd-fork.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-fork.svg" width="64" height="64"/>',
     props: {},
     rules: {
       min: 0,
@@ -244,7 +244,7 @@ export default {
     }
   },
   join: {
-    markup: '<image xlink:href="images/wd-join.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-join.svg" width="64" height="64"/>',
     props: {},
     rules: {
       min: 0,
@@ -298,7 +298,7 @@ export default {
   },
 
   'map-reduce': {
-    markup: '<image xlink:href="images/wd-mapreduce.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-mapreduce.svg" width="64" height="64"/>',
     props: {      
       'general': {
         'mrType': {},
@@ -313,7 +313,7 @@ export default {
     rules: ACTION_RULES
   },
   pig: {
-    markup: '<image xlink:href="images/wd-pig.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-pig.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
@@ -332,7 +332,7 @@ export default {
     rules: ACTION_RULES
   },
   fs: {
-    markup: '<image xlink:href="images/wd-fs.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-fs.svg" width="64" height="64"/>',
     props: {
       'general': {
         'command': [],
@@ -342,7 +342,7 @@ export default {
     rules: ACTION_RULES
   },
   ssh: {
-    markup: '<image xlink:href="images/wd-ssh.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-ssh.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
@@ -356,7 +356,7 @@ export default {
     rules: ACTION_RULES
   },
   'sub-workflow': {
-    markup: '<image xlink:href="images/wd-sub-workflow.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-sub-workflow.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
@@ -369,7 +369,7 @@ export default {
     rules: ACTION_RULES
   },
   java: {
-    markup: '<image xlink:href="images/wd-java.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-java.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
@@ -389,7 +389,7 @@ export default {
     rules: ACTION_RULES
   },
   email: {
-    markup: '<image xlink:href="images/wd-email.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-email.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
@@ -404,7 +404,7 @@ export default {
     rules: ACTION_RULES
   },
   shell: {
-    markup: '<image xlink:href="images/wd-shell.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-shell.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
@@ -417,14 +417,14 @@ export default {
       },
       'advanced': {
         'prepare': [],
-	      'configuration': [],
-	      'archive': []
+        'configuration': [],
+        'archive': []
       }
     },
     rules: ACTION_RULES
   },
   hive: {
-    markup: '<image xlink:href="images/wd-hive.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-hive.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
@@ -443,7 +443,7 @@ export default {
     rules: ACTION_RULES
   },
   hive2: {
-    markup: '<image xlink:href="images/wd-hive2.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-hive2.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
@@ -464,7 +464,7 @@ export default {
     rules: ACTION_RULES
   },
   sqoop: {
-    markup: '<image xlink:href="images/wd-sqoop.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-sqoop.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
@@ -481,7 +481,7 @@ export default {
     rules: ACTION_RULES
   },
   distcp: {
-    markup: '<image xlink:href="images/wd-dist-cp.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-dist-cp.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {
@@ -497,7 +497,7 @@ export default {
     rules: ACTION_RULES
   },
   spark: {
-    markup: '<image xlink:href="images/wd-spark.svg" width="64" height="64"/>',
+    markup: '<image href="images/wd-spark.svg" width="64" height="64"/>',
     props: {
       'general': {
         'config': {

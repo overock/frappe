@@ -4,6 +4,7 @@ import MdPool from './model/pool';
 import SVG from './util/svg';
 import RadialMenu from './util/radial';
 import actionDef from './defs/action';
+import './util/ieshim';
 //import uuid from './util/uuid';
 
 let instance = null;
@@ -58,7 +59,7 @@ export default class Frappe {
 
       'frappe.add': e => this.add(e.detail.type, e.detail.top, e.detail.left, e.detail.bottom, e.detail.right),
       'frappe.remove': e => this.remove(e.detail.model),
-      'frappe.clear': e => this.clear(),
+      'frappe.clear': () => this.clear(),
       'frappe.link': e => this.link(e.detail.src, e.detail.dest),
       'frappe.replace': e => this.replace(e.detail.src, e.detail.dest),
       'frappe.render': () => this.render(),

@@ -1,3 +1,5 @@
+const container = document.createElement('div');
+
 export default class SVG {
   static get namespace() {
     return 'http://www.w3.org/2000/svg';
@@ -8,7 +10,17 @@ export default class SVG {
 
     switch(true) {
       case typeof html == 'string':
-        svg.innerHTML = html;
+        container.innerHTML = `<svg>${html}</svg>`;
+
+        let node = container.firstElementChild.firstElementChild;
+
+        while(node) {
+          svg.appendChild(node.cloneNode(true));
+          node = node.nextSibling;
+        }
+        
+        // IE does not support SVGElement.innerHTML
+        //svg.innerHTML = html;
         break;
 
       case html instanceof SVGElement:
@@ -28,9 +40,9 @@ export default class SVG {
     return svg;
   }
 
-  static build(html) {
-    container.innerHTML = html;
-    return container.removeChild(container.firstElementChild);
+  static build(markup) {
+    container.innerHTML = `<svg>${markup}</svg>`;
+    return container.firstElementChild.firstElementChild;
   }
 
   static get marker() {
@@ -117,4 +129,4 @@ export default class SVG {
   }
 }
 
-const container = SVG.create('svg');
+//const container = SVG.create('svg');

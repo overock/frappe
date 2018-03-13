@@ -43,10 +43,14 @@ module.exports = {
         "overrides": {
           "case": { "after": true },
           "const": { "after": true },
+          "do": { "after": true },
           "else": { "after": true },
           "from": { "after": true },
+          "import": { "after": true },
           "let": { "after": true },
-          "return": { "after": true }
+          "return": { "after": true },
+          "throw": { "after": true },
+          "try": { "after": true }
         }
       },
     ],

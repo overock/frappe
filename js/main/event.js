@@ -10,7 +10,10 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
       pool = new MdPool(),
 
       // codelets
-      getModel = el => (currentModel = pool.item(el.closest('g').getAttribute('id'))),
+      getModel = el => {
+        el.correspondingUseElement && (el = el.correspondingUseElement);
+        currentModel = pool.item(el.closest('g').getAttribute('id'));
+      },
       emit = (type, param) => window.dispatchEvent(new CustomEvent(type, { detail: param })),
 
       // handle 아이콘 보이기/숨기기
@@ -27,6 +30,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         }
       },
       showGadget = e => {
+//        console.log(e);
         if(editMode) return;
         getModel(e.target);
         showHandle();

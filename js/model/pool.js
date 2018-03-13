@@ -61,7 +61,7 @@ export default class ModelPool {
 
   render(canvas, callback) {
     this.container.forEach(m => {
-      if(canvas && !canvas.contains(m.element)) {
+      if(canvas) { //} && !canvas.contains(m.element)) {
         m.isFlow? canvas.insertBefore(m.element, canvas.firstElementChild) : canvas.appendChild(m.element);
         callback && callback(m);
       }
