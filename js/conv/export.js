@@ -49,7 +49,7 @@ export default class Out {
           pred = tag.tag('switch');
     this._geometry(tag, v);
     v.next.slice(0, -1).forEach(f => {
-      const cond = f.cond.replace(/^\$\{.*\}$/, '$1');
+      const cond = f.cond.replace(/^\$\{(.*)\}$/, '$1');
       pred.tag('case').text(`\${${cond}}`).prop('to', f.next[0].name);
     });
     v.next.length && pred.tag('default').prop('to', v.next[v.next.length-1].next[0].name);
