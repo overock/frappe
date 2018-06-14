@@ -49,7 +49,7 @@ export default class Out {
           pred = tag.tag('switch');
     this._geometry(tag, v);
     v.next.slice(0, -1).forEach(f => {
-      const cond = f.cond.replace(/^\$\{.*\}$/, '$1');
+      const cond = f.cond.replace(/^\$\{(.*)\}$/, '$1');
       pred.tag('case').text(`\${${cond}}`).prop('to', f.next[0].name);
     });
     v.next.length && pred.tag('default').prop('to', v.next[v.next.length-1].next[0].name);
@@ -300,7 +300,11 @@ export default class Out {
       body.tag('jar').text(gen.config.jar);
 
       opt.option && opt.option['spark-opts'] && body.tag('spark-opts').text(opt.option['spark-opts']);
-      [ 'arg', 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
+      // arg 추가
+      opt.arg && opt.arg.forEach(function(argVal) {
+        body.tag('arg').text(argVal);
+      });
+      [ 'file', 'archive' ].forEach(k => adv[k] && adv[k].forEach(t => body.tag(k).text(t)));
     }, {
       jobTracker: true,
       nameNode: true
