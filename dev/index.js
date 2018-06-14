@@ -446,3 +446,5 @@ startDemo();
 test();
 frappe.subscribe('frappe.edit', e => alert(e.detail.uuid));
 frappe.subscribe('frappe.change', () => console.log('workflow has been changed...'));
+
+frappe.emit('frappe.vars', [ 'logFile' ]);

@@ -30,7 +30,6 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         }
       },
       showGadget = e => {
-//        console.log(e);
         if(editMode) return;
         getModel(e.target);
         showHandle();
@@ -101,11 +100,13 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
           scale: viewBox.z
         }, editTextDone);
 
+        currentModel.isFlow? textInput.elAssist.enable() : textInput.elAssist.disable();
+
         currentModel.editing = true;
         currentModel.render();
       },
       editTextDone = bCancel => {
-        const name = currentModel.type == 'start' ? 'start' : textInput.text,
+        const name = currentModel.type == 'start' ? 'start' : textInput.text.trim(),
               regex = currentModel.isFlow ? /.*/ : /^[a-zA-Z_][\-_a-zA-Z0-9]{0,38}$/g,
               matches = regex.test(name),
               exists = !currentModel.isFlow && pool.filter(m => m!=currentModel).some(m => m.name == name);
@@ -370,10 +371,8 @@ export default class EventHandler {
     }
   }
 
-  get viewBox() {
-    return viewBox;
-  }
-  set viewBox(values) {
-    [ viewBox.x, viewBox.y, viewBox.w, viewBox.h ] = values.split(' ').map(v => v | 0);
-  }
+  get viewBox() { return viewBox; }
+  set viewBox(values) { [ viewBox.x, viewBox.y, viewBox.w, viewBox.h ] = values.split(' ').map(v => v | 0); }
+
+  setVars(list) { textInput.elAssist.setExternalVars(list); }
 }

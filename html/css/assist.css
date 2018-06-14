@@ -1,0 +1,55 @@
+.ela_helper {
+  position: relative;
+  background-color: white;
+  top: 6px;
+  left: -8px;
+  border: 1px solid black;
+  border-radius: 4px;
+  padding: 4px 0px;
+  display: table;
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+.ela_item {
+  font-family: 'Courier New';
+  font-size: 10pt;
+  padding: 2px 8px;
+  background-color: transparent;
+  white-space: nowrap;
+}
+
+.ela_item.ela_focused {
+  background-color: #ccc;
+  cursor: pointer;
+}
+
+.ela_item > .ela_keyword {
+  color: #531;
+  font-weight: bold;
+}
+
+.ela_item > .ela_type {
+  font-style: italic;
+  color: #999;
+}
+
+.ela_item > .ela_param {
+  color: white;
+  background-color: #77e;
+  border-radius: 4px;
+  padding: 0px 4px;
+}
+
+.ela_item.ela_focused .ela_type {
+  color: white;
+}
+
+.exp_comment {
+  position: relative;
+  left: 8px;
+  border: 1px solid black;
+  border-radius: 4px;
+
+  display: none;
+}

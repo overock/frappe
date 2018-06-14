@@ -1,3 +1,5 @@
+import ElAssist from './elassist';
+
 const MARGIN_WIDTH = 32;
 
 let instance = null,
@@ -13,29 +15,38 @@ export default class LineEditor {
     this.input = document.createElement('input');
     this.input.className = 'frappe-textinput';
     this.input.setAttribute('type', 'text');
-    this.input.addEventListener('blur', () => this.hide());
+    this.input.addEventListener('focus', () => this.fit());
+    this.input.addEventListener('blur', e => this.onBlur(e));
     this.input.addEventListener('keydown', e => this.checkKeys(e));
     this.input.addEventListener('keyup', () => this.fit());
+
+    this.holder = document.createElement('div');
+    this.holder.className = 'frappe-textinput-holder';
+    this.holder.appendChild(this.input);
     
     this._p = document.createElement('div');
-    this._p.className = 'frappe-textinput';
-    this._p.style.display = 'block';
-    this._p.style.opacity = '0';
+    this._p.className = 'frappe-textinput frappe-textinput-shadow';
+
+    this.elAssist = new ElAssist(this.input);
   }
 
   get text() { return this.input.value; }
   set text(s) { this.input.value = s; }
 
   show(x, y, options, callback) {
-    const { text = '', deg = 0, scale = 1 } = options;
+    const { text = '', scale = 1 } = options;
+    //const { text = '', deg = 0, scale = 1 } = options;
+
+    this.elAssist.hideItems();
+
     center = x;
-    document.body.appendChild(this.input);
+    document.body.appendChild(this.holder);
     this.text = text || '';
 
-    this.input.style.display = 'block';
-    this.input.style.top = (y - this.input.offsetHeight / 2) + 'px';
-    this.input.style.transform = `rotate(${deg||0}deg) scale(${scale||1})`;
-
+    this.holder.style.top = (y - this.holder.offsetHeight / 2) + 'px';
+    this.holder.style.transform = `scale(${scale||1})`;
+    //this.holder.style.transform = `rotate(${deg||0}deg) scale(${scale||1})`;
+    
     this.input.focus();
     this.input.select();
     this.fit();
@@ -46,14 +57,13 @@ export default class LineEditor {
     if(!callbackFn(isCancelled)) {
       this.anim = {
         ts: new Date(),
-        iX: this.input.offsetLeft
+        iX: this.holder.offsetLeft
       };
       requestAnimationFrame(() => this.shake());
       return;
     }
 
-    this.input.display = '';
-    this.input.parentElement && this.input.parentElement.removeChild(this.input);
+    this.holder.parentElement && this.holder.parentElement.removeChild(this.holder);
     
     isCancelled = false;
   }
@@ -67,7 +77,7 @@ export default class LineEditor {
     }
 
     const offset = Math.sin(delta/20) * Math.sin(delta/500*Math.PI) * 4;
-    this.input.style.left = (this.anim.iX + offset) + 'px';
+    this.holder.style.left = (this.anim.iX + offset) + 'px';
     requestAnimationFrame(() => this.shake());
   }
 
@@ -75,14 +85,26 @@ export default class LineEditor {
     document.body.appendChild(this._p);
     this._p.innerHTML = this.text;
     this.input.style.width = (this._p.offsetWidth + MARGIN_WIDTH) + 'px';
-    this.input.style.left = (center - this.input.offsetWidth / 2) + 'px';
+    this.holder.style.left = (center - this.input.offsetWidth / 2) + 'px';
     document.body.removeChild(this._p);
+  }
+
+  onBlur() {
+    setTimeout(() => {
+      if(this.elAssist.itemSelected) {
+        this.input.focus();
+        this.fit();
+      } else {
+        this.hide();
+      }
+    }, 167);
   }
 
   checkKeys(e) {
     switch(e.key || e.keyCode) {
       case 'Enter':
       case '13':
+        if(this.elAssist.isActive) return;
         e.preventDefault();
         this.input.blur();
         break;

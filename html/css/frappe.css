@@ -26,8 +26,8 @@
   stroke: none;
   fill: #fff;
   text-anchor: middle;
-  font-family: "Roboto Condensed", sans-serif;
-  font-size: 15px;
+  font-family: "Courier New"; /*"Roboto Condensed", sans-serif;*/
+  font-size: 14px;
 }
 
 .frappe-decision-order {
@@ -42,21 +42,30 @@
 }
 
 .frappe-textinput {
-  position: absolute;
-  vertical-align: middle;
-  font-family: "Roboto Condensed", sans-serif;
-  font-size: 15px;
+  font-family: "Courier New"; /*"Roboto Condensed", sans-serif;*/
+  font-size: 14px;
   color: #fff;
-  background-color: transparent;
+  background-color: #444;
   border: 1px dashed #20aaf7;
   border-radius: 8px;
   text-align: center;
   display: table-cell;
-  transform-origin: 50% 50%;
 }
 
 .frappe-textinput:focus {
   outline: none; /* #20aaf7 auto 3px; */
+}
+
+.frappe-textinput-shadow {
+  position: absolute;
+  display: block;
+  opacity: 0;
+}
+
+.frappe-textinput-holder {
+  position: absolute;
+  display: table-cell;
+  transform-origin: 50% 50%;
 }
 
 .frappe-flow-holder {

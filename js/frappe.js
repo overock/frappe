@@ -78,6 +78,7 @@ export default class Frappe {
       'frappe.snapend': e => this.confirmGhostSnap(e.detail),
       'frappe.snapconfirm': e => this.removeGhostSnap(e.detail),
 
+      'frappe.vars': e => this.event.setVars(e.detail),
       'frappe.import': e => this.pool.import(e.detail),
       'frappe.export': () => this.pool.export() // 이렇게 해서 export 결과는 어떻게 받을건데??
     };
