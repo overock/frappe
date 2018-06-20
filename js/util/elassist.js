@@ -391,3 +391,5 @@ elaLogic.operators = EL_SYMBOLS.concat(EL_OPERATORS);
 elaLogic.functions = Object.keys(EL_FUNCTIONS);
 elaLogic.nonOps = EL_CONSTANTS.concat(elaLogic.functions);
 elaLogic.setVars();
+
+window.ElAssist = ElAssist;

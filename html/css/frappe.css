@@ -27,7 +27,7 @@
   fill: #fff;
   text-anchor: middle;
   font-family: "Courier New"; /*"Roboto Condensed", sans-serif;*/
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .frappe-decision-order {
@@ -43,7 +43,7 @@
 
 .frappe-textinput {
   font-family: "Courier New"; /*"Roboto Condensed", sans-serif;*/
-  font-size: 14px;
+  font-size: 13px;
   color: #fff;
   background-color: #444;
   border: 1px dashed #20aaf7;
