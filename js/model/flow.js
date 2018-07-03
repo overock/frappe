@@ -52,13 +52,13 @@ export default class Flow extends Model {
 
   get prev() {
     let len = this._prev_.length;
-    if(len > 1) this._prev_ = [ this._prev_.pop() ];
+    if(len>1) this._prev_ = [ this._prev_.pop() ];
     return this._prev_;
   }
 
   get next() {
     let len = this._next_.length;
-    if(len > 1) this._next_ = [ this._next_.pop() ];
+    if(len>1) this._next_ = [ this._next_.pop() ];
     return this._next_;
   }
 

@@ -21,12 +21,16 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         if(currentModel) {
           currentModel.renderer.handle.classList.add('frappe-handle-hover');
           currentModel.renderer.removeBtn && currentModel.renderer.removeBtn.classList.add('frappe-handle-hover');
+          currentModel.renderer.asc && currentModel.renderer.asc.classList.add('frappe-handle-hover');
+          currentModel.renderer.desc && currentModel.renderer.desc.classList.add('frappe-handle-hover');
         }
       },
       hideHandle = () => {
         if(currentModel) {
           currentModel.renderer.handle.classList.remove('frappe-handle-hover');
           currentModel.renderer.removeBtn && currentModel.renderer.removeBtn.classList.remove('frappe-handle-hover');
+          currentModel.renderer.asc && currentModel.renderer.asc.classList.remove('frappe-handle-hover');
+          currentModel.renderer.desc && currentModel.renderer.desc.classList.remove('frappe-handle-hover');
         }
       },
       showGadget = e => {
@@ -316,6 +320,16 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
           listener: snapSelect,
           confirmed: e.target.classList.contains('frappe-branch-confirm')
         });
+      },
+      ascOrder = () => {
+        currentModel.order--;
+        emit('frappe.change');
+        emit('frappe.render');
+      },
+      descOrder = () => {
+        currentModel.order++;
+        emit('frappe.change');
+        emit('frappe.render');
       };
 
 export default class EventHandler {
@@ -363,6 +377,8 @@ export default class EventHandler {
     // action 전용
     if(model.isFlow) {
       model.renderer.handle[_]('mousedown', snapStart);
+      model.renderer.asc[_]('click', ascOrder);
+      model.renderer.desc[_]('click', descOrder);
     } else {
       model.renderer.element[_]('dblclick', propEditor);
       model.renderer.removeBtn[_]('click', remove);
@@ -374,5 +390,5 @@ export default class EventHandler {
   get viewBox() { return viewBox; }
   set viewBox(values) { [ viewBox.x, viewBox.y, viewBox.w, viewBox.h ] = values.split(' ').map(v => v | 0); }
 
-  setVars(list) { textInput.elAssist.setExternalVars(list); }
+  setVars(list) { textInput.elAssist.setVars(...list); }
 }

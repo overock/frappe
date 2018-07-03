@@ -1,14 +1,13 @@
 .ela_helper {
-  position: relative;
+  position: absolute;
   background-color: white;
-  top: 6px;
-  left: -8px;
   border: 1px solid black;
   border-radius: 4px;
   padding: 4px 0px;
   display: table;
   overflow-x: hidden;
   overflow-y: scroll;
+  z-index:10000;
 }
 
 .ela_item {

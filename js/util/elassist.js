@@ -1,10 +1,12 @@
 export default class ElAssist {
-  constructor(el) {
+  constructor(el, reversed) {
     if(!el || !(el instanceof HTMLInputElement) || !(el.getAttribute('type')=='text' || !el.getAttribute('type'))) {
       throw Error('ELInput instance must be handeled with <input type="text"> element!');
     }
     this.textInput = el;
     this.isActive = false;
+    this.disabled = false;
+    this.reversed = reversed || false;
     this.query = [];
     this.itemIndex = 0;
     this.items = document.createElement('div');
@@ -15,26 +17,35 @@ export default class ElAssist {
     this.textInput.addEventListener('keydown', e => this.keydown(e));
     this.textInput.addEventListener('keypress', e => this.keypress(e));
     this.textInput.addEventListener('keyup', e => this.keyup(e));
-    this.textInput.addEventListener('click', e => this.queryItem(e));
+    this.textInput.addEventListener('click', () => this.hideItems());
   }
 
   // setting
-  setExternalVars(ext) { elaLogic.setVars(ext); }
+  setVars(...ext) { elaLogic.setVars(...ext); }
+  excludeNS(...ns) { elaLogic.excludeNS(...ns); }
   enable() { this.disabled = false; }
   disable() { this.disabled = true; }
   
   // item handling
   showItems() {
     if(this.disabled) return;
-    if(!this.textInput.parentElement) return;
-    this.textInput.parentElement.insertBefore(this.items, this.textInput.nextSibling);
+    
+    setTimeout(() => {
+      const pos = this.textInput.getBoundingClientRect();
+      this.items.style.left = `${pos.left - 8}px`;
+      this.items.style.top = this.reversed? `${pos.top - 4 - this.items.offsetHeight}px`
+                                          : `${pos.bottom + 4}px`;
+      document.body.appendChild(this.items);
+    }, 17);
+
     this.isActive = true;
     this.focusItem(this.itemIndex);
   }
   hideItems() {
-    this.isActive = false;
-    this.items.parentElement && this.items.parentElement.removeChild(this.items);
+    this.items.parentElement && document.body.removeChild(this.items);
     this.itemIndex = 0;
+
+    setTimeout(() => this.isActive = false, 167);
   }
   focusItem(n) {
     this.itemIndex = n|0;
@@ -164,17 +175,25 @@ export default class ElAssist {
   
   // event handlers
   keydown(e) {
-    const pair = { '(': ')', '[': ']', '\'': '\'', '"': '"' };
+    //console.log(e.key);
+    const pair = { '(': ')', '{': '}', '[': ']', '\'': '\'', '"': '"' };
 
     switch(e.key) {
       case 'ArrowUp':
         this.isActive && e.preventDefault();
         this.prevItem();
-        break;
+        return;
       case 'ArrowDown':
         this.isActive && e.preventDefault();
         this.nextItem();
-        break;
+        return;
+      case 'ArrowLeft': case 'ArrowRight':
+      case 'Home': case 'End': case 'PageUp': case 'PageDown':
+      case 'Escape':
+        return;
+      case 'Enter':
+        this.isActive && this.selectItem();
+        return;
       case 'Backspace':
         if(this.rightChar() == pair[this.leftChar()]) {
           e.preventDefault();
@@ -183,14 +202,11 @@ export default class ElAssist {
           document.execCommand('insertText', false, '');
         }
         break;
-      case 'Enter':
-        this.isActive && this.selectItem();
-        break;
-
-      case '(': case '[':
+      
+      case '(': case '{': case '[':
         elaLogic.quoted || this.addChar(pair[e.key]);
         break;
-      case ')': case ']':
+      case ')': case '}': case ']':
         this.rightChar()==e.key && !elaLogic.quoted && (e.preventDefault() || this.moveRight(e));
         break;
       case '\'':
@@ -301,7 +317,7 @@ const EL_SYMBOLS = [ '+', '-', '*', '/', '!', '&&', '||', '==', '>=', '>', '<=',
         'coord:latest': { n: INT, _ret_: STRING, _desc_: 'Determine the date-time in Oozie processing timezone of <pre>n</pre>-th latest available dataset instance.<br/>It depends on:<ol><li>Data set frequency</li><li>Data set Time unit (day, month, minute)</li><li>Data set Time zone/DST</li><li>End Day/Month flag</li><li>Data set initial instance</li><li>Action Creation Time</li><li>Existence of dataset\'s directory</li></ol>' },
         'coord:latestRange': { start: INT, end: INT, _ret_: STRING, _desc_: 'Determine the date-time in Oozie processing timezone of latest available dataset instances from <pre>start</pre> to <pre>end</pre> offsets from the nominal time.<br/>It depends on:<ol><li>Data set frequency</li><li>Data set Time unit (day, month, minute)</li><li>Data set Time zone/DST</li><li>End Day/Month flag</li><li>Data set initial instance</li><li>Action Creation Time</li><li>Existence of dataset\'s directory</li></ol>' },
         'coord:conf': { property: STRING, _ret_: STRING, _desc_: 'Return a job configuration property for the coordinator.' },
-        'coord:user': { _ret_: STRING, _desc_: 'Return the user that submitted the coordinator job.' },
+        'coord:user': { _ret_: STRING, _desc_: 'Return the user that submitted the coordinator job.' }//,
 
         // 'coord:endOfWeeks': {},
         // 'coord:absolute': {},
@@ -319,6 +335,13 @@ const EL_SYMBOLS = [ '+', '-', '*', '/', '!', '&&', '||', '==', '>=', '>', '<=',
       };
 
 const elaLogic = {
+  operators: EL_SYMBOLS.concat(EL_OPERATORS),
+  functions: Object.keys(EL_FUNCTIONS),
+  nonOps: EL_CONSTANTS.concat(Object.keys(EL_FUNCTIONS)),
+  values: [],
+  all: [],
+  excl: [],
+
   query: function(string, index) {
     this.succeeded = string.substring(index, index+1);
     string = string.substring(0, index);
@@ -326,10 +349,10 @@ const elaLogic = {
     if(this.checkQuotes(string)) return []; // in string
     if(!this.tail()) return [];             // middle of word
 
-    string = string.replace(/(wf|fs|hcat|coord):/g, '$1_');                                                 // replace functionnames with namespace
-    string = string.replace(/(\+|\-|\*|\/|\!|\&\&|\|\||==|>|>=|<|<=|\!=|\?|:|\(|\)|\[|\]|\'|\")/g, ' $1 '); // emboss
-    const tokens = string.split(/\s+/);                                                                       // tokenize
-    this.current = tokens.pop();                                                                            // get last word
+    string = string.replace(/(wf|fs|hcat|coord):/g, '$1_');                                                       // replace functionnames with namespace
+    string = string.replace(/(\+|\-|\*|\/|\!|\&\&|\|\||==|>|>=|<|<=|\!=|\?|:|\(|\)|\{|\}|\[|\]|\'|\")/g, ' $1 '); // emboss
+    const tokens = string.split(/\s+/);                                                                           // tokenize
+    this.current = tokens.pop();                                                                                  // get last word
 
     if(this.current == '') return [];
 
@@ -353,19 +376,24 @@ const elaLogic = {
   },
 
   suggest: function(key, list) {
-    let em = false;
     const k = key.toLowerCase(),
           candidate = list.filter(v => {
+            const nsToken = v.split(':');
+            if(nsToken.length==2 && this.excl.indexOf(nsToken[0])>=0) return false;
+
             const w = v.replace(':', '_').toLowerCase();
-            if(w==k) em = true;
             return w.indexOf(k)==0 || v.indexOf(':' + k)>=0;
           });
-    return em? [] : candidate;
+    return candidate;
   },
   
-  setVars: function(ext = []) {
+  setVars: function(...ext) {
     this.values = this.nonOps.concat(ext);
     this.all = this.values.concat(this.operators);
+  },
+  
+  excludeNS: function(...ns) {
+    this.excl = ns;
   },
 
   checkQuotes: function(str) {
@@ -384,12 +412,10 @@ const elaLogic = {
     return this.quoted = status!='NORMAL';
   },
 
-  tail: function() { return !this.succeeded? -1 : /[a-zA-Z0-9_/$]/.test(this.succeeded)? 0 : 1; }
+  tail: function() { return !this.succeeded? -1 : /[a-zA-Z0-9_/$:]/.test(this.succeeded)? 0 : 1; }
 };
       
-elaLogic.operators = EL_SYMBOLS.concat(EL_OPERATORS);
-elaLogic.functions = Object.keys(EL_FUNCTIONS);
-elaLogic.nonOps = EL_CONSTANTS.concat(elaLogic.functions);
 elaLogic.setVars();
 
 window.ElAssist = ElAssist;
+window.elParser = elaLogic;

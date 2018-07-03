@@ -31,14 +31,21 @@
 }
 
 .frappe-decision-order {
-  fill: #fff;
+  stroke: #fff;
+  stroke-width: 1;
+  stroke-linejoin: round;
+  transition: opacity 0.3s;
+  opacity: 0;
 }
 
-.frappe-decision-asc {
+.frappe-decision-order[data-asc] {
+  fill: #3c3;
+  cursor: n-resize;
 }
 
-.frappe-decision-desc {
-
+.frappe-decision-order[data-desc] {
+  fill: #c33;
+  cursor: s-resize;
 }
 
 .frappe-textinput {

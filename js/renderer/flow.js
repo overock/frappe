@@ -6,10 +6,8 @@ export default class FlowRenderer extends Renderer {
             <line class="frappe-flow" marker-end="url(#dest)" />
             <line class="frappe-flow-holder" />
             <text class="frappe-label" />
-            <text class="frappe-decision-order frappe-label" />
-            <use href="#ascension" class="frappe-decision-order frappe-decision-asc" width="8" height="8" />
-            <use href="#descension" class="frappe-decision-order frappe-decision-desc" width="8" height="8" />
-            <use href="#change" class="frappe-order width="8" height="8" />
+            <use href="#ascension" data-asc class="frappe-decision-order" width="10" height="9" />
+            <use href="#descension" data-desc class="frappe-decision-order" width="10" height="9" />
             <use href="#flowSnapTo" class="frappe-handle" width="16" height="16" />
         `);
   }
@@ -17,6 +15,8 @@ export default class FlowRenderer extends Renderer {
   get label() { return this.el.querySelector('.frappe-label'); }
   get holder() { return this.el.querySelector('.frappe-flow-holder'); }
   get handle() { return this.el.querySelector('.frappe-handle'); }
+  get asc() { return this.el.querySelector('[data-asc]'); }
+  get desc() { return this.el.querySelector('[data-desc]'); }
 
   update(model) {
     model.fitToNodes();
@@ -34,6 +34,17 @@ export default class FlowRenderer extends Renderer {
 
     this.handle.setAttribute('x', model.left + model.width/2 - 4);
     this.handle.setAttribute('y', model.top + model.height/2 - 4);
+
+    const //angle = model.angle/Math.PI*180,
+          orderX = model.left + model.width/2 - 4,
+          orderY = model.top + model.height/2 - 4;
+
+    this.desc.style.display = model.isLast? 'none' : '';
+    this.desc.setAttribute('x', orderX - 16);
+    this.desc.setAttribute('y', orderY);
+    this.asc.style.display = model.order==1? 'none': '';
+    this.asc.setAttribute('x', orderX + 16);
+    this.asc.setAttribute('y', orderY);
 
     if(model.editing) {
       this.label.style.display = 'none';

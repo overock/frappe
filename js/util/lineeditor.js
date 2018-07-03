@@ -28,6 +28,7 @@ export default class LineEditor {
     this._p.className = 'frappe-textinput frappe-textinput-shadow';
 
     this.elAssist = new ElAssist(this.input);
+    this.elAssist.excludeNS('coord');
   }
 
   get text() { return this.input.value; }

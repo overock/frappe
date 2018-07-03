@@ -48,8 +48,24 @@ export default class SVG {
   static get marker() {
     return this.build(`
       <marker id="dest" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="8" markerHeight="8" orient="auto">
-        <path class="frappe-flow-marker" d="m 0 0 L 8 4 L 0 8 z" />'
+        <path class="frappe-flow-marker" d="M0,0 L8,4 L0,8 z" />
       </marker>
+    `);
+  }
+
+  static get ascension() {
+    return this.build(`
+      <symbol id="ascension" viewBox="0 0 8 8">
+        <path d="M0,8 L4,1 L8,8 z" />
+      </symbol>
+    `);
+  }
+
+  static get descension() {
+    return this.build(`
+      <symbol id="descension" viewBox="0 0 8 8">
+        <path d="M0,0 L4,7 L8,0 z" />
+      </symbol>
     `);
   }
 

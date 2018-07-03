@@ -28,7 +28,7 @@ export default class Frappe {
     this.canvas.style.width = width || '100%';
     this.canvas.style.height = height || '100%';
 
-    [ 'marker', 'actionHandle', 'actionRemove', 'flowHandle', 'normMatrix', 'radialMatrix', 'warnMatrix', 'errMatrix' ]
+    [ 'marker', 'ascension', 'descension', 'actionHandle', 'actionRemove', 'flowHandle', 'normMatrix', 'radialMatrix', 'warnMatrix', 'errMatrix' ]
       .forEach(v => this.defs.appendChild(SVG[v]));
 
     
