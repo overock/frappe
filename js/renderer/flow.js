@@ -6,8 +6,8 @@ export default class FlowRenderer extends Renderer {
             <line class="frappe-flow" marker-end="url(#dest)" />
             <line class="frappe-flow-holder" />
             <text class="frappe-label" />
-            <use href="#ascension" data-asc class="frappe-decision-order" width="10" height="9" />
-            <use href="#descension" data-desc class="frappe-decision-order" width="10" height="9" />
+            <use href="#ascension" data-asc class="frappe-decision-order" width="16" height="16" />
+            <use href="#descension" data-desc class="frappe-decision-order" width="16" height="16" />
             <use href="#flowSnapTo" class="frappe-handle" width="16" height="16" />
         `);
   }
@@ -36,16 +36,16 @@ export default class FlowRenderer extends Renderer {
     this.handle.setAttribute('y', model.top + model.height/2 - 4);
 
     const angle = model.angle/Math.PI*180,
-          orderX = model.left + model.width/2,
-          orderY = model.top + model.height/2;
+          orderX = model.left + model.width - 32*Math.cos(model.angle),
+          orderY = model.top + model.height - 32*Math.sin(model.angle);
 
     this.desc.style.display = model.isLast? 'none' : '';
-    this.desc.setAttribute('x', orderX - 20);
-    this.desc.setAttribute('y', orderY - 4);
+    this.desc.setAttribute('x', orderX - 8);
+    this.desc.setAttribute('y', orderY + 4);
     this.desc.setAttribute('transform', `rotate(${angle} ${orderX} ${orderY})`);
     this.asc.style.display = model.order==1? 'none': '';
-    this.asc.setAttribute('x', orderX + 12);
-    this.asc.setAttribute('y', orderY - 4);
+    this.asc.setAttribute('x', orderX - 8);
+    this.asc.setAttribute('y', orderY - 20);
     this.asc.setAttribute('transform', `rotate(${angle} ${orderX} ${orderY})`);
 
     if(model.editing) {

@@ -56,7 +56,7 @@ export default class SVG {
   static get ascension() {
     return this.build(`
       <symbol id="ascension" viewBox="0 0 8 8">
-        <path d="M0,8 L4,1 L8,8 z" />
+        <path d="M1,7 L4,1 L7,7 z" />
       </symbol>
     `);
   }
@@ -64,7 +64,7 @@ export default class SVG {
   static get descension() {
     return this.build(`
       <symbol id="descension" viewBox="0 0 8 8">
-        <path d="M0,0 L4,7 L8,0 z" />
+        <path d="M1,1 L4,7 L7,1 z" />
       </symbol>
     `);
   }
