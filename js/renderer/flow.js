@@ -35,16 +35,18 @@ export default class FlowRenderer extends Renderer {
     this.handle.setAttribute('x', model.left + model.width/2 - 4);
     this.handle.setAttribute('y', model.top + model.height/2 - 4);
 
-    const //angle = model.angle/Math.PI*180,
-          orderX = model.left + model.width/2 - 4,
-          orderY = model.top + model.height/2 - 4;
+    const angle = model.angle/Math.PI*180,
+          orderX = model.left + model.width/2,
+          orderY = model.top + model.height/2;
 
     this.desc.style.display = model.isLast? 'none' : '';
-    this.desc.setAttribute('x', orderX - 16);
-    this.desc.setAttribute('y', orderY);
+    this.desc.setAttribute('x', orderX - 20);
+    this.desc.setAttribute('y', orderY - 4);
+    this.desc.setAttribute('transform', `rotate(${angle} ${orderX} ${orderY})`);
     this.asc.style.display = model.order==1? 'none': '';
-    this.asc.setAttribute('x', orderX + 16);
-    this.asc.setAttribute('y', orderY);
+    this.asc.setAttribute('x', orderX + 12);
+    this.asc.setAttribute('y', orderY - 4);
+    this.asc.setAttribute('transform', `rotate(${angle} ${orderX} ${orderY})`);
 
     if(model.editing) {
       this.label.style.display = 'none';
