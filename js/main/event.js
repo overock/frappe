@@ -4,19 +4,16 @@ let instance,
     metric, m,
     dx, dy, ox, oy,
     currentModel = null,
+    standbyModel = null,
     editMode = false;
 
 const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
       pool = new MdPool(),
 
-      // codelets
-      getModel = el => {
-        el.correspondingUseElement && (el = el.correspondingUseElement);
-        currentModel = pool.item(el.closest('g').getAttribute('id'));
-      },
       emit = (type, param) => window.dispatchEvent(new CustomEvent(type, { detail: param })),
 
       // handle 아이콘 보이기/숨기기
+      
       showHandle = () => {
         if(currentModel) {
           currentModel.renderer.handle.classList.add('frappe-handle-hover');
@@ -34,14 +31,25 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         }
       },
       showGadget = e => {
-        if(editMode) return;
-        getModel(e.target);
-        showHandle();
+        const getModel = el => {
+          el.correspondingUseElement && (el = el.correspondingUseElement);
+          return pool.item(el.closest('g').getAttribute('id'));
+        };
+
+        if(editMode) {
+          standbyModel = getModel(e.target);
+        } else {
+          currentModel = getModel(e.target);
+          showHandle();
+        }
       },
       hideGadget = () => {
-        if(editMode) return;
-        hideHandle();
-        currentModel = null;
+        if(editMode) {
+          standbyModel = null;
+        } else {
+          hideHandle();
+          currentModel = null;
+        }
       },
 
       /**
@@ -54,7 +62,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
        */
       actionDragStart = e => {
         if(editMode) return;
-        editMode = true;
+        emit('frappe.editstart');
 
         e.preventDefault();
 
@@ -63,7 +71,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         window.addEventListener('mouseup', actionDragEnd);
       },
       actionDragging = e => {
-        currentModel.moveTo((e.pageX - dx) / viewBox.z, (e.pageY - dy) / viewBox.z);
+        currentModel.moveTo((e.pageX - dx)/viewBox.z, (e.pageY - dy)/viewBox.z);
         pool.render();
       },
       actionDragEnd = e => {
@@ -72,7 +80,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         actionDragging(e);
 
         emit('frappe.change');
-        editMode = false;
+        emit('frappe.editend');
       },
 
       /**
@@ -86,26 +94,22 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
       textInput = new LineEditor(),
       editText = e => {
         if(editMode || !currentModel || !currentModel.isRenamable) return;
-        editMode = true;
+
+        emit('frappe.editstart');
+        hideHandle();
 
         e.preventDefault();
         e.stopPropagation();
 
-        hideHandle();
 
         const rect = e.target.getBoundingClientRect(),
               cX = rect.x + rect.width / 2,
               cY = rect.y + rect.height / 2,
               text = currentModel.isFlow? currentModel.cond : currentModel.name;
 
-        textInput.show(cX, cY, {
-          text: text,
-          deg: currentModel.angle / Math.PI * 180,
-          scale: viewBox.z
-        }, editTextDone);
+        textInput.show(cX, cY, { text: text, deg: currentModel.angle / Math.PI * 180, scale: viewBox.z }, editTextDone);
 
         currentModel.isFlow? textInput.elAssist.enable() : textInput.elAssist.disable();
-
         currentModel.editing = true;
         currentModel.render();
       },
@@ -122,9 +126,9 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         currentModel.render();
         currentModel.prev[0] && currentModel.prev[0].render();
         currentModel = null;
-        editMode = false;
 
         emit('frappe.change');
+        emit('frappe.editend');
 
         return true;
       },
@@ -134,7 +138,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
        */
       canvasDragStart = e => {
         if(editMode) return;
-        editMode = true;
+        emit('frappe.editstart');
 
         dx = e.pageX / viewBox.z, dy = e.pageY / viewBox.z, ox = viewBox.x, oy = viewBox.y;
         window.addEventListener('mousemove', canvasDragging);
@@ -149,7 +153,8 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         window.removeEventListener('mousemove', canvasDragging);
         window.removeEventListener('mouseup', canvasDragEnd);
         canvasDragging(e);
-        editMode = false;
+
+        emit('frappe.editend');
       },
       canvasZoom = e => {
         e.preventDefault();
@@ -162,15 +167,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
       /**
        * 새 액션 링크
        */
-      evtProps = {
-        from: null,
-        to: null,
-        ghostAction: null,
-        ghostFlow: null,
-        ghostFlow2: null,
-        top: 0,
-        left: 0
-      },
+      evtProps = { from: null, to: null, ghostAction: null, ghostFlow: null, ghostFlow2: null, top: 0, left: 0 },
       branchStart = e => {
         e.preventDefault();
 
@@ -179,7 +176,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
           return;
         }
         
-        editMode = true;
+        emit('frappe.editstart');
         hideHandle();
 
         dx = e.pageX, dy = e.pageY;
@@ -204,7 +201,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
                 window.removeEventListener('mousemove', hold);
                 window.removeEventListener('mouseup', release);
 
-                editMode = false;
+                emit('frappe.editend');
                 showHandle();
               };
 
@@ -213,29 +210,18 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
       },
       branching = e => {
         [ evtProps.top, evtProps.left ] = [ (e.pageY - m.top) / viewBox.z + viewBox.y - 32, (e.pageX - m.left) / viewBox.z + viewBox.x - 32 ];
-        const {
-          ghostAction: action,
-          top: top,
-          left: left
-        } = evtProps;
+        const { ghostAction: action, top: top, left: left } = evtProps;
 
         action.moveTo(left, top);
 
-        emit('frappe.checkarea', {
-          props: evtProps
-        });
+        emit('frappe.checkarea', { props: evtProps });
       },
       branchEnd = e => {
         window.removeEventListener('mousemove', branching);
         window.removeEventListener('mouseup', branchEnd);
 
         branching(e);
-        emit('frappe.branchend', {
-          props: evtProps,
-          listener: branchSelect
-        });
-
-        editMode = false;
+        emit('frappe.branchend', { props: evtProps, listener: branchSelect });
       },
       branchSelect = e => {
         emit('frappe.branchconfirm', {
@@ -266,9 +252,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
 
                   [ evtProps.from, evtProps.top, evtProps.left ] = [ currentModel, (e.pageY - m.top) / viewBox.z + viewBox.y - 32, (e.page - m.left) / viewBox.z + viewBox.x - 32 ];
 
-                  emit('frappe.snapstart', {
-                    props: evtProps
-                  });
+                  emit('frappe.snapstart', { props: evtProps });
 
                   window.addEventListener('mousemove', snapping);
                   window.addEventListener('mouseup', snapEnd);
@@ -278,7 +262,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
                 window.removeEventListener('mousemove', hold);
                 window.removeEventListener('mouseup', release);
 
-                editMode = false;
+                emit('frappe.editend');
                 showHandle();
               };
 
@@ -310,8 +294,6 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
           listener: snapSelect,
           confirmed: e.target.classList.contains('frappe-branch-confirm')
         });
-
-        editMode = false;
       },
       snapSelect = e => {
         emit('frappe.snapconfirm', {
@@ -323,12 +305,10 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
       },
       ascOrder = () => {
         currentModel.order--;
-        emit('frappe.change');
         emit('frappe.render');
       },
       descOrder = () => {
         currentModel.order++;
-        emit('frappe.change');
         emit('frappe.render');
       };
 
@@ -340,7 +320,6 @@ export default class EventHandler {
 
   hotKeys(e) {
     if(editMode) return;
-    //        console.log(e.key, e.keyCode);
     switch(e.key || e.keyCode) {
       case 'Backspace':
       case 8:
@@ -388,7 +367,16 @@ export default class EventHandler {
   }
 
   get viewBox() { return viewBox; }
-  set viewBox(values) { [ viewBox.x, viewBox.y, viewBox.w, viewBox.h ] = values.split(' ').map(v => v | 0); }
+  set viewBox(values) { [ viewBox.x, viewBox.y, viewBox.w, viewBox.h ] = values.split(' ').map(v => v|0); }
+
+  set editMode(m) {
+    editMode = !!m;
+    if(!m && standbyModel) {
+      currentModel = standbyModel;
+      standbyModel = null;
+      showHandle();
+    }
+  }
 
   setVars(list) { textInput.elAssist.setVars(...list); }
 }

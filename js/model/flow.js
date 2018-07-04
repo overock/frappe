@@ -78,18 +78,8 @@ export default class Flow extends Model {
   fitToNodes() {
     if(!this.isDirty) return;
 
-    const p = this.prev[0] || {
-            top: this.top,
-            left: this.left,
-            width: 0,
-            height: 0
-          },
-          n = this.next[0] || {
-            top: this.bottom,
-            left: this.right,
-            width: 0,
-            height: 0
-          },
+    const p = this.prev[0] || { top: this.top, left: this.left, width: 0, height: 0 },
+          n = this.next[0] || { top: this.bottom, left: this.right, width: 0, height: 0 },
 
           pcx = p.left + p.width / 2,
           pcy = p.top + p.height / 2,

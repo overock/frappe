@@ -35,14 +35,15 @@ export default class Action extends Model {
     // FIXME: 앞뒤를 모두 체크하니 join이 안 되는 문제가 발생.
     // 추후 액션별 룰체크를 좀 더 강화하는 쪽으로 변경해야할듯
     const _b = [],
-          _f = a => a.prevActions. /*concat(a.nextActions).*/ some(b => {
+          _p = a => a.prevActions.some(b => {
             if(_b.indexOf(b) >= 0) return false;
             if(b == target) return true;
             _b.push(b);
-            return _f(b);
-          });
+            return _p(b);
+          }),
+          _n = a => a.nextActions.some(b => b == target);
 
-    return _f(this);
+    return _p(this) || _n(this);
   }
 
   adjustEdges() {

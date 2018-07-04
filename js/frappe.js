@@ -57,6 +57,9 @@ export default class Frappe {
     const evts = {
       'keydown': this.event.hotKeys,
 
+      'frappe.editstart': () => this.event.editMode = true,
+      'frappe.editend': () => this.event.editMode = false,
+
       'frappe.add': e => this.add(e.detail.type, e.detail.top, e.detail.left, e.detail.bottom, e.detail.right),
       'frappe.remove': e => this.remove(e.detail.model),
       'frappe.clear': () => this.clear(),
@@ -97,10 +100,7 @@ export default class Frappe {
     if(document.body.contains(this.canvas)) {
       // check resize
       const z = this.event.viewBox.z,
-            {
-              width,
-              height
-            } = this.metric,
+            { width, height } = this.metric,
             [ x, y, w, h ] = this.canvas.getAttribute('viewBox').split(' ').map(v => v | 0);
 
       if(height != h || width != w) {
@@ -121,10 +121,7 @@ export default class Frappe {
 
   resize() {
     const z = this.event.viewBox.z,
-          {
-            width,
-            height
-          } = this.metric,
+          { width, height } = this.metric,
           [ x, y ] = this.canvas.getAttribute('viewBox').split(' ').map(v => v | 0),
           viewbox = `${x} ${y} ${width/z} ${height/z}`;
 
@@ -175,10 +172,7 @@ export default class Frappe {
   replace(oldModel, type) {
     const newModel = this.add(type);
 
-    ({
-      top: newModel.top,
-      left: newModel.left
-    } = oldModel);
+    ({ top: newModel.top, left: newModel.left } = oldModel);
     oldModel.prev.forEach(p => this.link(p, newModel));
     oldModel.next.forEach(n => this.link(newModel, n));
     this.remove(oldModel);
@@ -190,19 +184,7 @@ export default class Frappe {
   render(bUpdateOnly) {
     this.pool.render(bUpdateOnly ? undefined : this.canvas, model => this.event.listen(model));
     this.emit('frappe.change');
-
-    // this.__timeout && clearTimeout(this.__timeout);
-    // this.__updateOnly = this.__updateOnly && bUpdateOnly;
-    // this.__timeout = setTimeout(() => this._render(this.__updateOnly), 16);
   }
-
-  // _render(bUpdateOnly) {
-  //   this.pool.render(bUpdateOnly ? undefined : this.canvas, model => this.event.listen(model));
-  //   this.emit('frappe.change');
-
-  //   this.__timeout = null;
-  //   this.__updateOnly = true;
-  // }
 
   import (json) {
     typeof json == 'string' && (json = JSON.parse(json));
@@ -241,33 +223,18 @@ export default class Frappe {
   }
 
   setZoom(d) {
-    const {
-            width: cw,
-            height: ch
-          } = this.metric,
-          {
-            viewBox: v,
-            originalEvent: e
-          } = d,
+    const { width: cw, height: ch } = this.metric,
+          { viewBox: v, originalEvent: e } = d,
           offset = 1 / v.z - 1 / (v.z = Math.min(Math.max(0.25, v.z - e.deltaY / 500), 2));
 
     v.x += offset * e.layerX, v.y += offset * e.layerY, v.w = cw / v.z, v.h = ch / v.z;
 
-    const {
-      x,
-      y,
-      w,
-      h
-    } = v;
+    const { x, y, w, h } = v;
     this.canvas.setAttribute('viewBox', `${x} ${y} ${w} ${h}`);
   }
 
   addNewAction(d) {
-    const {
-            type,
-            top,
-            left
-          } = d,
+    const { type, top, left } = d,
           [ vx, vy, vw ] = this.canvas.getAttribute('viewBox').split(' ').map(v => v | 0),
           ratio = vw / this.metric.width;
 
@@ -290,14 +257,7 @@ export default class Frappe {
   }
 
   checkArea(d) {
-    let {
-          from: lnFrom,
-          to: lnTo,
-          ghostAction: ga,
-          ghostFlow: gf,
-          left: x,
-          top: y
-        } = d.props;
+    let { from: lnFrom, to: lnTo, ghostAction: ga, ghostFlow: gf, left: x, top: y } = d.props;
     
     x += 32, y += 32;
     let hover = this.pool.filter(m => m != lnFrom && !m.isFlow && !lnFrom.isConnectedTo(m))
@@ -318,14 +278,7 @@ export default class Frappe {
 
   confirmGhost(d) {
     const {
-            props: {
-              ghostAction: ga,
-              ghostFlow: gf,
-              from: lnFrom,
-              to: lnTo,
-              top: y,
-              left: x
-            },
+            props: { ghostAction: ga, ghostFlow: gf, from: lnFrom, to: lnTo, top: y, left: x },
             listener: fn
           } = d;
 
@@ -335,6 +288,8 @@ export default class Frappe {
 
       this.canvas.removeChild(ga.element);
       this.canvas.removeChild(gf.element);
+      
+      this.emit('frappe.editend');
     } else {
       this.radial.open(this.canvas, x + 32, y + 32, lnFrom.rules.after);
       this.canvas.addEventListener('mousedown', fn);
@@ -343,11 +298,7 @@ export default class Frappe {
 
   removeGhost(d) {
     const {
-            props: {
-              from: target,
-              ghostAction: ga,
-              ghostFlow: gf
-            },
+            props: { from: target, ghostAction: ga, ghostFlow: gf },
             type: type,
             listener: fn,
             confirmed: c
@@ -360,6 +311,8 @@ export default class Frappe {
     this.remove(gf);
     this.canvas.removeEventListener('mousedown', fn);
     this.radial.close();
+
+    this.emit('frappe.editend');
   }
 
   addGhostSnap(d) {
@@ -397,12 +350,7 @@ export default class Frappe {
 
   removeGhostSnap(d) {
     const {
-            props: {
-              from: target,
-              ghostAction: ga,
-              ghostFlow: gf1,
-              ghostFlow2: gf2
-            },
+            props: { from: target, ghostAction: ga, ghostFlow: gf1, ghostFlow2: gf2 },
             type: type,
             listener: fn,
             confirmed: c
@@ -429,6 +377,8 @@ export default class Frappe {
     this.canvas.removeEventListener('mousedown', fn);
     this.radial.close();
     target.element.style.display = '';
+
+    this.emit('frappe.editend');
   }
 }
 
