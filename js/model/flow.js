@@ -68,12 +68,11 @@ export default class Flow extends Model {
   }
 
   get isFlow() { return true; }
+  get isForked() { return this.prev[0] && this.prev[0].type == 'fork'; }
   get isCase() { return this.prev[0] && this.prev[0].type == 'decision'; }
   get isLast() { return this.siblings.length == this.order; }
   get isRenamable() { return this.isCase && !this.isLast; }
-
   
-
   // TODO: dirty check로 불필요한 계산 반복하지 않도록 처리해 보자.
   fitToNodes() {
     if(!this.isDirty) return;

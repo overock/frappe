@@ -35,15 +35,17 @@ export default class FlowRenderer extends Renderer {
     this.handle.setAttribute('x', model.left + model.width/2 - 4);
     this.handle.setAttribute('y', model.top + model.height/2 - 4);
 
-    const angle = model.angle/Math.PI*180,
-          orderX = model.left + model.width - 32*Math.cos(model.angle),
-          orderY = model.top + model.height - 32*Math.sin(model.angle);
+    const flip = Math.abs(model.angle) > Math.PI/2,
+          factor = flip? -1 : 1,
+          angle = model.angle/Math.PI*180 + flip*180,
+          orderX = model.left + model.width*(1-flip) - 32*Math.cos(model.angle)*factor,
+          orderY = model.top + model.height*(1-flip) - 32*Math.sin(model.angle)*factor;
 
-    this.desc.style.display = model.isLast? 'none' : '';
+    this.desc.style.display = model.isForked || model.isLast? 'none' : '';
     this.desc.setAttribute('x', orderX - 8);
     this.desc.setAttribute('y', orderY + 4);
     this.desc.setAttribute('transform', `rotate(${angle} ${orderX} ${orderY})`);
-    this.asc.style.display = model.order==1? 'none': '';
+    this.asc.style.display = model.isForked || model.order==1? 'none': '';
     this.asc.setAttribute('x', orderX - 8);
     this.asc.setAttribute('y', orderY - 20);
     this.asc.setAttribute('transform', `rotate(${angle} ${orderX} ${orderY})`);
@@ -51,10 +53,7 @@ export default class FlowRenderer extends Renderer {
     if(model.editing) {
       this.label.style.display = 'none';
     } else {
-      const flip = Math.abs(model.angle)>Math.PI/2,
-            factor = flip? -1 : 1,
-            angle = model.angle/Math.PI*180 + (flip? 180 : 0),
-            labelX = model.left + model.width/2 - 20*Math.sin(model.angle)*factor,
+      const labelX = model.left + model.width/2 - 20*Math.sin(model.angle)*factor,
             labelY = model.top + model.height/2 + 20*Math.cos(model.angle)*factor;
 
       this.label.setAttribute('x', labelX);
