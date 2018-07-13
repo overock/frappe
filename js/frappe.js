@@ -47,7 +47,7 @@ export default class Frappe {
     parent.appendChild(this.canvas);
 
     this.pool = new MdPool();
-    this.event = new Event();
+    this.event = new Event('d2hhdCBpcyB0aGUgbWFnaWMgd29yZA|b3Zlcm9ja0BkYXVtLm5ldA');
     this.radial = new RadialMenu();
 
     this.event.bind(this);

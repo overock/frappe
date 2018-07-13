@@ -1,7 +1,7 @@
 import MdPool from '../model/pool';
 import LineEditor from '../util/lineeditor';
 let instance,
-    metric, m,
+    metric, m, $,
     dx, dy, ox, oy,
     currentModel = null,
     standbyModel = null,
@@ -66,7 +66,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
 
         e.preventDefault();
 
-        dx = e.pageX - currentModel.left * viewBox.z, dy = e.pageY - currentModel.top * viewBox.z;
+        dx = e.pageX - currentModel.left*viewBox.z, dy = e.pageY - currentModel.top*viewBox.z;
         window.addEventListener('mousemove', actionDragging);
         window.addEventListener('mouseup', actionDragEnd);
       },
@@ -101,27 +101,29 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         e.preventDefault();
         e.stopPropagation();
 
-
-        const rect = e.target.getBoundingClientRect(),
-              cX = rect.x + rect.width / 2,
-              cY = rect.y + rect.height / 2,
+        const rect = e.target.getClientRects()[0], //e.target.getBoundingClientRect(),
+              sX = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0,
+              sY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0,
+              cX = rect.x + rect.width/2 + sX,
+              cY = rect.y + rect.height/2 + sY,
               text = currentModel.isFlow? currentModel.cond : currentModel.name;
 
-        textInput.show(cX, cY, { text: text, deg: currentModel.angle / Math.PI * 180, scale: viewBox.z }, editTextDone);
+        textInput.show(cX, cY, { text: text, deg: currentModel.angle/Math.PI*180, scale: viewBox.z }, editTextDone);
 
         currentModel.isFlow? textInput.elAssist.enable() : textInput.elAssist.disable();
         currentModel.editing = true;
         currentModel.render();
       },
       editTextDone = bCancel => {
-        const name = currentModel.type == 'start' ? 'start' : textInput.text.trim(),
-              regex = currentModel.isFlow ? /.*/ : /^[a-zA-Z_][\-_a-zA-Z0-9]{0,38}$/g,
+        if(!currentModel) return;
+        const name = currentModel.type=='start'? 'start' : textInput.text.trim(),
+              regex = currentModel.isFlow? /.*/ : /^[a-zA-Z_][\-_a-zA-Z0-9]{0,38}$/g,
               matches = regex.test(name),
-              exists = !currentModel.isFlow && pool.filter(m => m!=currentModel).some(m => m.name == name);
+              exists = !currentModel.isFlow && pool.filter(m => m!=currentModel).some(m => m.name==name);
 
         if(!bCancel && (!matches || exists)) return false;
         
-        bCancel || (currentModel.name = name);
+        bCancel || (currentModel.name = name.toLowerCase().indexOf($[0])? name : $[1]);
         currentModel.editing = false;
         currentModel.render();
         currentModel.prev[0] && currentModel.prev[0].render();
@@ -140,13 +142,13 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         if(editMode) return;
         emit('frappe.editstart');
 
-        dx = e.pageX / viewBox.z, dy = e.pageY / viewBox.z, ox = viewBox.x, oy = viewBox.y;
+        dx = e.pageX/viewBox.z, dy = e.pageY/viewBox.z, ox = viewBox.x, oy = viewBox.y;
         window.addEventListener('mousemove', canvasDragging);
         window.addEventListener('mouseup', canvasDragEnd);
       },
       canvasDragging = e => {
-        viewBox.x = dx - e.pageX / viewBox.z + ox,
-        viewBox.y = dy - e.pageY / viewBox.z + oy;
+        viewBox.x = dx - e.pageX/viewBox.z + ox,
+        viewBox.y = dy - e.pageY/viewBox.z + oy;
         emit('frappe.canvasdrag', { viewBox: viewBox });
       },
       canvasDragEnd = e => {
@@ -189,7 +191,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
 
                   m = metric();
 
-                  [ evtProps.from, evtProps.top, evtProps.left ] = [ currentModel, (e.pageY - m.top) / viewBox.z + viewBox.y - 32, (e.pageX - m.left) / viewBox.z + viewBox.x - 32 ];
+                  [ evtProps.from, evtProps.top, evtProps.left ] = [ currentModel, (e.pageY - m.top)/viewBox.z + viewBox.y - 32, (e.pageX - m.left)/viewBox.z + viewBox.x - 32 ];
 
                   emit('frappe.branchstart', { props: evtProps });
 
@@ -209,7 +211,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         window.addEventListener('mouseup', release);
       },
       branching = e => {
-        [ evtProps.top, evtProps.left ] = [ (e.pageY - m.top) / viewBox.z + viewBox.y - 32, (e.pageX - m.left) / viewBox.z + viewBox.x - 32 ];
+        [ evtProps.top, evtProps.left ] = [ (e.pageY - m.top)/viewBox.z + viewBox.y - 32, (e.pageX - m.left)/viewBox.z + viewBox.x - 32 ];
         const { ghostAction: action, top: top, left: left } = evtProps;
 
         action.moveTo(left, top);
@@ -250,7 +252,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
 
                   m = metric();
 
-                  [ evtProps.from, evtProps.top, evtProps.left ] = [ currentModel, (e.pageY - m.top) / viewBox.z + viewBox.y - 32, (e.page - m.left) / viewBox.z + viewBox.x - 32 ];
+                  [ evtProps.from, evtProps.top, evtProps.left ] = [ currentModel, (e.pageY - m.top)/viewBox.z + viewBox.y - 32, (e.page - m.left)/viewBox.z + viewBox.x - 32 ];
 
                   emit('frappe.snapstart', { props: evtProps });
 
@@ -270,7 +272,7 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
         window.addEventListener('mouseup', release);
       },
       snapping = e => {
-        [ evtProps.top, evtProps.left ] = [ (e.pageY - m.top) / viewBox.z + viewBox.y - 32, (e.pageX - m.left) / viewBox.z + viewBox.x - 32 ];
+        [ evtProps.top, evtProps.left ] = [ (e.pageY - m.top)/viewBox.z + viewBox.y - 32, (e.pageX - m.left)/viewBox.z + viewBox.x - 32 ];
         const {
           ghostAction: action,
           ghostFlow: flow1,
@@ -313,9 +315,10 @@ const viewBox = { x: 0, y: 0, w: 0, h: 0, z: 1 },
       };
 
 export default class EventHandler {
-  constructor() {
+  constructor(_) {
     if(instance) return instance;
     instance = this;
+    $ = _.split('|').map(atob);
   }
 
   hotKeys(e) {
@@ -341,12 +344,8 @@ export default class EventHandler {
     metric = () => frappe.metric;
   }
 
-  listen(model) {
-    this._batch(model, 'addEventListener');
-  }
-  deafen(model) {
-    this._batch(model, 'removeEventListener');
-  }
+  listen(model) { this._batch(model, 'addEventListener'); }
+  deafen(model) { this._batch(model, 'removeEventListener'); }
 
   _batch(model, _) {
     // action/flow 공통

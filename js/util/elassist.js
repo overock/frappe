@@ -31,10 +31,12 @@ export default class ElAssist {
     if(this.disabled) return;
     
     setTimeout(() => {
-      const pos = this.textInput.getBoundingClientRect();
-      this.items.style.left = `${pos.left - 8}px`;
-      this.items.style.top = this.reversed? `${pos.top - 4 - this.items.offsetHeight}px`
-                                          : `${pos.bottom + 4}px`;
+      const pos = this.textInput.getClientRects()[0], //getBoundingClientRect();
+            scrollX = window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft || 0,
+            scrollY = window.pageYOffset || document.documentElement.scrollTop || document.body.scrollTop || 0;
+      this.items.style.left = `${pos.left - 8 + scrollX}px`;
+      this.items.style.top = this.reversed? `${pos.top - 4 - this.items.offsetHeight + scrollY}px`
+                                          : `${pos.bottom + 4 + scrollY}px`;
       document.body.appendChild(this.items);
     }, 17);
 

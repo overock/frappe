@@ -44,7 +44,7 @@ export default class LineEditor {
     document.body.appendChild(this.holder);
     this.text = text || '';
 
-    this.holder.style.top = (y - this.holder.offsetHeight / 2) + 'px';
+    this.holder.style.top = (y - this.holder.offsetHeight/2) + 'px';
     this.holder.style.transform = `scale(${scale||1})`;
     //this.holder.style.transform = `rotate(${deg||0}deg) scale(${scale||1})`;
     
@@ -71,7 +71,7 @@ export default class LineEditor {
 
   shake() {
     const delta = new Date() - this.anim.ts;
-    if(delta > 500) {
+    if(delta>500) {
       this.input.focus();
       this.input.select();
       return;

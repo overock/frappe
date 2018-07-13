@@ -57,6 +57,10 @@
   border-radius: 8px;
   text-align: center;
   display: table-cell;
+  ime-mode: disabled;
+  -ms-ime-mode: disabled;
+  -webkit-ime-mode: disabled;
+  -moz-ime-mode: disabled;
 }
 
 .frappe-textinput:focus {

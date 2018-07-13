@@ -21,6 +21,9 @@ module.exports = {
       "error",
       "unix"
     ],
+    "no-octal": [
+      "off"
+    ],
     "quotes": [
       "error",
       "single"

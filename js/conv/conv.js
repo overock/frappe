@@ -13,14 +13,14 @@ export default class JSONConverter {
     const inp = new In(),
           rel = [];
     Object.keys(json)
-      .filter(tag => [ '@', '#', '!' ].indexOf(tag[0]) == -1)
+      .filter(tag => [ '@', '#', '!' ].indexOf(tag[0])==-1)
       .forEach(tag => [].concat(json[tag]).forEach(body => pool.add(inp[tag](body, rel))));
 
     // stage #2: build nameMap;
     rel.map(r => {
       return {
-        f: pool.find(m => m.name == r[0] || m.type == r[0]),
-        t: pool.find(m => m.name == r[1] || m.type == r[1]),
+        f: pool.find(m => m.name==r[0] || m.type==r[0]),
+        t: pool.find(m => m.name==r[1] || m.type==r[1]),
         pred: r[2]
       };
     }).forEach(r => {
@@ -30,7 +30,7 @@ export default class JSONConverter {
       r.f.linkBefore(flow);
       r.t.linkAfter(flow);
       flow.cond = r.pred || '';
-      pool.add(flow);      
+      pool.add(flow);
     });
 
     // stage #4: positioning
@@ -44,10 +44,10 @@ export default class JSONConverter {
     const ret = new Node({}).prop({ name: pool.title, xmlns: 'uri:oozie:workflow:0.4' }),
           out = new Out(),
           proc = v => out[v.type](ret, v);
-    pool.container.filter(v => v.type == 'start').forEach(proc);
-    pool.container.filter(v => !v.isFlow && [ 'start', 'end', 'kill' ].indexOf(v.type) == -1).forEach(proc);
-    pool.container.filter(v => v.type == 'kill').forEach(proc);
-    pool.container.filter(v => v.type == 'end').forEach(proc);
+    pool.container.filter(v => v.type=='start').forEach(proc);
+    pool.container.filter(v => !v.isFlow && [ 'start', 'end', 'kill' ].indexOf(v.type)==-1).forEach(proc);
+    pool.container.filter(v => v.type=='kill').forEach(proc);
+    pool.container.filter(v => v.type=='end').forEach(proc);
     return ret;
   }
 }
